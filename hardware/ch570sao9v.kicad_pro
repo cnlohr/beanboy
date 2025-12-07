@@ -38,8 +38,8 @@
         "other_text_upright": false,
         "pads": {
           "drill": 0.0,
-          "height": 12.5,
-          "width": 12.5
+          "height": 0.24,
+          "width": 0.24
         },
         "silk_line_width": 0.12,
         "silk_text_italic": false,
@@ -472,7 +472,7 @@
     "classes": [
       {
         "bus_width": 12,
-        "clearance": 0.2,
+        "clearance": 0.16,
         "diff_pair_gap": 0.25,
         "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2,
