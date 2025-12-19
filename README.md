@@ -106,11 +106,12 @@ TODO:
 3. ~~Make sprite import code.~~
 4. ~~Add transparency code.~~
 5. ~~Add API for comms~~
-6. "Pass the puffer"  "Hot Potato with puffer fish"
+6. Add networking to emu
+7. "Pass the puffer"  "Hot Potato with puffer fish"
   * Choose between 2 and 6 players
   * Randomly assign X amount of passes.
   * # of passes remaining is unknown.
-7. Shut the box.
+8. Shut the box.
   * Rules too complicated for me to write here.
 
 
