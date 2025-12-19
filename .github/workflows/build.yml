@@ -27,14 +27,18 @@ jobs:
       run: make -C firmware clean firmware.bin makeassets.exe
     - name: Build Emu
       run: make -C emu emu.exe
-    - name: 'Upload Artifact'
+    - name: 'Upload emulator'
       uses: actions/upload-artifact@v4
       with:
         name: emu.exe
         path: emu/emu.exe
+    - name: 'Upload makeassets.exe'
+      uses: actions/upload-artifact@v4
       with:
         name: makeassets.exe
         path: firmware/makeassets.exe
+    - name: 'Upload firmware.bin'
+      uses: actions/upload-artifact@v4
       with:
         name: firmware.bin
         path: firmware/firmware.bin
