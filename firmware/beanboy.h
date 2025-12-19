@@ -53,6 +53,53 @@ void ISLERSend( const void * message, int messageLength )
 const uint8_t * GetSelfMAC() { return (const uint8_t*)ESIG1_ADDRESS; }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// Auxiliary rendering sources bsprite
+//
+// This drawing function is very slow.  Consider optimizing.
+//
+void RenderBSprite( const bsprite * spr, int outx, int outy ) __attribute__ ((noinline));
+void RenderBSprite( const bsprite * spr, int outx, int outy )
+{
+	int sw = spr->w;
+	int sh = spr->h;
+	int x, y;
+	const uint32_t * bin = &spr->data[0];
+	for( y = 0; y < sh; y++, outy++ )
+	{
+		uint8_t * bout = &ssd1306_buffer[(outy>>3)*SSD1306_W + outx];
+		int boutshift = outy&7;
+		int boutshiftmaskinv = ~(1<<boutshift);
+		int tx = outx;
+		int group;
+		if( outy < 0 )
+		{
+			bin += sw;
+			continue;
+		}
+		else if( outy >= SSD1306_H )
+		{
+			break;
+		}
+
+		for( group = 0; group < sw; group++ )
+		{
+			uint32_t input = *(bin++);
+			for( x = 0; x < 16; x++, tx++, input >>= 1 )
+			{
+				if( tx < 0 || tx >= SSD1306_W ) continue;
+				if( input & 1 )
+				{
+					bout[x] = ( bout[x] & boutshiftmaskinv ) | (((input>>16)&1)<< ( boutshift));
+				}
+			}
+			bout += 16;
+		}
+	}
+}
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,6 +149,54 @@ void SetupADC(void)
 	funPinMode( PA2, GPIO_ModeOut_PP_20mA );
 }
 
+
+
+
+
+
+void BeanBoyReadPressures( uint32_t * pressures )
+{
+	int btn = 0;
+	for( btn = 0; btn < 4; btn++ )
+	{
+		// try GPIO_CFGLR_IN_PUPD, GPIO_ModeIN_Floating, GPIO_CFGLR_OUT_10Mhz_PP as well
+		funPinMode( PA3, GPIO_ModeIN_Floating );
+		funPinMode( PA8, GPIO_ModeIN_Floating );
+		funPinMode( PA9, GPIO_ModeIN_Floating );
+		switch( btn )
+		{
+		case 0:
+			funPinMode( PA8, GPIO_CFGLR_OUT_10Mhz_PP );
+			funDigitalWrite( PA3, 1 );
+			break;
+		case 1:
+			funPinMode( PA9, GPIO_CFGLR_OUT_10Mhz_PP );
+			funDigitalWrite( PA8, 1 );
+			break;
+		case 2:
+			funPinMode( PA3, GPIO_CFGLR_OUT_10Mhz_PP );
+			funDigitalWrite( PA9, 1 );
+			break;
+		}
+
+		if( *((uint32_t*)0x4fff0000) == 0xaaaaaaaa )
+		{
+			pressures[btn] = *((uint32_t*)(0x4fff0004+4*btn));
+		}
+		else
+		{
+			lastfifo = 0;
+			EventRelease();
+			int to = 4000;
+			while( !lastfifo && --to );
+
+			#define COEFFICIENT (const uint32_t)(FUNCONF_SYSTEM_CORE_CLOCK*(RESISTANCE*CAPACITANCE)*VREF*FIXEDPOINT_SCALE+0.5)
+			int r = lastfifo - 2; // 2 cycles back.
+			int vtot = COEFFICIENT/r + ((const uint32_t)(VREF*FIXEDPOINT_SCALE));
+			pressures[btn] = vtot - 70;
+		}
+	}
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 

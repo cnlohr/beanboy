@@ -12,7 +12,7 @@ assets.h : makeassets
 	./makeassets
 
 makeassets : makeassets.c
-	gcc -g -o $@ $^
+	gcc -g -o $@ $^ -lm
 
 clean :
 	rm -rf *.o assets.h

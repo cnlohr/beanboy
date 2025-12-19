@@ -17,8 +17,13 @@
 #include "ssd1306_spi.h"
 #include "ssd1306.h"
 
+#include "assets.h"
 
 #include "beanboy.h"
+
+#define RANDOM_STRENGTH 2
+
+#include "lib_rand.h"
 
 
 
@@ -83,54 +88,13 @@ int main()
 
 		uint32_t pressures[4];
 
-		int btn = 0;
-		for( btn = 0; btn < 4; btn++ )
-		{
-			// try GPIO_CFGLR_IN_PUPD, GPIO_ModeIN_Floating, GPIO_CFGLR_OUT_10Mhz_PP as well
-			funPinMode( PA3, GPIO_ModeIN_Floating );
-			funPinMode( PA8, GPIO_ModeIN_Floating );
-			funPinMode( PA9, GPIO_ModeIN_Floating );
-			switch( btn )
-			{
-			case 0:
-				funPinMode( PA8, GPIO_CFGLR_OUT_10Mhz_PP );
-				funDigitalWrite( PA3, 1 );
-				break;
-			case 1:
-				funPinMode( PA9, GPIO_CFGLR_OUT_10Mhz_PP );
-				funDigitalWrite( PA8, 1 );
-				break;
-			case 2:
-				funPinMode( PA3, GPIO_CFGLR_OUT_10Mhz_PP );
-				funDigitalWrite( PA9, 1 );
-				break;
-			}
-
-			if( *((uint32_t*)0x4fff0000) == 0xaaaaaaaa )
-			{
-				pressures[btn] = *((uint32_t*)(0x4fff0004+4*btn));
-			}
-			else
-			{
-				lastfifo = 0;
-				EventRelease();
-				int to = 4000;
-				while( !lastfifo && --to );
-
-				#define COEFFICIENT (const uint32_t)(FUNCONF_SYSTEM_CORE_CLOCK*(RESISTANCE*CAPACITANCE)*VREF*FIXEDPOINT_SCALE+0.5)
-				int r = lastfifo - 2; // 2 cycles back.
-				int vtot = COEFFICIENT/r + ((const uint32_t)(VREF*FIXEDPOINT_SCALE));
-				pressures[btn] = vtot - 70;
-			}
-		}
+		BeanBoyReadPressures( pressures );
 
 		debug = SysTick->CNT - start;
 		frameno++;
 		
 		ssd1306_setbuf(0x00); // Clear screen
 
-
-#if 1
 		// Draw stuff to screen
 		char st[128];
 		sprintf( st, "%08x", (int)SysTick->CNT );
@@ -139,7 +103,7 @@ int main()
 		sprintf( st, "%3d %d", debug>>8, (int)pressures[3] );
 		ssd1306_drawstr_sz(0, 24, st, 1, 2 );
 
-
+		int btn;
 		for( btn = 0; btn < 3; btn++ )
 		{
 			int x = 32 + btn * 32;
@@ -148,12 +112,15 @@ int main()
 			ssd1306_drawCircle( x, y, p, 1 );
 			//ssd1306_fillCircle( x, y, p, 1 );
 		}
-#endif
 
-		//char st[128];
-		//sprintf( st, "%08x\n", AES->some_reg4 );
-		//ssd1306_drawstr_sz(0, 0, st, 1, 2 );
-//		printf( "%08x %08x\n", ESIG1_ADDRESS[0], ESIG1_ADDRESS[1] );
+		int sprites = 0;
+		for( sprites = 0; sprites < 10; sprites++ )
+		{
+			int x = (rand() % (128+80))-40;
+			int y = (rand() % (128+80))-40;
+			RenderBSprite( &bubble, x, y );
+		}
+
 		if( ( frameno & 0xff ) == 0 )
 		{
 			ISLERSend( "\xaa\xbb\xcc\xdd\xee\xff", 6 );
@@ -161,5 +128,7 @@ int main()
 
 		// Output screen contents to OLED display.
 		ssd1306_refresh();
+
+		Delay_Ms(13);
 	}
 }
