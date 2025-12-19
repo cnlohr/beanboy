@@ -130,7 +130,6 @@ int main()
 
 	while(1)
 	{
-
 		start = SysTick->CNT;
 
 		uint32_t pressures[4];
@@ -175,11 +174,14 @@ int main()
 				pressures[btn] = vtot - 70;
 			}
 		}
+
 		debug = SysTick->CNT - start;
 		frameno++;
 		
-		ssd1306_setbuf(0x00);
+		ssd1306_setbuf(0x00); // Clear screen
 
+
+		// Draw stuff to screen
 		char st[128];
 		sprintf( st, "%08x", (int)SysTick->CNT );
 		ssd1306_drawstr_sz(0, 0, st, 1, 2 );
@@ -193,10 +195,11 @@ int main()
 			int x = 32 + btn * 32;
 			int y = 90;
 			int p = pressures[btn]>>9;
-			//ssd1306_drawCircle( x, y, 
+			//ssd1306_drawCircle( x, y, p, 1 );
 			ssd1306_fillCircle( x, y, p, 1 );
 		}
 
+		// Output screen contents to OLED display.
 		ssd1306_refresh();
 	}
 }
