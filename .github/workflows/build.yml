@@ -24,7 +24,7 @@ jobs:
           gdb-multiarch \
           gcc-mingw-w64-x86-64-win32
     - name: Build Firmware
-      run: make -C firmware clean firmware.bin
+      run: make -C firmware clean firmware.bin makeassets.exe
     - name: Build Emu
       run: make -C emu emu.exe
     - name: 'Upload Artifact'
@@ -32,3 +32,9 @@ jobs:
       with:
         name: emu.exe
         path: emu/emu.exe
+      with:
+        name: makeassets.exe
+        path: firmware/makeassets.exe
+      with:
+        name: firmware.bin
+        path: firmware/firmware.bin

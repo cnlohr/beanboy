@@ -66,7 +66,7 @@ int main()
 	const char * rootAssets = "assets";
 	enumerate( rootAssets );
 
-	qsort( fileList, nrFiles, sizeof(char*), (__compar_fn_t)strcmp );
+	qsort( fileList, nrFiles, sizeof(char*), (int (*)(const void*, const void*))strcmp );
 
 	for( i = 0; i < nrFiles; i++ )
 	{
