@@ -105,7 +105,7 @@ TODO:
 2. ~~Check to see if the radio code works.~~
 3. ~~Make sprite import code.~~
 4. ~~Add transparency code.~~
-5. ~~Add API for comms
+5. ~~Add API for comms~~
 6. "Pass the puffer"  "Hot Potato with puffer fish"
   * Choose between 2 and 6 players
   * Randomly assign X amount of passes.
