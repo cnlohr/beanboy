@@ -490,10 +490,10 @@ static uint32_t DMDATA[2];
 uint32_t GetSTK()
 {
 	double dt = OGGetAbsoluteTime();
-	if (STK_CTLR & 2)
-		dt *= 48000000;
-	else
-		dt *= 6000000;
+//	if (STK_CTLR & 2)
+		dt *= 60000000;
+//	else
+//		dt *= 6000000;
 	return ((uint32_t)dt) - STK_ZERO;
 }
 
@@ -611,6 +611,11 @@ static int CHPLoad(uint32_t address, uint32_t* regret, int size)
 	{
 		*regret = pressures[3];
 	}
+	else if( address >= 0x4000c000 && address <= 0x4000e000 )
+	{
+		// radio.
+		*regret  = 0;
+	}
 	else if (address >= 0x40000000 && address < 0x50000000)
 	{
 		printf( "Unknown hardware read %08x @ %08x ra: %08x\n", address, debugpc, ch570state.regs[1] ); *regret = 0;
@@ -664,7 +669,7 @@ static int CHPStore(uint32_t address, uint32_t regset, int size)
 		{
 			int chars = (DMDATA[0] & 0xf) - 4;
 			int i;
-			printf("PRINTF FROM ch570: [%08x %08x]\n", DMDATA[0], DMDATA[1]);
+			//printf("PRINTF FROM ch570: [%08x %08x]\n", DMDATA[0], DMDATA[1]);
 			for (i = 0; i < chars; i++)
 			{
 				printf("%c", ((uint8_t*)DMDATA)[i + 1]);
@@ -779,6 +784,10 @@ static int CHPStore(uint32_t address, uint32_t regset, int size)
 	}
 	else if( address == 0x4000240c ); // R32_TMR_CNT_END 
 	else if( address == 0x40002402 ); // R8_TMR_INTER_EN
+	else if( address >= 0x4000c000 && address <= 0x4000e000 )
+	{
+		// radio.
+	}
 	else if (address >= 0x40000000 && address < 0x50000000)
 	{
 		 printf( "Unknown hardware write %08x = %08x @ %08x; ra: %08x\n", address, regset, debugpc, ch570state.regs[1] );
