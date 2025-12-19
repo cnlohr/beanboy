@@ -10,6 +10,15 @@ Follow these instructions: [https://github.com/cnlohr/ch32fun/wiki](https://gith
 
 The bean boy uses a monochrome 128x128 display.
 
+### Input
+
+You get "pressures" for button 1, button 2, button 3, and the battery level. (For now, just print the values to the screen, we will be changing the levels)
+
+```c
+	uint32_t pressures[4];
+	BeanBoyReadPressures( pressures );
+```
+
 ### Sprites
 
 Have .png files in `sprites/` folder, then on compile, they will turn into the object name itself, when you say `make clean firmware.elf`
