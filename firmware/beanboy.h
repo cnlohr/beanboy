@@ -1,6 +1,41 @@
 #ifndef _BEANBOY_H
 #define _BEANBOY_H
 
+void BeanboySetup()
+{
+	SystemInit();
+
+	funGpioInitAll(); // no-op on ch5xx
+
+	funPinMode( PA11, GPIO_CFGLR_OUT_10Mhz_PP );
+//	funDigitalWrite( PA11, 1 ); // BS1 = 1 for I2C
+	funDigitalWrite( PA11, 0 ); // BS1 = 0 for SPI
+
+	funPinMode( PA6, GPIO_CFGLR_OUT_10Mhz_PP );
+	funDigitalWrite( PA6, 1 ); // RES
+	funPinMode( PA4, GPIO_CFGLR_OUT_10Mhz_PP );
+	funDigitalWrite( PA4, 0 ); // SCS
+	funPinMode( PA10, GPIO_CFGLR_OUT_10Mhz_PP );
+	funDigitalWrite( PA10, 0 ); // D/C
+
+
+
+	ssd1306_rst();
+	ssd1306_spi_init();
+	ssd1306_init();
+	ssd1306_setbuf(0x00);
+
+	// Turbo-time
+	ssd1306_cmd(0xD5);
+	ssd1306_cmd(0xe0);
+
+
+	ssd1306_cmd(0xc8);
+	ssd1306_cmd(0xa1);
+
+	SetupADC();
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // iSLER support
