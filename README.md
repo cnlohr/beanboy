@@ -1,5 +1,16 @@
 # beanboy
 
+The beanboy is a handheld game system with 3 buttons, and an oled display.  It has the following specs:
+ * Powered by a 9V Battery
+ * 128x128 RB150-2828KSWKG01 SPI OLED display from Ronboe ($2.50)
+ * 3 Silicone buttons with pressure sensitivity
+ * CH572 Main Processor
+   * 240kB Flash
+   * 12kB RAM
+   * 60MHz
+   * RISC-V rv32imbc processor
+* 2.4GHz iSLER radio comms
+
 (Early drafts, not ready yet)
 
 ## Installation / getting started
