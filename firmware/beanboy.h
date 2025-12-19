@@ -1,41 +1,6 @@
 #ifndef _BEANBOY_H
 #define _BEANBOY_H
 
-void BeanboySetup()
-{
-	SystemInit();
-
-	funGpioInitAll(); // no-op on ch5xx
-
-	funPinMode( PA11, GPIO_CFGLR_OUT_10Mhz_PP );
-//	funDigitalWrite( PA11, 1 ); // BS1 = 1 for I2C
-	funDigitalWrite( PA11, 0 ); // BS1 = 0 for SPI
-
-	funPinMode( PA6, GPIO_CFGLR_OUT_10Mhz_PP );
-	funDigitalWrite( PA6, 1 ); // RES
-	funPinMode( PA4, GPIO_CFGLR_OUT_10Mhz_PP );
-	funDigitalWrite( PA4, 0 ); // SCS
-	funPinMode( PA10, GPIO_CFGLR_OUT_10Mhz_PP );
-	funDigitalWrite( PA10, 0 ); // D/C
-
-
-
-	ssd1306_rst();
-	ssd1306_spi_init();
-	ssd1306_init();
-	ssd1306_setbuf(0x00);
-
-	// Turbo-time
-	ssd1306_cmd(0xD5);
-	ssd1306_cmd(0xe0);
-
-
-	ssd1306_cmd(0xc8);
-	ssd1306_cmd(0xa1);
-
-	SetupADC();
-}
-
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // iSLER support
@@ -43,7 +8,7 @@ void BeanboySetup()
 // BLE-like interface.
 
 #define ISLER_CALLBACK ISLER_BEANBOY_INTERNAL_CALLBACK
-void ISLER_BEANBOY_INTERNAL_CALLBACK();
+static void ISLER_BEANBOY_INTERNAL_CALLBACK();
 #include "iSLER.h"
 #define PHY_MODE       PHY_1M
 #define ACCESS_ADDRESS 0x8E89BED6 // the "BED6" address for BLE advertisements
@@ -52,7 +17,7 @@ void ISLERCallback( uint8_t * txmac, uint8_t * message, int messageLength, int r
 
 uint8_t iSLERChannel;
 
-void ISLER_BEANBOY_INTERNAL_CALLBACK()
+static void ISLER_BEANBOY_INTERNAL_CALLBACK()
 {
 	// The chip stores the incoming frame in LLE_BUF, defined in extralibs/iSLER.h
 	uint8_t *frame = (uint8_t*)LLE_BUF;
@@ -63,14 +28,14 @@ void ISLER_BEANBOY_INTERNAL_CALLBACK()
 	ISLERCallback( frame+2, frame+10, len+4, rssi );
 }
 
-void ISLERSetup( int channel )
+static void ISLERSetup( int channel )
 {
 	iSLERChannel = channel;
 	RFCoreInit(LL_TX_POWER_6_DBM);
 	Frame_RX(ACCESS_ADDRESS, channel, PHY_MODE);
 }
 
-void ISLERSend( const void * message, int messageLength )
+static void ISLERSend( const void * message, int messageLength )
 {
 	__attribute__((aligned(4)))  uint8_t pkt_tx[messageLength+10];
 	pkt_tx[0] = 0x02;
@@ -94,8 +59,8 @@ const uint8_t * GetSelfMAC() { return (const uint8_t*)ESIG1_ADDRESS; }
 //
 // This drawing function is very slow.  Consider optimizing.
 //
-void RenderBSprite( const bsprite * spr, int outx, int outy ) __attribute__ ((noinline));
-void RenderBSprite( const bsprite * spr, int outx, int outy )
+static void RenderBSprite( const bsprite * spr, int outx, int outy ) __attribute__ ((noinline));
+static void RenderBSprite( const bsprite * spr, int outx, int outy )
 {
 	int sw = spr->w;
 	int sh = spr->h;
@@ -169,7 +134,7 @@ void EventRelease(void)
 	funPinMode( PA2, GPIO_ModeIN_Floating );
 }
 
-void SetupADC(void)
+static void SetupADC(void)
 {
 	R8_TMR_CTRL_MOD = 0b00000010; // All clear
 	R32_TMR_CNT_END = 0x03FFFFFF; // Maximum possible counter size.
@@ -184,12 +149,7 @@ void SetupADC(void)
 	funPinMode( PA2, GPIO_ModeOut_PP_20mA );
 }
 
-
-
-
-
-
-void BeanBoyReadPressures( uint32_t * pressures )
+static void BeanBoyReadPressures( uint32_t * pressures )
 {
 	int btn = 0;
 	for( btn = 0; btn < 4; btn++ )
@@ -234,8 +194,38 @@ void BeanBoyReadPressures( uint32_t * pressures )
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
+static void BeanboySetup()
+{
+	SystemInit();
+
+	funGpioInitAll(); // no-op on ch5xx
+
+	funPinMode( PA11, GPIO_CFGLR_OUT_10Mhz_PP );
+//	funDigitalWrite( PA11, 1 ); // BS1 = 1 for I2C
+	funDigitalWrite( PA11, 0 ); // BS1 = 0 for SPI
+
+	funPinMode( PA6, GPIO_CFGLR_OUT_10Mhz_PP );
+	funDigitalWrite( PA6, 1 ); // RES
+	funPinMode( PA4, GPIO_CFGLR_OUT_10Mhz_PP );
+	funDigitalWrite( PA4, 0 ); // SCS
+	funPinMode( PA10, GPIO_CFGLR_OUT_10Mhz_PP );
+	funDigitalWrite( PA10, 0 ); // D/C
+
+	ssd1306_rst();
+	ssd1306_spi_init();
+	ssd1306_init();
+	ssd1306_setbuf(0x00);
+
+	// Turbo-time
+	ssd1306_cmd(0xD5);
+	ssd1306_cmd(0xe0);
 
 
+	ssd1306_cmd(0xc8);
+	ssd1306_cmd(0xa1);
+
+	SetupADC();
+}
 
 #endif
 

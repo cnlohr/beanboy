@@ -1,0 +1,36 @@
+name: Build Test
+on:
+  push:
+  pull_request:
+jobs:
+  Build-for-Linux:
+    permissions:
+      statuses: write
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+        submodules: recursive
+    - name: Install more dependencies
+      run: |
+        sudo apt-get install -y \
+          make \
+          build-essential \
+          libnewlib-dev \
+          gcc-riscv64-unknown-elf \
+          libusb-1.0-0-dev \
+          libudev-dev \
+          gdb-multiarch \
+          gcc-mingw-w64-x86-64-win32
+    - name: Build Firmware
+      run: make -C firmware clean firmware.bin
+    - name: Build Emu
+      run: make -C emu emu.exe
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v4
+      with:
+        name: emu.exe
+        path: emu/emu.exe
