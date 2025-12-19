@@ -17,74 +17,21 @@
 #include "ssd1306_spi.h"
 #include "ssd1306.h"
 
-uint32_t count;
+
+#include "beanboy.h"
 
 
 
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// FakeDC
-//
-// Fake digital-to-analog, by looking at the time constant on a capcaitor
-// and waiting for the scmitt trigger flip.
-//
-
-#define CAPACITANCE 0.00000001
-#define RESISTANCE  33000.0
-#define VREF 1.75
-#define FIXEDPOINT_SCALE 100
-
-volatile uint32_t lastfifo = 0;
-
-void TMR1_IRQHandler(void) __attribute__((interrupt))  __attribute__((section(".srodata")));
-void TMR1_IRQHandler(void)
+void ISLERCallback( uint8_t * txmac, uint8_t * message, int messageLength, int rssi )
 {
-	R8_TMR_INT_FLAG = 2;
-	lastfifo = R32_TMR_FIFO;
-	funPinMode( PA2, GPIO_ModeOut_PP_20mA );
+	printf( "%02x:%02x:%02x:%02x:%02x:%02x:%3d %d:", txmac[0], txmac[1], txmac[2], txmac[3], txmac[4], txmac[5], rssi, messageLength );
+	int i;
+	for( i = 0; i < messageLength; i++ )
+	{
+		printf( "%02x ", message[i] );
+	}
+	printf( "\n" );
 }
-
-
-// The timing on the setup has to be tight.
-void EventRelease(void) __attribute__((section(".srodata"))) __attribute__((noinline));
-void EventRelease(void)
-{
-	R8_TMR_CTRL_MOD = 0b00000010; // Reset Timer
-	R8_TMR_CTRL_MOD = 0b11000101; // Capture mode rising edge
-	funPinMode( PA2, GPIO_ModeIN_Floating );
-}
-
-void SetupADC(void)
-{
-	R8_TMR_CTRL_MOD = 0b00000010; // All clear
-	R32_TMR_CNT_END = 0x03FFFFFF; // Maximum possible counter size.
-	R8_TMR_CTRL_MOD = 0b11000101; // Capture mode rising edge
-	R8_TMR_INTER_EN = 0b10; // Capture event.
-
-	R16_PIN_ALTERNATE_H |= 1<<6; // Map PA2 to CAP1 (could be PA7, PA4, or PA9) (see RB_TMR_PIN)
-
-	NVIC_EnableIRQ(TMR1_IRQn);
-	__enable_irq();
-
-	funPinMode( PA2, GPIO_ModeOut_PP_20mA );
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 int main()
@@ -127,6 +74,8 @@ int main()
 	int debug = 0;
 
 	unsigned start;
+
+	ISLERSetup( 14 );
 
 	while(1)
 	{
@@ -181,6 +130,7 @@ int main()
 		ssd1306_setbuf(0x00); // Clear screen
 
 
+#if 1
 		// Draw stuff to screen
 		char st[128];
 		sprintf( st, "%08x", (int)SysTick->CNT );
@@ -195,8 +145,18 @@ int main()
 			int x = 32 + btn * 32;
 			int y = 90;
 			int p = pressures[btn]>>9;
-			//ssd1306_drawCircle( x, y, p, 1 );
-			ssd1306_fillCircle( x, y, p, 1 );
+			ssd1306_drawCircle( x, y, p, 1 );
+			//ssd1306_fillCircle( x, y, p, 1 );
+		}
+#endif
+
+		//char st[128];
+		//sprintf( st, "%08x\n", AES->some_reg4 );
+		//ssd1306_drawstr_sz(0, 0, st, 1, 2 );
+//		printf( "%08x %08x\n", ESIG1_ADDRESS[0], ESIG1_ADDRESS[1] );
+		if( ( frameno & 0xff ) == 0 )
+		{
+			ISLERSend( "\xaa\xbb\xcc\xdd\xee\xff", 6 );
 		}
 
 		// Output screen contents to OLED display.
