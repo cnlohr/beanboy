@@ -31,25 +31,25 @@ You can use purple or actual transparency to indicate transparent, then use whit
 Graphics APIs are from [the ch32v003 ssd1306 driver](https://github.com/cnlohr/ch32fun/blob/master/extralibs/ssd1306.h)
 
 ```c
-	#define SSD1306_W 128
-	#define SSD1306_H 128
+#define SSD1306_W 128
+#define SSD1306_H 128
 
 
-	void ssd1306_drawPixel(uint32_t x, uint32_t y, int color);
-	void ssd1306_xorPixel(uint32_t x, uint32_t y);
-	void ssd1306_drawImage(uint32_t x, uint32_t y, const unsigned char* input, uint32_t width, uint32_t height, uint32_t color_mode);
-	void ssd1306_drawFastVLine(int32_t x, int32_t y, int32_t h, uint32_t color);
-	void ssd1306_drawFastHLine(uint32_t x, uint32_t y, uint32_t w, uint32_t color);
-	void ssd1306_drawLine(int x0, int y0, int x1, int y1, uint32_t color);
-	void ssd1306_drawCircle(int x, int y, int radius, int color);
-	void ssd1306_fillCircle(int x, int y, int radius, int color);
-	void ssd1306_drawRect(int32_t x, int32_t y, uint32_t w, uint32_t h, uint32_t color);
-	void ssd1306_fillRect(uint32_t x, uint32_t y, uint8_t w, uint32_t h, uint32_t color);
-	void ssd1306_xorrect(uint8_t x, uint8_t y, uint8_t w, uint8_t h);
-	void ssd1306_drawchar(uint8_t x, uint8_t y, uint8_t chr, uint8_t color);
-	void ssd1306_drawstr(uint8_t x, uint8_t y, char *str, uint8_t color);
-	void ssd1306_drawchar_sz(uint8_t x, uint8_t y, uint8_t chr, uint8_t color, font_size_t font_size);
-	void ssd1306_drawstr_sz(uint8_t x, uint8_t y, char *str, uint8_t color, font_size_t font_size);
+void ssd1306_drawPixel(uint32_t x, uint32_t y, int color);
+void ssd1306_xorPixel(uint32_t x, uint32_t y);
+void ssd1306_drawImage(uint32_t x, uint32_t y, const unsigned char* input, uint32_t width, uint32_t height, uint32_t color_mode);
+void ssd1306_drawFastVLine(int32_t x, int32_t y, int32_t h, uint32_t color);
+void ssd1306_drawFastHLine(uint32_t x, uint32_t y, uint32_t w, uint32_t color);
+void ssd1306_drawLine(int x0, int y0, int x1, int y1, uint32_t color);
+void ssd1306_drawCircle(int x, int y, int radius, int color);
+void ssd1306_fillCircle(int x, int y, int radius, int color);
+void ssd1306_drawRect(int32_t x, int32_t y, uint32_t w, uint32_t h, uint32_t color);
+void ssd1306_fillRect(uint32_t x, uint32_t y, uint8_t w, uint32_t h, uint32_t color);
+void ssd1306_xorrect(uint8_t x, uint8_t y, uint8_t w, uint8_t h);
+void ssd1306_drawchar(uint8_t x, uint8_t y, uint8_t chr, uint8_t color);
+void ssd1306_drawstr(uint8_t x, uint8_t y, char *str, uint8_t color);
+void ssd1306_drawchar_sz(uint8_t x, uint8_t y, uint8_t chr, uint8_t color, font_size_t font_size);
+void ssd1306_drawstr_sz(uint8_t x, uint8_t y, char *str, uint8_t color, font_size_t font_size);
 ```
 
 ### Wireless API

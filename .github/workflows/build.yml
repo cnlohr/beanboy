@@ -3,7 +3,7 @@ on:
   push:
   pull_request:
 jobs:
-  Build-for-Linux:
+  Build-Firmware-And-Emu:
     permissions:
       statuses: write
     runs-on: ubuntu-latest
