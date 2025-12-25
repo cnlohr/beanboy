@@ -64,7 +64,7 @@ int main()
 
 
 	ssd1306_cmd(0xc8);
-	ssd1306_cmd(0xa1);
+	ssd1306_cmd(0xa1); 
 
 
 	SetupADC();

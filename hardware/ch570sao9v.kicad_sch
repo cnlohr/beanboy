@@ -3994,9 +3994,9 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "REV A UNTESTED"
+	(text "REV A UNTESTED\nTODO: Antenna tuning test.\nBring OLED pads down about 0.2mm, same size..\nFix labeling on back"
 		(exclude_from_sim no)
-		(at 53.848 110.236 0)
+		(at 157.226 28.448 0)
 		(effects
 			(font
 				(size 3.81 3.81)
@@ -4055,6 +4055,26 @@
 			)
 		)
 		(uuid "d681eec0-3cad-4c35-9aaf-36c5006fbb67")
+	)
+	(text "CHANGES:\n\nRevA->B\n * Fixed back label\n"
+		(exclude_from_sim no)
+		(at 45.974 118.364 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "e1eebdf7-9600-4146-8034-1754bbe3022e")
+	)
+	(text "Battery Terminals:\nMUST BE Keystone 1016-1 (36-1016-1-ND)\nD2 is not actually needed IRL, but just in case"
+		(exclude_from_sim no)
+		(at 147.066 106.68 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "e22f6a6b-8121-4d40-a124-e7a3dfecf614")
 	)
 	(text "BS1: 1: I2C / 0: SPI\nRONBOE\nRB150-2828KSWKG01"
 		(exclude_from_sim no)
@@ -6091,6 +6111,15 @@
 		)
 		(property "Description" "test point"
 			(at 105.41 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C6063943"
+			(at 105.41 142.24 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8231,6 +8260,15 @@
 		)
 		(property "Description" "test point"
 			(at 105.41 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C6063943"
+			(at 105.41 137.16 90)
 			(effects
 				(font
 					(size 1.27 1.27)
