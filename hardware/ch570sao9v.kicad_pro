@@ -501,8 +501,8 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "ch570sao9v-revA/",
-      "pos_files": "ch570sao9v-revA",
+      "plot": "ch570sao9v-revB/",
+      "pos_files": "ch570sao9v-revB",
       "specctra_dsn": "",
       "step": "",
       "svg": "",
@@ -512,7 +512,7 @@
   },
   "schematic": {
     "annotate_start_num": 0,
-    "bom_export_filename": "ch570sao9v-revA/${PROJECTNAME}.csv",
+    "bom_export_filename": "ch570sao9v-revB/${PROJECTNAME}.csv",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",
