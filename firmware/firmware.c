@@ -96,7 +96,9 @@ int main()
 		// Output screen contents to OLED display.
 		ssd1306_refresh();
 
-		Delay_Ms(2000);
+
+		//DoI2C();
+		//Delay_Ms(2000);
 	}
 }
 
