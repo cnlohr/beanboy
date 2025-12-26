@@ -390,12 +390,12 @@ void SetupI2C()
 #endif
 
 	ConfigI2C();
+	SetupRegisterMap( QMC6309_ADDRESS, (const uint8_t[]){ 0x0b, 0x80, 0x0b, 0x00 }, 2, "QMC6309 RESET" );
+
+
 	SetupRegisterMap( LSM6DS3_ADDRESS, LSM6DS3Regmap, sizeof(LSM6DS3Regmap)/2, "LSM6DS3" );
 
 	const static uint8_t QMC6309Regmap[] = {
-		0x0b, 0x80, // CTRL2 = Reset
-		0x0b, 0x00, // CTRL2 = Un-reset
-		0x0b, 0x00, // CTRL2 = Un-reset
 		0x0b, 0x48, // CTRL2 = ODR = 200Hz
 		0x0a, 0x19, // CTRL3 = OSR = 8, OSR2=16
 	};
