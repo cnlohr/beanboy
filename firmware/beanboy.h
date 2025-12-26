@@ -21,7 +21,7 @@ static void ISLER_BEANBOY_INTERNAL_CALLBACK()
 {
 	// The chip stores the incoming frame in LLE_BUF, defined in extralibs/iSLER.h
 	uint8_t *frame = (uint8_t*)LLE_BUF;
-	if( !CRCOK() ) return;
+	if( !iSLERCRCOK() ) return;
 
 	int rssi = ReadRSSI();
 	int len = frame[0];
@@ -40,7 +40,7 @@ static void ISLERSend( const void * message, int messageLength )
 	__attribute__((aligned(4)))  uint8_t pkt_tx[messageLength+10];
 	pkt_tx[0] = 0x02;
 	pkt_tx[1] = 10+messageLength;
-	memcpy( pkt_tx+2, (uint32_t*)ESIG1_ADDRESS, 6 );
+	memcpy( pkt_tx+2, (uint32_t*)ROM_CFG_MAC_ADDR, 6 );
 	//memset( pkt_tx+2, 0xff, 6 );
 	pkt_tx[8] = 0xff; // Normally should be 0x03, 0x19, 0x00, 0x00 for BLE
 	pkt_tx[9] = 0xff; 
@@ -50,7 +50,7 @@ static void ISLERSend( const void * message, int messageLength )
 	Frame_RX(ACCESS_ADDRESS, iSLERChannel, PHY_MODE);
 }
 
-const uint8_t * GetSelfMAC() { return (const uint8_t*)ESIG1_ADDRESS; }
+const uint8_t * GetSelfMAC() { return (const uint8_t*)ROM_CFG_MAC_ADDR; }
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
