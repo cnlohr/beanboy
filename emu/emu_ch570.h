@@ -491,7 +491,7 @@ uint32_t GetSTK()
 {
 	double dt = OGGetAbsoluteTime();
 //	if (STK_CTLR & 2)
-		dt *= 60000000;
+		dt *= 48000000;
 //	else
 //		dt *= 6000000;
 	return ((uint32_t)dt) - STK_ZERO;
