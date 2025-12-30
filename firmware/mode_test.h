@@ -25,7 +25,8 @@ void ModeTestLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 {
 	int i;
 	ModeTest * m = (ModeTest *)mode;
- 
+
+#if 0 
 	ssd1306_setbuf(0x00); // Clear screen
 
 	// Draw stuff to screen
@@ -54,13 +55,14 @@ void ModeTestLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 	}
 
 	// Output screen contents to OLED display.
-	ssd1306_refresh();
 
 
 	if( ( m->frameNumber & 0xff ) == 0 )
 	{
 		ISLERSend( "\xaa\xbb\xcc\xdd\xee\xff", 6 );
 	}
+#endif
+	ssd1306_refresh();
 }
 
 
@@ -70,6 +72,12 @@ void EnterTestMode( ModeTest * m )
 	m->Update = ModeTestLoop;
 	m->WirelessRX = ModeTestWirelessRX;
 	m->frameNumber = 0;
+	ssd1306_setbuf(0x00); // Clear screen
+	int i;
+	for( i = 0; i < 128; i++ )
+	{
+		ssd1306_drawPixel(i, i, 1);
+	}
 }
 
 
