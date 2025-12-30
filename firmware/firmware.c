@@ -28,9 +28,10 @@ void * game;
 #include "lib_rand.h"
 #include "mode_test.h"
 #include "mode_example.h"
+#include "mode_puffer.h"
 
 // Include name of mode here.
-const char * gameModes[] = { "Menu", "Example", "Test" };
+const char * gameModes[] = { "Menu", "Example", "Test", "Pass the Puffer" };
 
 #include "mode_menu.h"
 
@@ -41,6 +42,7 @@ union
 	ModeMenu menu;
 	ModeExample example;
 	ModeTest test;
+	ModePuffer puffer;
 } gameUnion;
 
 // Add it to this list.
@@ -57,6 +59,9 @@ void SelectMode( int modeNumber )
 			break;
 		case 2:
 			EnterTestMode( &gameUnion.test );
+			break;
+		case 3:
+			EnterPufferMode( &gameUnion.puffer);
 			break;
 	}
 }
