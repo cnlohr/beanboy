@@ -199,12 +199,40 @@ static void BeanBoyReadPressures( uint32_t * pressures )
 #define PIN_SDA PA10
 #define PIN_SCL PA11
 
-#define DELAY1 ADD_N_NOPS(10); //Delay_Us(1);
-#define DELAY2 ADD_N_NOPS(10); //Delay_Us(1);
+/*
+		*(&R32_PA_PD_DRV + OFFSET_FOR_GPIOB(pin)) &= ~(pin & ~PB);
+		*(&R32_PA_PU + OFFSET_FOR_GPIOB(pin))     |= (pin & ~PB);
+		*(&R32_PA_DIR + OFFSET_FOR_GPIOB(pin))    &= ~(pin & ~PB);
+		break;
+	case GPIO_ModeIN_PD:
+		*(&R32_PA_PD_DRV + OFFSET_FOR_GPIOB(pin)) |= (pin & ~PB);
+		*(&R32_PA_PU + OFFSET_FOR_GPIOB(pin))     &= ~(pin & ~PB);
+		*(&R32_PA_DIR + OFFSET_FOR_GPIOB(pin))    &= ~(pin & ~PB);
+		break;
+	case GPIO_ModeOut_PP_5mA:
+		*(&R32_PA_PD_DRV + OFFSET_FOR_GPIOB(pin)) &= ~(pin & ~PB);
+		*(&R32_PA_DIR + OFFSET_FOR_GPIOB(pin))    |= (pin & ~PB);
+		break;
+	case GPIO_ModeOut_PP_20mA:
+		*(&R32_PA_PD_DRV + OFFSET_FOR_GPIOB(pin)) |= (pin & ~PB);
+		*(&R32_PA_DIR + OFFSET_FOR_GPIOB(pin))    |= (pin & ~PB);
+		break;
+*/
+
+#define DELAY1 ADD_N_NOPS(9); //Delay_Us(1);
+#define DELAY2 ADD_N_NOPS(9); //Delay_Us(1);
 #define DSCL_IHIGH  { funDigitalWrite( PIN_SCL, 1 ); } 
 #define DSDA_IHIGH  { funDigitalWrite( PIN_SDA, 1 ); } 
-#define DSDA_INPUT  { funPinMode( PIN_SDA, GPIO_CFGLR_IN_PUPD ); funDigitalWrite( PIN_SDA, 1 ); } 
-#define DSDA_DONE_INPUT {  funPinMode( PIN_SDA, GPIO_CFGLR_OUT_2Mhz_PP );  }
+#define DSDA_INPUT  { \
+	/*funPinMode( PIN_SDA, GPIO_CFGLR_IN_PUPD );*/ \
+	\
+	\
+	 funDigitalWrite( PIN_SDA, 1 ); } 
+
+#define DSDA_DONE_INPUT {  /* funPinMode( PIN_SDA, GPIO_CFGLR_OUT_2Mhz_PP );  */ \
+	\
+	\
+	}
 #define DSCL_OUTPUT { funDigitalWrite( PIN_SCL, 0 ); } 
 #define DSDA_OUTPUT { funDigitalWrite( PIN_SDA, 0 ); } 
 #define READ_DSDA    funDigitalRead( PIN_SDA )
@@ -239,7 +267,7 @@ int SetupRegisterMap( int address, const uint8_t * regptr, int regs, const char 
 		int v = *(regptr++);
 		b = SendByte( v );
 		SendStop();
-		printf( "%s %02xh = %02x [%s]\n", name, a, v, b?"FAIL":"OK" );
+		//printf( "%s %02xh = %02x [%s]\n", name, a, v, b?"FAIL":"OK" );
 		fail |= b;
 	}
 	return fail;
@@ -360,17 +388,19 @@ void SetupI2C()
 	const static uint8_t LSM6DS3Regmap[] = {
 		0x12, 0x44, // CTRL3_C - unset reboot. + BDU
 		0x10, 0x5a, // CTRL1_XL - 208Hz, +/-8g
-		0x11, 0x54, // CTRL2_G - 208Hz, 1000dps
+		0x11, 0x5d, // CTRL2_G - 208Hz, 4000dps
 
 		0x0a, 0x28, // FIFO_CTRL5 - Disable FIFO (will re-enable)
 		0x06, 0x60, // FIFO_CTRL1 - FIFO size.
 		0x07, 0x00, // FIFO_CTRL2 - No temperature in FIFO.
 		0x08, 0x09, // FIFO_CTRL3 - Put accel+gyro in FIFO.
 		0x09, 0xaa, // FIFO_CTRL4 - TODO: Investigate.
-		0x0a, 0x03, // FIFO_CTRL5 -  Continuous-to-FIFO mode: Continuous mode until trigger is deasserted, then FIFO mode;
+		0x0a, 0x01, // FIFO_CTRL5 -  FIFO mode.
+		0x0b, 0x60, // Trigger on gyro event.
+		0x0d, 0x00, // Disable weird triggers.
 		0x13, 0x00, // CTRL4_C - No extra stuff, don't stop on fth.
 		0x15, 0x10, // CTRL6_C - High Performance disabled
-		0x16, 0x00, // CTRL7_C - Just default settings.
+		0x16, 0x00, // CTRL7_C - Just default settings.  No gyro filter.
 		0x13, 0x01, // CTRL4_C - Stop on fth
 	};
 #else
@@ -393,6 +423,7 @@ void SetupI2C()
 #endif
 
 	ConfigI2C();
+	SetupRegisterMap( QMC6309_ADDRESS, (const uint8_t[]){ 0x12, 0x81 }, 1, "LSM6DS3 RESET" );
 	SetupRegisterMap( QMC6309_ADDRESS, (const uint8_t[]){ 0x0b, 0x80, 0x0b, 0x00 }, 2, "QMC6309 RESET" );
 
 
@@ -404,11 +435,10 @@ void SetupI2C()
 	};
 	SetupRegisterMap( QMC6309_ADDRESS, QMC6309Regmap, sizeof(QMC6309Regmap)/2, "QMC6309" );
 
-
-	funPinMode( PIN_SCL, GPIO_CFGLR_OUT_2Mhz_PP );
-	funPinMode( PIN_SDA, GPIO_CFGLR_OUT_2Mhz_PP );
-	funDigitalWrite( PA11, 0 ); // BS1 = 0 for SPI
-	funDigitalWrite( PA10, 1 ); // D/C
+	DSCL_OUTPUT;
+	DSDA_OUTPUT;
+//	funDigitalWrite( PA11, 0 ); // BS1 = 0 for SPI
+//	funDigitalWrite( PA10, 1 ); // D/C
 }
 
 void DoI2C()
@@ -419,10 +449,13 @@ void DoI2C()
 	ProcessLSM6DS3();
 	ProcessQMC6309();
 
-	funPinMode( PIN_SCL, GPIO_CFGLR_OUT_2Mhz_PP );
+	DSCL_OUTPUT;
+	DSDA_OUTPUT;
+
+/*	funPinMode( PIN_SCL, GPIO_CFGLR_OUT_2Mhz_PP );
 	funPinMode( PIN_SDA, GPIO_CFGLR_OUT_2Mhz_PP );
 	funDigitalWrite( PA11, 0 ); // BS1 = 0 for SPI
-	funDigitalWrite( PA10, 1 ); // D/C
+	funDigitalWrite( PA10, 1 ); // D/C*/
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////

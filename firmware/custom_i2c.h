@@ -99,6 +99,7 @@ I2CCODE void I2CFNCOLLAPSE(I2CPREFIX, SendStop)()
 	DELAY1
 	DSCL_OUTPUT
 	DELAY1
+	DSDA_OUTPUT
 }
 
 // Return nonzero on failure.
@@ -187,7 +188,7 @@ I2CCODE unsigned char I2CFNCOLLAPSE(I2CPREFIX, GetByte)(uint8_t send_nak)
         DELAY1
         DELAY1
         DSCL_IHIGH
-        DELAY2
+        DELAY1
         ret <<= 1;
         if (READ_DSDA)
             ret |= 1;
@@ -211,7 +212,8 @@ I2CCODE unsigned char I2CFNCOLLAPSE(I2CPREFIX, GetByte)(uint8_t send_nak)
     DELAY2
     DSCL_OUTPUT
     DELAY1
-    DSDA_IHIGH
+        DSDA_OUTPUT
+//    DSDA_IHIGH
 
     return ret;
 }
