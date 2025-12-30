@@ -119,14 +119,15 @@ TODO:
 4. ~~Add transparency code.~~
 5. ~~Add API for comms~~
 6. Add networking to emu
-7. Add compression to sprites
-8. Add sprite rotation maybe?
-9. Add sprite scaling maybe?
-10. "Pass the puffer"  "Hot Potato with puffer fish"
+7. Add button debouncing
+8. Add compression to sprites
+9. Add sprite rotation maybe?
+10. Add sprite scaling maybe?
+11. "Pass the puffer"  "Hot Potato with puffer fish"
   a. Choose between 2 and 6 players
   b. Randomly assign X amount of passes.
   c. number of passes remaining is unknown.
-11. Shut the box.
+12. Shut the box.
   a. Rules too complicated for me to write here.
 
 
