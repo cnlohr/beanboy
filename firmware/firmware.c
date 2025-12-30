@@ -79,7 +79,7 @@ int main()
 
 	int frameno = 0;
 
-	unsigned start;
+	unsigned lastStart;
 
 	ISLERSetup( 14 );
 
@@ -90,8 +90,6 @@ int main()
 	uint32_t lastClickedMask = 0;
 	while(1)
 	{
-		start = SysTick->CNT;
-
 		uint32_t pressures[4];
 
 		BeanBoyReadPressures( pressures );
@@ -104,11 +102,13 @@ int main()
 			if( pressures[i] > 5000 ) clickedMask |= 1<<i;
 		}
 
-		unsigned deltaTimeTicks = SysTick->CNT - start;
+		unsigned now = SysTick->CNT;
+		unsigned deltaUS = (now - lastStart)/48;
 		if( gameUnion.template.Update )
 		{
-			gameUnion.template.Update( &gameUnion, deltaTimeTicks, pressures, clickedMask, lastClickedMask );
+			gameUnion.template.Update( &gameUnion, deltaUS, pressures, clickedMask, lastClickedMask );
 		}
+		lastStart += deltaUS * 48;
 		frameno++;
 
 		lastClickedMask = clickedMask;
