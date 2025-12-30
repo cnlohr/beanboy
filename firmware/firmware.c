@@ -83,7 +83,7 @@ int main()
 
 	ISLERSetup( 14 );
 
-	game = &game.template;
+	game = &gameUnion.template;
 
 	SelectMode( 0 ); // Menu mode
 
