@@ -18,22 +18,50 @@
 #include "ssd1306.h"
 
 #include "assets.h"
-
 #include "beanboy.h"
 
 #define RANDOM_STRENGTH 2
 
+// Include mode here.
 #include "lib_rand.h"
+#include "mode_test.h"
+
+// Include name of mode here.
+const char * gameModes[] = { "Menu", "Test" };
+
+#include "mode_menu.h"
+
+// Include its struct entry here.
+union
+{
+	ModeTemplate template;
+	ModeTest test;
+	ModeMenu menu;
+} game;
+
+// Add it to this list.
+void SelectMode( int modeNumber )
+{
+	switch(modeNumber)
+	{
+		case 0:
+		default:
+			EnterMenuMode( &game.menu );
+			break;
+		case 1:
+			EnterTestMode( &game.test );
+	}
+}
+
+
+
+
+
 
 void ISLERCallback( uint8_t * txmac, uint8_t * message, int messageLength, int rssi )
 {
-	printf( "%02x:%02x:%02x:%02x:%02x:%02x:%3d %d:", txmac[0], txmac[1], txmac[2], txmac[3], txmac[4], txmac[5], rssi, messageLength );
-	int i;
-	for( i = 0; i < messageLength; i++ )
-	{
-		printf( "%02x ", message[i] );
-	}
-	printf( "\n" );
+	if( game.template.WirelessRX )
+		game.template.WirelessRX( txmac, message, messageLength, rssi );
 }
 
 
@@ -43,12 +71,13 @@ int main()
 
 	int frameno = 0;
 
-	int debug = 0;
-
 	unsigned start;
 
 	ISLERSetup( 14 );
 
+	SelectMode( 0 ); // Menu mode.
+
+	uint32_t lastClickedMask = 0;
 	while(1)
 	{
 		start = SysTick->CNT;
@@ -57,48 +86,22 @@ int main()
 
 		BeanBoyReadPressures( pressures );
 
-		debug = SysTick->CNT - start;
+		// TODO: Make this debounce.
+		int i;
+		uint32_t clickedMask = 0;
+		for( i = 0; i < 3; i++ )
+		{
+			if( pressures[i] > 5000 ) clickedMask |= 1<<i;
+		}
+
+		unsigned deltaTimeTicks = SysTick->CNT - start;
+		if( game.template.Update )
+		{
+			game.template.Update( &game, deltaTimeTicks, pressures, clickedMask, lastClickedMask );
+		}
 		frameno++;
-		
-		ssd1306_setbuf(0x00); // Clear screen
 
-		// Draw stuff to screen
-		char st[128];
-		sprintf( st, "%08x", (int)SysTick->CNT );
-		ssd1306_drawstr_sz(0, 0, st, 1, 2 );
-
-		sprintf( st, "%3d %d", debug>>8, (int)pressures[3] );
-		ssd1306_drawstr_sz(0, 24, st, 1, 2 );
-
-		int btn;
-		for( btn = 0; btn < 3; btn++ )
-		{
-			int x = 32 + btn * 32;
-			int y = 90;
-			int p = pressures[btn]>>9;
-			ssd1306_drawCircle( x, y, p, 1 );
-			//ssd1306_fillCircle( x, y, p, 1 );
-		}
-
-		int sprites = 0;
-		for( sprites = 0; sprites < 10; sprites++ )
-		{
-			int x = (rand() % (128+80))-40;
-			int y = (rand() % (128+80))-40;
-			RenderBSprite( &bubble, x, y );
-		}
-
-		if( ( frameno & 0xff ) == 0 )
-		{
-			ISLERSend( "\xaa\xbb\xcc\xdd\xee\xff", 6 );
-		}
-
-		// Output screen contents to OLED display.
-		ssd1306_refresh();
-
-
-		//DoI2C();
-		//Delay_Ms(2000);
+		lastClickedMask = clickedMask;
 	}
 }
 

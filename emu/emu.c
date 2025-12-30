@@ -236,7 +236,7 @@ int main( int argc, char ** argv )
 
 	ch32v003quitMode = 1;
 
-	OGJoinThread( ch570thread );
+//	OGJoinThread( ch570thread );
 
     return 0;
 }
