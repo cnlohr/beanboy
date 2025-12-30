@@ -25,9 +25,10 @@
 // Include mode here.
 #include "lib_rand.h"
 #include "mode_test.h"
+#include "mode_example.h"
 
 // Include name of mode here.
-const char * gameModes[] = { "Menu", "Test" };
+const char * gameModes[] = { "Menu", "Example", "Test" };
 
 #include "mode_menu.h"
 
@@ -35,8 +36,9 @@ const char * gameModes[] = { "Menu", "Test" };
 union
 {
 	ModeTemplate template;
-	ModeTest test;
 	ModeMenu menu;
+	ModeExample example;
+	ModeTest test;
 } game;
 
 // Add it to this list.
@@ -49,7 +51,11 @@ void SelectMode( int modeNumber )
 			EnterMenuMode( &game.menu );
 			break;
 		case 1:
+			EnterExampleMode( &game.example );
+			break;
+		case 2:
 			EnterTestMode( &game.test );
+			break;
 	}
 }
 
