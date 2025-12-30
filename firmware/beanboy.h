@@ -244,8 +244,6 @@ int SetupRegisterMap( int address, const uint8_t * regptr, int regs, const char 
 
 void ProcessQMC6309()
 {
-	int tsamp = 0;
-
 	SendStart();
 	int r = SendByte( QMC6309_ADDRESS<<1 );
 	SendByte( 0x09 );
@@ -453,12 +451,26 @@ static void BeanboySetup()
 	ssd1306_cmd(0xD5);
 	ssd1306_cmd(0xe0);
 
-
 	ssd1306_cmd(0xc8);
 	ssd1306_cmd(0xa1);
 
 	SetupADC();
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+typedef void (*UpdateFunction)( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32_t clickedMask, uint32_t lastClickMask );
+typedef void (*WirelessRXFunction)( uint8_t * txmac, uint8_t * message, int messageLength, int rssi );
+
+
+typedef struct ModeTemplate_t
+{
+	UpdateFunction Update;
+	WirelessRXFunction WirelessRX;
+} ModeTemplate;
+
+void SelectMode( int modeNumber );
+
 
 #endif
 
