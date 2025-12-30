@@ -116,7 +116,7 @@ static void RenderBSprite( const bsprite * spr, int outx, int outy )
 
 volatile uint32_t lastfifo = 0;
 
-void TMR1_IRQHandler(void) __attribute__((interrupt))  __attribute__((section(".srodata")));
+void TMR1_IRQHandler(void) __attribute__((interrupt))  __attribute__((section(".highcode")));
 void TMR1_IRQHandler(void)
 {
 	R8_TMR_INT_FLAG = 2;
@@ -126,7 +126,7 @@ void TMR1_IRQHandler(void)
 
 
 // The timing on the setup has to be tight.
-void EventRelease(void) __attribute__((section(".srodata"))) __attribute__((noinline));
+void EventRelease(void) __attribute__((section(".highcode"))) __attribute__((noinline));
 void EventRelease(void)
 {
 	R8_TMR_CTRL_MOD = 0b00000010; // Reset Timer
@@ -199,18 +199,23 @@ static void BeanBoyReadPressures( uint32_t * pressures )
 #define PIN_SDA PA10
 #define PIN_SCL PA11
 
-#define DELAY1 //Delay_Us(1);
-#define DELAY2 //Delay_Us(1);
-#define DSCL_IHIGH  { funPinMode( PIN_SCL, GPIO_CFGLR_IN_PUPD ); funDigitalWrite( PIN_SCL, 1 ); } 
-#define DSDA_IHIGH  { funPinMode( PIN_SDA, GPIO_CFGLR_IN_PUPD ); funDigitalWrite( PIN_SDA, 1 ); } 
+#define DELAY1 ADD_N_NOPS(10); //Delay_Us(1);
+#define DELAY2 ADD_N_NOPS(10); //Delay_Us(1);
+#define DSCL_IHIGH  { funDigitalWrite( PIN_SCL, 1 ); } 
+#define DSDA_IHIGH  { funDigitalWrite( PIN_SDA, 1 ); } 
 #define DSDA_INPUT  { funPinMode( PIN_SDA, GPIO_CFGLR_IN_PUPD ); funDigitalWrite( PIN_SDA, 1 ); } 
-#define DSCL_OUTPUT { funDigitalWrite( PIN_SCL, 0 ); funPinMode( PIN_SCL, GPIO_CFGLR_OUT_2Mhz_PP );  } 
-#define DSDA_OUTPUT { funDigitalWrite( PIN_SDA, 0 ); funPinMode( PIN_SDA, GPIO_CFGLR_OUT_2Mhz_PP );  } 
+#define DSDA_DONE_INPUT {  funPinMode( PIN_SDA, GPIO_CFGLR_OUT_2Mhz_PP );  }
+#define DSCL_OUTPUT { funDigitalWrite( PIN_SCL, 0 ); } 
+#define DSDA_OUTPUT { funDigitalWrite( PIN_SDA, 0 ); } 
 #define READ_DSDA    funDigitalRead( PIN_SDA )
 #define I2CNEEDGETBYTE 1
 //#define I2CNEEDSCAN    1
 
-#include "static_i2c.h"
+#define I2CCODE __HIGH_CODE
+
+#include "custom_i2c.h"
+
+#define I2CSTATICODE static __attribute__((section(".highcode")))
 
 #define LSM6DS3_ADDRESS 0x6a
 #define QMC6309_ADDRESS 0x7c
@@ -278,14 +283,14 @@ void ProcessQMC6309()
 
 }
 
-
+void ProcessLSM6DS3() __HIGH_CODE;
 void ProcessLSM6DS3()
 {
 	SendStart();
-	int ra = SendByte( LSM6DS3_ADDRESS<<1 );
-	int rb = SendByte( 0x3a );
+	SendByteNoAck( LSM6DS3_ADDRESS<<1 );
+	SendByteNoAck( 0x3a );
 	SendStart();
-	int rc = SendByte( (LSM6DS3_ADDRESS<<1)|1 );
+	SendByteNoAck( (LSM6DS3_ADDRESS<<1)|1 );
 
 	uint32_t sw = 0;
 	sw = GetByte( 0 );
@@ -296,7 +301,7 @@ void ProcessLSM6DS3()
 
 	if( sw & 0x4000 )
 	{
-		printf( "Full SW: %06x [%d %d %d]\n", (int)sw, ra, rb, rc );
+		printf( "Full SW: %06x\n", (int)sw );
 		// Need to reset fifo.
 
 		SetupRegisterMap( LSM6DS3_ADDRESS, 
@@ -320,10 +325,10 @@ void ProcessLSM6DS3()
 	}
 
 	SendStart();
-	SendByte( LSM6DS3_ADDRESS<<1 );
-	SendByte( 0x20 );
+	SendByteNoAck( LSM6DS3_ADDRESS<<1 );
+	SendByteNoAck( 0x20 );
 	SendStart();
-	SendByte( (LSM6DS3_ADDRESS<<1)|1 );
+	SendByteNoAck( (LSM6DS3_ADDRESS<<1)|1 );
 
 	uint32_t ta = GetByte( 0 );
 	ta |= GetByte( 0 )<<8; // Ignore FIFO status 4

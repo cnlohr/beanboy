@@ -5,9 +5,55 @@ typedef struct ModeTest_t
 {
 	UpdateFunction Update;
 	WirelessRXFunction WirelessRX;
-
-	uint32_t frameNumber;
 } ModeTest;
+
+// Super duper X plot fast
+void sh1107_setup_for_scope()
+{
+	ssd1306_setbuf(0x00); // Clear screen
+	int i;
+	for( i = 0; i < 128; i++ )
+	{
+		ssd1306_drawPixel(i, i, 1);
+	}
+	ssd1306_refresh();
+
+	// Set mux ratio.
+	ssd1306_cmd(0xa8);
+	ssd1306_cmd(0x0 );
+
+	// As fast as possible
+	ssd1306_cmd(0xD5);
+	ssd1306_cmd(0xf0);
+
+	ssd1306_cmd(0xc8);
+	ssd1306_cmd(0xa1);
+
+	ssd1306_cmd(0xD9);
+	ssd1306_cmd(0x11);
+
+	// It seems that when operating after boot, and fast osc, you can go up to about 44MHz (/2)
+	// But we slow down a tad.
+	R8_SPI0_CLOCK_DIV = 3; 
+
+	// Setup FIFO mode.
+	R8_SPI0_CTRL_MOD &= ~RB_SPI_FIFO_DIR;
+	R8_SPI0_CTRL_CFG |= RB_SPI_AUTO_IF | RB_SPI_DMA_ENABLE;
+}
+
+void spi_send_command_fast(uint32_t x, uint32_t y)
+{
+	funDigitalWrite( SSD1306_DC_PIN, FUN_LOW );
+	funDigitalWrite( SSD1306_CS_PIN, FUN_LOW );
+	R16_SPI0_TOTAL_CNT = 4;
+	R8_SPI0_FIFO = 0xd3;
+	R8_SPI0_FIFO = x;
+	R8_SPI0_FIFO = 0xdc;
+	R8_SPI0_FIFO = y;
+	while( R16_SPI0_TOTAL_CNT );
+	//while( !(R8_SPI0_INT_FLAG & RB_SPI_FREE)) { }
+	funDigitalWrite( SSD1306_CS_PIN, FUN_HIGH );
+}
 
 
 void ModeTestWirelessRX( uint8_t * txmac, uint8_t * message, int messageLength, int rssi )
@@ -26,43 +72,39 @@ void ModeTestLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 	int i;
 	ModeTest * m = (ModeTest *)mode;
 
-#if 0 
-	ssd1306_setbuf(0x00); // Clear screen
+	uint32_t fn = 0;
 
-	// Draw stuff to screen
-	char st[128];
-	sprintf( st, "%08x", (int)SysTick->CNT );
-	ssd1306_drawstr_sz(0, 0, st, 1, 2 );
+//	ssd1306_cmd(0xd3);
+//	ssd1306_cmd((fn&0x7f));
+//	ssd1306_cmd(0xdc);
+//	ssd1306_cmd((fn>>7));
 
-	sprintf( st, "%3d %d", (int)m->frameNumber, (int)pressures[3] );
-	ssd1306_drawstr_sz(0, 24, st, 1, 2 );
-
-	int btn;
-	for( btn = 0; btn < 3; btn++ )
+	while( 1 )
 	{
-		int x = 32 + btn * 32;
-		int y = 90;
-		int p = pressures[btn]>>9;
-		ssd1306_drawCircle( x, y, p, 1 );
-		//ssd1306_fillCircle( x, y, p, 1 );
-	}
+		// Target 16.697 kHz
+		spi_send_command_fast( fn&0x7f, fn>>7 );
+		fn++;
+		Delay_Us(30);
 
-	for( i = 0; i < 10; i++ )
-	{
-		int x = (rand() % (128+80))-40;
-		int y = (rand() % (128+80))-40;
-		RenderBSprite( (i&1)?&bubble:&bubblemirror, x, y );
-	}
+#if 1 
+		if( (fn & 0xff) == 0 )
+		{
+			//spi_send_command_fast( 128, 128 );
 
-	// Output screen contents to OLED display.
+			ConfigI2C();
 
+			ProcessLSM6DS3();
+			//ProcessQMC6309();
 
-	if( ( m->frameNumber & 0xff ) == 0 )
-	{
-		ISLERSend( "\xaa\xbb\xcc\xdd\xee\xff", 6 );
-	}
+			funPinMode( PIN_SCL, GPIO_CFGLR_OUT_2Mhz_PP );
+			funPinMode( PIN_SDA, GPIO_CFGLR_OUT_2Mhz_PP );
+			funDigitalWrite( PA11, 0 ); // BS1 = 0 for SPI
+			funDigitalWrite( PA10, 1 ); // D/C
+		}
 #endif
-	ssd1306_refresh();
+	}
+
+	//Delay_Ms(5);
 }
 
 
@@ -71,13 +113,10 @@ void EnterTestMode( ModeTest * m )
 	memset( m, 0, sizeof(*m) );
 	m->Update = ModeTestLoop;
 	m->WirelessRX = ModeTestWirelessRX;
-	m->frameNumber = 0;
-	ssd1306_setbuf(0x00); // Clear screen
-	int i;
-	for( i = 0; i < 128; i++ )
-	{
-		ssd1306_drawPixel(i, i, 1);
-	}
+
+
+	sh1107_setup_for_scope();
+
 }
 
 
