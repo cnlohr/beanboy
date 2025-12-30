@@ -10,6 +10,9 @@ emu : emu.c
 emu.exe : emu.c
 	x86_64-w64-mingw32-gcc $(CFLAGS) -o $@ $^ -luser32 -lgdi32
 
+emu_win : emu.c
+	gcc $(CFLAGS) -o emu.exe $^ -luser32 -lgdi32
+
 clean :
 	rm -rf emu emu.exe
 

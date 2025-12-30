@@ -74,14 +74,14 @@ int main()
 		for( btn = 0; btn < 3; btn++ )
 		{
 			int x = 32 + btn * 32;
-			int y = 90;
+			int y = 30;
 			int p = pressures[btn]>>9;
 			ssd1306_drawCircle( x, y, p, 1 );
 			//ssd1306_fillCircle( x, y, p, 1 );
 		}
 
 		int sprites = 0;
-		for( sprites = 0; sprites < 10; sprites++ )
+		for( sprites = 0; sprites < 1; sprites++ )
 		{
 			int x = (rand() % (128+80))-40;
 			int y = (rand() % (128+80))-40;
