@@ -22,6 +22,8 @@
 
 #define RANDOM_STRENGTH 2
 
+void * game;
+
 // Include mode here.
 #include "lib_rand.h"
 #include "mode_test.h"
@@ -39,7 +41,7 @@ union
 	ModeMenu menu;
 	ModeExample example;
 	ModeTest test;
-} game;
+} gameUnion;
 
 // Add it to this list.
 void SelectMode( int modeNumber )
@@ -48,13 +50,13 @@ void SelectMode( int modeNumber )
 	{
 		case 0:
 		default:
-			EnterMenuMode( &game.menu );
+			EnterMenuMode( &gameUnion.menu );
 			break;
 		case 1:
-			EnterExampleMode( &game.example );
+			EnterExampleMode( &gameUnion.example );
 			break;
 		case 2:
-			EnterTestMode( &game.test );
+			EnterTestMode( &gameUnion.test );
 			break;
 	}
 }
@@ -66,8 +68,8 @@ void SelectMode( int modeNumber )
 
 void ISLERCallback( uint8_t * txmac, uint8_t * message, int messageLength, int rssi )
 {
-	if( game.template.WirelessRX )
-		game.template.WirelessRX( txmac, message, messageLength, rssi );
+	if( gameUnion.template.WirelessRX )
+		gameUnion.template.WirelessRX( txmac, message, messageLength, rssi );
 }
 
 
@@ -81,7 +83,9 @@ int main()
 
 	ISLERSetup( 14 );
 
-	SelectMode( 0 ); // Menu mode.
+	game = &game.template;
+
+	SelectMode( 0 ); // Menu mode
 
 	uint32_t lastClickedMask = 0;
 	while(1)
@@ -101,9 +105,9 @@ int main()
 		}
 
 		unsigned deltaTimeTicks = SysTick->CNT - start;
-		if( game.template.Update )
+		if( gameUnion.template.Update )
 		{
-			game.template.Update( &game, deltaTimeTicks, pressures, clickedMask, lastClickedMask );
+			gameUnion.template.Update( &gameUnion, deltaTimeTicks, pressures, clickedMask, lastClickedMask );
 		}
 		frameno++;
 
