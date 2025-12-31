@@ -79,7 +79,7 @@ int main()
 
 	int frameno = 0;
 
-	unsigned lastStart;
+	unsigned lastStart = 0;
 
 	ISLERSetup( 14 );
 
@@ -103,7 +103,7 @@ int main()
 		}
 
 		unsigned now = SysTick->CNT;
-		unsigned deltaUS = (now - lastStart)/48;
+		unsigned deltaUS = (now - lastStart)/48; // Wacky math to make sure we don't lose microseconds.
 		if( gameUnion.template.Update )
 		{
 			gameUnion.template.Update( &gameUnion, deltaUS, pressures, clickedMask, lastClickedMask );
@@ -111,6 +111,24 @@ int main()
 		lastStart += deltaUS * 48;
 		frameno++;
 
+		// EMULATOR ONLY! BB19 contains a pointer to an incoming packet.
+		while( BB->BB19 )
+		{
+			ISLER_BEANBOY_INTERNAL_CALLBACK();
+			BB->BB19 = 0;
+		}
+/*
+
+static void ISLER_BEANBOY_INTERNAL_CALLBACK()
+{
+	// The chip stores the incoming frame in LLE_BUF, defined in extralibs/iSLER.h
+	uint8_t *frame = (uint8_t*)LLE_BUF;
+	if( !iSLERCRCOK() ) return;
+
+	int rssi = ReadRSSI();
+	int len = frame[0];
+	ISLERCallback( frame+2, frame+10, len+4, rssi );
+}*/
 		lastClickedMask = clickedMask;
 	}
 }

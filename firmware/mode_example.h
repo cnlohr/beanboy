@@ -7,6 +7,7 @@ typedef struct ModeExample_t
 	WirelessRXFunction WirelessRX;
 
 	uint32_t frameNumber;
+	int usTilNextSend;
 } ModeExample;
 
 
@@ -23,6 +24,7 @@ void ModeExampleWirelessRX( uint8_t * txmac, uint8_t * message, int messageLengt
 
 void ModeExampleLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32_t clickedMask, uint32_t lastClickMask )
 {
+
 	int i;
 	ModeExample * m = (ModeExample *)mode;
  
@@ -55,10 +57,10 @@ void ModeExampleLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uin
 
 	// Output screen contents to OLED display.
 	ssd1306_refresh();
-
-
-	if( ( m->frameNumber & 0xff ) == 0 )
+	int32_t us = m->usTilNextSend -= deltaTime;
+	if( us < 0 )
 	{
+		m->usTilNextSend = 400000;
 		ISLERSend( "\xaa\xbb\xcc\xdd\xee\xff", 6 );
 	}
 }
