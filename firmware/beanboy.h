@@ -198,9 +198,9 @@ static void BeanBoyReadPressures( uint32_t * pressures )
 
 		// Junky entropy.
 		uint32_t fe = frameentropy;
-		fe ^= p;
+		fe += p;
 		fe ^= fe << 10;
-		fe ^= fe << 20;
+		fe ^= fe << 21;
 		frameentropy = fe;
 	}
 }
