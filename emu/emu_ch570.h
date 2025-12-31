@@ -569,7 +569,7 @@ void CheckSock()
 
 	// Optionally.
 	#ifndef WIN32
-//		setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, (const char*)&opt , sizeof(opt));
+		setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, (const char*)&opt , sizeof(opt));
 	#endif
 
 	struct sockaddr_in serveraddr = { 0 };
@@ -634,6 +634,8 @@ void RadioTX( uint8_t * tx )
 {
 	CheckSock();
 
+	// Cause random failures.
+	if( (rand()%10) == 0 ) return;
 
 	// From https://stackoverflow.com/a/683707/2926815
 #if defined(WIN32)
