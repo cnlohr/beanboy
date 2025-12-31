@@ -115,6 +115,7 @@ static void RenderBSprite( const bsprite * spr, int outx, int outy )
 #define FIXEDPOINT_SCALE 100
 
 volatile uint32_t lastfifo = 0;
+volatile uint32_t frameentropy = 0;
 
 void TMR1_IRQHandler(void) __attribute__((interrupt))  __attribute__((section(".highcode")));
 void TMR1_IRQHandler(void)
@@ -174,9 +175,11 @@ static void BeanBoyReadPressures( uint32_t * pressures )
 			break;
 		}
 
+		uint32_t p;
+
 		if( *((uint32_t*)0x4fff0000) == 0xaaaaaaaa )
 		{
-			pressures[btn] = *((uint32_t*)(0x4fff0004+4*btn));
+			p = *((uint32_t*)(0x4fff0004+4*btn));
 		}
 		else
 		{
@@ -188,8 +191,17 @@ static void BeanBoyReadPressures( uint32_t * pressures )
 			#define COEFFICIENT (const uint32_t)(FUNCONF_SYSTEM_CORE_CLOCK*(RESISTANCE*CAPACITANCE)*VREF*FIXEDPOINT_SCALE+0.5)
 			int r = lastfifo - 2; // 2 cycles back.
 			int vtot = COEFFICIENT/r + ((const uint32_t)(VREF*FIXEDPOINT_SCALE));
-			pressures[btn] = vtot - 70;
+			p = vtot - 70;
 		}
+
+		pressures[btn] = p;
+
+		// Junky entropy.
+		uint32_t fe = frameentropy;
+		fe += p;
+		fe ^= fe << 10;
+		fe ^= fe << 21;
+		frameentropy = fe;
 	}
 }
 

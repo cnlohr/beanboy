@@ -19,6 +19,8 @@ uint32_t R32_PFIC_IENR1;
 
 volatile int ch32v003quitMode = 0;
 volatile int ch570runMode;
+
+volatile uint32_t buttondowns[4];
 volatile uint32_t pressures[4];
 
 #define OLED_W 128
@@ -32,12 +34,11 @@ uint8_t oled[OLED_W*OLED_H/8];
 
 void HandleKey( int keycode, int bDown )
 {
-	const int pDown = 10000;
 	switch( keycode )
 	{
-		case 'z': case 'Z': pressures[0] = bDown ? pDown : 0; break;
-		case 'x': case 'X': pressures[1] = bDown ? pDown : 0; break;
-		case 'c': case 'C': pressures[2] = bDown ? pDown : 0; break;
+		case 'z': case 'Z': buttondowns[0] = bDown; break;
+		case 'x': case 'X': buttondowns[1] = bDown; break;
+		case 'c': case 'C': buttondowns[2] = bDown; break;
 	}
 }
 
@@ -143,7 +144,12 @@ int main( int argc, char ** argv )
 	}
 
 	char * firmwareFile = argv[1];
-	FILE * f = fopen( "../firmware/firmware.bin", "rb" );
+	FILE * f = fopen( firmwareFile, "rb" );
+	if( !f )
+	{
+		fprintf( stderr, "Error: can't open %s\n", firmwareFile );
+		exit( -7 );
+	}
 	fseek( f, 0, SEEK_END );
 	int len = ftell( f );
 	fseek( f, 0, SEEK_SET );
@@ -168,6 +174,12 @@ int main( int argc, char ** argv )
 		short w, h;
 		CNFGGetDimensions( &w, &h );
 		CNFGClearFrame();
+
+		int i;
+		for( i = 0; i < 3; i++ )
+		{
+			pressures[i] = buttondowns[i] ? ( 9500 + (rand()%300) ) : (10+(rand()%32));
+		}
 
 		CNFGColor( 0xffffffff );
 		{
