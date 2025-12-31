@@ -55,7 +55,6 @@ void spi_send_command_fast(uint32_t x, uint32_t y)
 	funDigitalWrite( SSD1306_CS_PIN, FUN_HIGH );
 }
 
-
 void ModeTestWirelessRX( uint8_t * txmac, uint8_t * message, int messageLength, int rssi )
 {
 	printf( "%02x:%02x:%02x:%02x:%02x:%02x:%3d %d:", txmac[0], txmac[1], txmac[2], txmac[3], txmac[4], txmac[5], rssi, messageLength );
@@ -67,11 +66,12 @@ void ModeTestWirelessRX( uint8_t * txmac, uint8_t * message, int messageLength, 
 	printf( "\n" );
 }
 
-void ModeTestLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32_t clickedMask, uint32_t lastClickMask )
-{
-	int i;
-	ModeTest * m = (ModeTest *)mode;
 
+void CoreLoop() __HIGH_CODE;
+
+void CoreLoop()
+{
+	uint32_t tmp;
 	uint32_t fn = 0;
 
 //	ssd1306_cmd(0xd3);
@@ -79,32 +79,133 @@ void ModeTestLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 //	ssd1306_cmd(0xdc);
 //	ssd1306_cmd((fn>>7));
 
-	while( 1 )
-	{
+	uint32_t cimutag;
+	uint32_t cimudat;
+	int16_t cimu[3];
+
+	unsigned nextdeadline = SysTick->CNT;
+	void * nextjump = &&lsm6_getcimu;
+
+	cont:
 		// Target 16.697 kHz
+		while( ((int32_t)( SysTick->CNT - nextdeadline )) < 0  );
+		nextdeadline += 2500;
 		spi_send_command_fast( fn&0x7f, fn>>7 );
 		fn++;
-		Delay_Us(30);
+		goto *nextjump;
 
-#if 1 
-		if( (fn & 0xff) == 0 )
+	lsm6_getcimu:
+		SendStart();
+		SendByteNoAck( LSM6DS3_ADDRESS<<1 );
+		SendByteNoAck( 0x3a );
+		SendStart();
+		SendByteNoAck( (LSM6DS3_ADDRESS<<1)|1 );
+		cimudat = GetByte( 0 );
+		cimudat |= GetByte( 0 ) << 8ULL;
+		cimudat |= GetByte( 1 ) << 16ULL;
+		SendStop();
+		if( cimudat & 0x4000 )
 		{
-			//spi_send_command_fast( 128, 128 );
-
-			ConfigI2C();
-
-			ProcessLSM6DS3();
-			//ProcessQMC6309();
-
-			funPinMode( PIN_SCL, GPIO_CFGLR_OUT_2Mhz_PP );
-			funPinMode( PIN_SDA, GPIO_CFGLR_OUT_2Mhz_PP );
-			funDigitalWrite( PA11, 0 ); // BS1 = 0 for SPI
-			funDigitalWrite( PA10, 1 ); // D/C
+			nextjump = &&lsm6_force_fifo_reset;
+			goto cont;
 		}
-#endif
-	}
+		else if( ( cimudat & 0x7ff ) > 0 )
+		{
+			nextjump = &&lsm6_pull0;
+			goto cont;
+		}
+		nextjump = &&lsm6_1;
+		goto cont;
 
-	//Delay_Ms(5);
+	lsm6_force_fifo_reset:
+		SendStart();
+		SendByteNoAck( LSM6DS3_ADDRESS<<1 );
+		SendByteNoAck( 0x0a );
+		SendByteNoAck( 0x28 );
+		SendStop();
+		SendStart();
+		SendByteNoAck( LSM6DS3_ADDRESS<<1 );
+		SendByteNoAck( 0x0a );
+		SendByteNoAck( 0x2e );
+		SendStop();
+		Delay_Ms(20);
+		nextjump = &&lsm6_getcimu;
+		goto cont;
+
+	lsm6_pull0:
+		SendStart();
+		SendByteNoAck( LSM6DS3_ADDRESS<<1 );
+		SendByteNoAck( 0x78 );
+		SendStart();
+		SendByteNoAck( (LSM6DS3_ADDRESS<<1)|1 );
+		cimutag = GetByte( 0 ); // FIFO Tag
+	//	GetByte( 0 )<<8; // Ignore FIFO status 4
+		nextjump = &&lsm6_pull1;
+		goto cont;
+
+	lsm6_pull1:
+		tmp = GetByte( 0 );
+		cimu[0] = tmp | GetByte( 0 ) << 8;
+		tmp = GetByte( 0 );
+		cimu[1] = tmp | GetByte( 0 ) << 8;
+		tmp = GetByte( 0 );
+		cimu[2] = tmp | GetByte( 1 ) << 8;
+		SendStop();
+		nextjump = &&lsm6_pull2;
+		goto cont;
+
+	lsm6_pull2:
+		cimutag >>= 3;
+		if( cimutag == 1 )
+		{
+			static int32_t ctot = 0;
+			static uint32_t last_time;
+			//ctot += cimu[2];
+			uint32_t now = SysTick->CNT;
+			//printf( "%d\n", now );
+			//printf( "%d\n", now - last_time );
+			//last_time = now;
+			// Actual gyro = 
+
+			//printf( "%d %d %d\n", cimu[0], cimu[1], cimu[2] );
+			//Gyro
+		}
+		else if( cimutag == 2 )
+		{
+			// Accel
+		}
+		else if( cimutag == 3 )
+		{
+			// Temperature
+		}
+		else
+		{
+			printf( "Confusing tag: %d\n", cimutag );
+		}
+		nextjump = &&lsm6_process;
+		goto cont;
+
+	lsm6_process:
+		nextjump = &&lsm6_1;
+		goto cont;
+
+	lsm6_1:
+		nextjump = &&lsm6_2;
+		goto cont;
+
+	lsm6_2:
+		nextjump = &&lsm6_getcimu;
+		goto cont;
+
+
+}
+
+void ModeTestLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32_t clickedMask, uint32_t lastClickMask )
+{
+	int i;
+	ModeTest * m = (ModeTest *)mode;
+
+	CoreLoop();
 }
 
 
