@@ -33,7 +33,7 @@ void ModePufferWirelessRX( uint8_t * txmac, uint8_t * message, int messageLength
 }
 
 int getNewPufferPokes(){
-	return (rand() % 35 + 4);
+	return ((rand() % 35) + 4);
 }
 int getRandExtraPokes(){
 	return (rand() % 7);

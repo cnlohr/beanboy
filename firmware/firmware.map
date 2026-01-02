@@ -1,23 +1,23 @@
 Archive member included to satisfy reference by file (symbol)
 
 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
-                              C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o (__divdi3)
+                              C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o (__divdi3)
 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
-                              C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o (__moddi3)
+                              C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o (__moddi3)
 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
-                              C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o (__adddf3)
+                              C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o (__adddf3)
 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
-                              C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o (__muldf3)
+                              C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o (__muldf3)
 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
-                              C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o (__subdf3)
+                              C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o (__subdf3)
 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
-                              C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o (__fixdfsi)
+                              C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o (__fixdfsi)
 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
-                              C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o (__floatsidf)
+                              C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o (__floatsidf)
 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
-                              C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o (__gtsf2)
+                              C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o (__gtsf2)
 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
-                              C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o (__floatsisf)
+                              C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o (__floatsisf)
 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clz.o)
                               C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o) (__clz_tab)
 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
@@ -25,39 +25,39 @@ C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/ris
 
 Discarded input sections
 
- .text          0x00000000        0x0 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .data          0x00000000        0x0 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .bss           0x00000000        0x0 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.vprintf  0x00000000       0x16 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+ .text          0x00000000        0x0 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .data          0x00000000        0x0 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .bss           0x00000000        0x0 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.vprintf  0x00000000       0x16 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.snprintf
-                0x00000000       0x20 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.strcpy   0x00000000       0x14 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.strncpy  0x00000000       0x1c C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.strcmp   0x00000000       0x1a C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.strncmp  0x00000000       0x2e C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.strchr   0x00000000       0x16 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.strrchr  0x00000000       0x3c C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.memcmp   0x00000000       0x20 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.memmove  0x00000000       0x5e C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.memchr   0x00000000       0x1a C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.strnlen  0x00000000       0x2a C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000000       0x20 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.strcpy   0x00000000       0x14 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.strncpy  0x00000000       0x1c C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.strcmp   0x00000000       0x1a C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.strncmp  0x00000000       0x2e C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.strchr   0x00000000       0x16 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.strrchr  0x00000000       0x3c C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.memcmp   0x00000000       0x20 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.memmove  0x00000000       0x5e C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.memchr   0x00000000       0x1a C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.strnlen  0x00000000       0x2a C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.twoway_strstr
-                0x00000000      0x256 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.strstr   0x00000000      0x118 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000000      0x256 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.strstr   0x00000000      0x118 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .rodata.puts.str1.4
-                0x00000000        0x2 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.puts     0x00000000       0x40 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.setjmp   0x00000000       0x38 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.longjmp  0x00000000       0x3c C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .comment       0x00000000       0x34 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000000        0x2 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.puts     0x00000000       0x40 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.setjmp   0x00000000       0x38 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.longjmp  0x00000000       0x3c C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .comment       0x00000000       0x34 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .note.GNU-stack
-                0x00000000        0x0 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .comment       0x00000000       0x34 C:\Users\Andy\AppData\Local\Temp\ccxcAqPy.debug.temp.o
+                0x00000000        0x0 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .comment       0x00000000       0x34 C:\Users\Andy\AppData\Local\Temp\cchwHGBR.debug.temp.o
  .note.GNU-stack
-                0x00000000        0x0 C:\Users\Andy\AppData\Local\Temp\ccxcAqPy.debug.temp.o
- .comment       0x00000000       0x34 C:\Users\Andy\AppData\Local\Temp\cc8IvH0t.debug.temp.o
+                0x00000000        0x0 C:\Users\Andy\AppData\Local\Temp\cchwHGBR.debug.temp.o
+ .comment       0x00000000       0x34 C:\Users\Andy\AppData\Local\Temp\ccArxumd.debug.temp.o
  .note.GNU-stack
-                0x00000000        0x0 C:\Users\Andy\AppData\Local\Temp\cc8IvH0t.debug.temp.o
+                0x00000000        0x0 C:\Users\Andy\AppData\Local\Temp\ccArxumd.debug.temp.o
  .text          0x00000000        0x0 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
  .data          0x00000000        0x0 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
  .bss           0x00000000        0x0 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
@@ -136,18 +136,18 @@ RAM              0x20000000         0x00003000         xrw
 
 Linker script and memory map
 
-LOAD C:\Users\Andy\AppData\Local\Temp\ccRNZzUz.o
-LOAD C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
-LOAD C:\Users\Andy\AppData\Local\Temp\ccxcAqPy.debug.temp.o
-LOAD C:\Users\Andy\AppData\Local\Temp\cc8IvH0t.debug.temp.o
-LOAD C:\Users\Andy\AppData\Local\Temp\cciDHeAb.o
+LOAD C:\Users\Andy\AppData\Local\Temp\ccMVSkIw.o
+LOAD C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+LOAD C:\Users\Andy\AppData\Local\Temp\cchwHGBR.debug.temp.o
+LOAD C:\Users\Andy\AppData\Local\Temp\ccArxumd.debug.temp.o
+LOAD C:\Users\Andy\AppData\Local\Temp\ccryxadB.o
 LOAD C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a
 
 .init           0x00000000       0x90
                 0x00000000                        _sinit = .
                 0x00000000                        . = ALIGN (0x4)
  *(SORT_NONE(.init))
- .init          0x00000000       0x90 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+ .init          0x00000000       0x90 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
                 0x00000000                InterruptVector
                 0x00000000                InterruptVectorDefault
                 0x00000090                        . = ALIGN (0x4)
@@ -158,11 +158,11 @@ LOAD C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gc
                 0x00000090                        . = ALIGN (0x4)
                 0x00000090                        PROVIDE (_highcode_lma = .)
 
-.highcode       0x20000000      0x9b0 load address 0x00000090
+.highcode       0x20000000      0x9a4 load address 0x00000090
                 0x20000000                        . = ALIGN (0x4)
                 0x20000000                        PROVIDE (_highcode_vma_start = .)
  *(.highcode*)
- .highcode      0x20000000      0x9ae C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+ .highcode      0x20000000      0x9a4 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
                 0x2000001c                iSLERRSSI
                 0x20000034                iSLERCRCOK
                 0x20000054                iSLERTX
@@ -175,377 +175,379 @@ LOAD C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gc
                 0x200005da                GetByte
                 0x200006c2                ProcessLSM6DS3
                 0x20000806                CoreLoop
-                0x200009b0                        . = ALIGN (0x4)
- *fill*         0x200009ae        0x2 
-                0x200009b0                        PROVIDE (_highcode_vma_end = .)
+                0x200009a4                        . = ALIGN (0x4)
+                0x200009a4                        PROVIDE (_highcode_vma_end = .)
 
-.text           0x00000a40     0x469c
-                0x00000a40                        . = ALIGN (0x4)
+.text           0x00000a34     0x46f4
+                0x00000a34                        . = ALIGN (0x4)
  *(.text)
  *(.text.*)
  .text.mini_pad
-                0x00000a40       0x8a C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text._puts    0x00000aca       0x42 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000a34       0x8a C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text._puts    0x00000abe       0x42 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.DelaySysTick
-                0x00000b0c       0x12 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000b00       0x12 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.mini_itoa.part.0
-                0x00000b1e       0x90 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000b12       0x90 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.ssd1306_drawPixel
-                0x00000bae       0x3c C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000ba2       0x3c C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.DevSetMode
-                0x00000bea       0x4e C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000bde       0x4e C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.RFEND_TXCTune
-                0x00000c38       0x7e C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000c2c       0x7e C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.DevSetChannel
-                0x00000cb6       0x22 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000caa       0x22 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.RenderBSprite
-                0x00000cd8       0xd8 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000ccc       0xd8 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text._rand_gen_32b
-                0x00000db0       0x3c C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000da4       0x3c C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.ModePufferWirelessRX
-                0x00000dec        0x2 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.badSin   0x00000dee       0x30 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000de0        0x2 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.badSin   0x00000de2       0x30 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.funPinMode.part.0
-                0x00000e1e       0x30 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000e12       0x30 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.ssd1306_drawstr_sz.constprop.0
-                0x00000e4e       0xdc C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000e42       0xdc C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.internal_handle_input.constprop.0
-                0x00000f2a        0xa C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000f1e        0xa C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text._write.constprop.0
-                0x00000f34       0xec C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000f28       0xec C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.__puts_uart
-                0x00001020       0x14 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00001014       0x14 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.ssd1306_pkt_send.isra.0
-                0x00001034       0x62 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00001028       0x62 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.ssd1306_cmd.isra.0
-                0x00001096       0x18 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x0000108a       0x18 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.ssd1306_refresh
-                0x000010ae       0x76 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x000010a2       0x76 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.funPinMode.constprop.0
-                0x00001124       0x1e C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00001118       0x1e C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.handle_reset
-                0x00001142       0xb0 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
-                0x00001142                handle_reset
+                0x00001136       0xb0 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+                0x00001136                handle_reset
  .text.vector_handler
-                0x000011f2        0x2 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
-                0x000011f2                EXTI2_IRQHandler
-                0x000011f2                TIM8_TRG_COM_IRQHandler
-                0x000011f2                TIM8_CC_IRQHandler
-                0x000011f2                USART_WKUP_IRQHandler
-                0x000011f2                UART8_IRQHandler
-                0x000011f2                SPI4_IRQHandler
-                0x000011f2                NFC_IRQHandler
-                0x000011f2                DFSDM0_IRQHandler
-                0x000011f2                TIM1_CC_IRQHandler
-                0x000011f2                HardFault_Handler
-                0x000011f2                TIM10_IRQHandler
-                0x000011f2                GPIOB_IRQHandler
-                0x000011f2                IPC_CH2_Handler
-                0x000011f2                USBPD_IRQHandler
-                0x000011f2                TIM6_IRQHandler
-                0x000011f2                GPIOA_IRQHandler
-                0x000011f2                SysTick_Handler
-                0x000011f2                CAN3_RX1_IRQHandler
-                0x000011f2                I3C_ER_IRQHandler
-                0x000011f2                PVD_IRQHandler
-                0x000011f2                SDIO_IRQHandler
-                0x000011f2                TIM9_BRK_IRQHandler
-                0x000011f2                DMA2_Channel8_IRQHandler
-                0x000011f2                NMI_Handler
-                0x000011f2                CAN2_RX1_IRQHandler
-                0x000011f2                EXTI3_IRQHandler
-                0x000011f2                HSEM_Handler
-                0x000011f2                UART1_IRQHandler
-                0x000011f2                USBHS_IRQHandler
-                0x000011f2                LPTIM2_IRQHandler
-                0x000011f2                DMA2_Channel9_IRQHandler
-                0x000011f2                TIM10_CC_IRQHandler
-                0x000011f2                EXTI25_16_IRQHandler
-                0x000011f2                I2C3_ER_IRQHandler
-                0x000011f2                USBFS_IRQHandler
-                0x000011f2                UART0_IRQHandler
-                0x000011f2                USART8_IRQHandler
-                0x000011f2                EXTI0_IRQHandler
-                0x000011f2                I2C2_EV_IRQHandler
-                0x000011f2                TIM10_TRG_COM_IRQHandler
-                0x000011f2                LPTIM_IRQHandler
-                0x000011f2                CAN1_RX0_IRQHandler
-                0x000011f2                CAN3_SCE_IRQHandler
-                0x000011f2                CAN2_SCE_IRQHandler
-                0x000011f2                ADC1_2_IRQHandler
-                0x000011f2                BB_IRQHandler
-                0x000011f2                Break_Point_Handler
-                0x000011f2                IPC_CH0_Handler
-                0x000011f2                TIM2_CC_IRQHandler
-                0x000011f2                SPI1_IRQHandler
-                0x000011f2                USART5_IRQHandler
-                0x000011f2                TAMPER_IRQHandler
-                0x000011f2                TMR0_IRQHandler
-                0x000011f2                AWU_IRQHandler
-                0x000011f2                EXTI7_0_IRQHandler
-                0x000011f2                CAN2_RX0_IRQHandler
-                0x000011f2                OSCWakeUp_IRQHandler
-                0x000011f2                TIM8_UP_IRQHandler
-                0x000011f2                Ecall_M_Mode_Handler
-                0x000011f2                ECDC_IRQHandler
-                0x000011f2                SDMMC_IRQHandler
-                0x000011f2                USART7_IRQHandler
-                0x000011f2                DMA2_Channel2_IRQHandler
-                0x000011f2                DMA1_Channel4_IRQHandler
-                0x000011f2                ADC1_IRQHandler
-                0x000011f2                TIM2_BRK_IRQHandler
-                0x000011f2                USART6_IRQHandler
-                0x000011f2                CAN3_RX0_IRQHandler
-                0x000011f2                HSADC_IRQHandler
-                0x000011f2                TIM9_UP_IRQHandler
-                0x000011f2                USART3_IRQHandler
-                0x000011f2                RTC_IRQHandler
-                0x000011f2                DMA1_Channel7_IRQHandler
-                0x000011f2                LED_IRQHandler
-                0x000011f2                CAN1_RX1_IRQHandler
-                0x000011f2                DVP_IRQHandler
-                0x000011f2                UART5_IRQHandler
-                0x000011f2                USBSS_IRQHandler
-                0x000011f2                SWPMI_IRQHandler
-                0x000011f2                USBPDWakeUp_IRQHandler
-                0x000011f2                EXTI15_8_IRQHandler
-                0x000011f2                TIM4_IRQHandler
-                0x000011f2                DMA2_Channel1_IRQHandler
-                0x000011f2                SWPMI_WKUP_IRQHandler
-                0x000011f2                USBPD_WKUP_IRQHandler
-                0x000011f2                I2C1_EV_IRQHandler
-                0x000011f2                USBSSWakeup_IRQHandler
-                0x000011f2                UART2_IRQHandler
-                0x000011f2                USART4_IRQHandler
-                0x000011f2                PWMX_IRQHandler
-                0x000011f2                DMA1_Channel6_IRQHandler
-                0x000011f2                UART4_IRQHandler
-                0x000011f2                DMA2_Channel4_IRQHandler
-                0x000011f2                TIM3_IRQHandler
-                0x000011f2                RCC_IRQHandler
-                0x000011f2                TIM1_TRG_COM_IRQHandler
-                0x000011f2                DMA1_Channel1_IRQHandler
-                0x000011f2                DMA2_Channel7_IRQHandler
-                0x000011f2                QSPI1_IRQHandler
-                0x000011f2                EXTI15_10_IRQHandler
-                0x000011f2                ADC_IRQHandler
-                0x000011f2                IPC_CH3_Handler
-                0x000011f2                DMA1_Channel8_IRQHandler
-                0x000011f2                I3C_EV_IRQHandler
-                0x000011f2                TMR2_IRQHandler
-                0x000011f2                I3C_WKUP_IRQHandler
-                0x000011f2                DefaultIRQHandler
-                0x000011f2                TIM12_IRQHandler
-                0x000011f2                TIM7_IRQHandler
-                0x000011f2                CAN2_TX_IRQHandler
-                0x000011f2                TIM5_IRQHandler
-                0x000011f2                I2C3_EV_IRQHandler
-                0x000011f2                USB_IRQHandler
-                0x000011f2                EXTI9_5_IRQHandler
-                0x000011f2                PIOC_IRQHandler
-                0x000011f2                TIM9_IRQHandler
-                0x000011f2                LTDC_IRQHandler
-                0x000011f2                SAI_IRQHandler
-                0x000011f2                SPI2_IRQHandler
-                0x000011f2                OSC32KCal_IRQHandler
-                0x000011f2                IPC_CH1_Handler
-                0x000011f2                I2C_IRQHandler
-                0x000011f2                LPTIM1_WKUP_IRQHandler
-                0x000011f2                TIM10_BRK_IRQHandler
-                0x000011f2                TIM9_CC_IRQHandler
-                0x000011f2                CAN1_TX_IRQHandler
-                0x000011f2                DMA2_Channel5_IRQHandler
-                0x000011f2                USB2_IRQHandler
-                0x000011f2                USBHSWakeUp_IRQHandler
-                0x000011f2                DMA1_Channel5_IRQHandler
-                0x000011f2                EXTI4_IRQHandler
-                0x000011f2                USB_LP_CAN1_RX0_IRQHandler
-                0x000011f2                QSPI2_IRQHandler
-                0x000011f2                RNG_IRQHandler
-                0x000011f2                USB_HP_CAN1_TX_IRQHandler
-                0x000011f2                CMPWakeUp_IRQHandler
-                0x000011f2                DMA1_Channel3_IRQHandler
-                0x000011f2                FSMC_IRQHandler
-                0x000011f2                ETH_IRQHandler
-                0x000011f2                TIM1_UP_IRQHandler
-                0x000011f2                LPTIMWakeUp_IRQHandler
-                0x000011f2                WWDG_IRQHandler
-                0x000011f2                USBHSWakeup_IRQHandler
-                0x000011f2                DMA2_Channel11_IRQHandler
-                0x000011f2                WDOG_BAT_IRQHandler
-                0x000011f2                Ecall_U_Mode_Handler
-                0x000011f2                I2C4_EV_IRQHandler
-                0x000011f2                CAN3_TX_IRQHandler
-                0x000011f2                TMR3_IRQHandler
-                0x000011f2                DMA2_Channel6_IRQHandler
-                0x000011f2                TIM2_IRQHandler
-                0x000011f2                SW_Handler
-                0x000011f2                TIM1_BRK_IRQHandler
-                0x000011f2                GPHA_IRQHandler
-                0x000011f2                OPA_IRQHandler
-                0x000011f2                DMA2_Channel10_IRQHandler
-                0x000011f2                EXTI1_IRQHandler
-                0x000011f2                SPI0_IRQHandler
-                0x000011f2                USB2_HOST_IRQHandler
-                0x000011f2                LPTIM2_WKUP_IRQHandler
-                0x000011f2                RTCAlarm_IRQHandler
-                0x000011f2                TIM11_IRQHandler
-                0x000011f2                TIM10_UP_IRQHandler
-                0x000011f2                TIM9_TRG_COM_IRQHandler
-                0x000011f2                UART7_IRQHandler
-                0x000011f2                USART2_IRQHandler
-                0x000011f2                UART6_IRQHandler
-                0x000011f2                UHSIF_IRQHandler
-                0x000011f2                ETHWakeUp_IRQHandler
-                0x000011f2                I2C2_ER_IRQHandler
-                0x000011f2                DMA1_Channel2_IRQHandler
-                0x000011f2                TIM8_BRK_IRQHandler
-                0x000011f2                TIM2_TRG_IRQHandler
-                0x000011f2                CAN1_SCE_IRQHandler
-                0x000011f2                FLASH_IRQHandler
-                0x000011f2                USBFSWakeUp_IRQHandler
-                0x000011f2                USART1_IRQHandler
-                0x000011f2                OTG_FS_IRQHandler
-                0x000011f2                SPI3_IRQHandler
-                0x000011f2                USBFS_WakeUp_IRQHandler
-                0x000011f2                UART3_IRQHandler
-                0x000011f2                I2C1_ER_IRQHandler
-                0x000011f2                FMC_IRQHandler
-                0x000011f2                USB2_DEVICE_IRQHandler
-                0x000011f2                LPTIM1_IRQHandler
-                0x000011f2                DFSDM1_IRQHandler
-                0x000011f2                I2C4_ER_IRQHandler
-                0x000011f2                SERDES_IRQHandler
-                0x000011f2                USBSS_LINK_IRQHandler
-                0x000011f2                USBWakeUp_IRQHandler
-                0x000011f2                DMA2_Channel3_IRQHandler
- .text.strlen   0x000011f4       0x12 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
-                0x000011f4                strlen
+                0x000011e6        0x2 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+                0x000011e6                EXTI2_IRQHandler
+                0x000011e6                TIM8_TRG_COM_IRQHandler
+                0x000011e6                TIM8_CC_IRQHandler
+                0x000011e6                USART_WKUP_IRQHandler
+                0x000011e6                UART8_IRQHandler
+                0x000011e6                SPI4_IRQHandler
+                0x000011e6                NFC_IRQHandler
+                0x000011e6                DFSDM0_IRQHandler
+                0x000011e6                TIM1_CC_IRQHandler
+                0x000011e6                HardFault_Handler
+                0x000011e6                TIM10_IRQHandler
+                0x000011e6                GPIOB_IRQHandler
+                0x000011e6                IPC_CH2_Handler
+                0x000011e6                USBPD_IRQHandler
+                0x000011e6                TIM6_IRQHandler
+                0x000011e6                GPIOA_IRQHandler
+                0x000011e6                SysTick_Handler
+                0x000011e6                CAN3_RX1_IRQHandler
+                0x000011e6                I3C_ER_IRQHandler
+                0x000011e6                PVD_IRQHandler
+                0x000011e6                SDIO_IRQHandler
+                0x000011e6                TIM9_BRK_IRQHandler
+                0x000011e6                DMA2_Channel8_IRQHandler
+                0x000011e6                NMI_Handler
+                0x000011e6                CAN2_RX1_IRQHandler
+                0x000011e6                EXTI3_IRQHandler
+                0x000011e6                HSEM_Handler
+                0x000011e6                UART1_IRQHandler
+                0x000011e6                USBHS_IRQHandler
+                0x000011e6                LPTIM2_IRQHandler
+                0x000011e6                DMA2_Channel9_IRQHandler
+                0x000011e6                TIM10_CC_IRQHandler
+                0x000011e6                EXTI25_16_IRQHandler
+                0x000011e6                I2C3_ER_IRQHandler
+                0x000011e6                USBFS_IRQHandler
+                0x000011e6                UART0_IRQHandler
+                0x000011e6                USART8_IRQHandler
+                0x000011e6                EXTI0_IRQHandler
+                0x000011e6                I2C2_EV_IRQHandler
+                0x000011e6                TIM10_TRG_COM_IRQHandler
+                0x000011e6                LPTIM_IRQHandler
+                0x000011e6                CAN1_RX0_IRQHandler
+                0x000011e6                CAN3_SCE_IRQHandler
+                0x000011e6                CAN2_SCE_IRQHandler
+                0x000011e6                ADC1_2_IRQHandler
+                0x000011e6                BB_IRQHandler
+                0x000011e6                Break_Point_Handler
+                0x000011e6                IPC_CH0_Handler
+                0x000011e6                TIM2_CC_IRQHandler
+                0x000011e6                SPI1_IRQHandler
+                0x000011e6                USART5_IRQHandler
+                0x000011e6                TAMPER_IRQHandler
+                0x000011e6                TMR0_IRQHandler
+                0x000011e6                AWU_IRQHandler
+                0x000011e6                EXTI7_0_IRQHandler
+                0x000011e6                CAN2_RX0_IRQHandler
+                0x000011e6                OSCWakeUp_IRQHandler
+                0x000011e6                TIM8_UP_IRQHandler
+                0x000011e6                Ecall_M_Mode_Handler
+                0x000011e6                ECDC_IRQHandler
+                0x000011e6                SDMMC_IRQHandler
+                0x000011e6                USART7_IRQHandler
+                0x000011e6                DMA2_Channel2_IRQHandler
+                0x000011e6                DMA1_Channel4_IRQHandler
+                0x000011e6                ADC1_IRQHandler
+                0x000011e6                TIM2_BRK_IRQHandler
+                0x000011e6                USART6_IRQHandler
+                0x000011e6                CAN3_RX0_IRQHandler
+                0x000011e6                HSADC_IRQHandler
+                0x000011e6                TIM9_UP_IRQHandler
+                0x000011e6                USART3_IRQHandler
+                0x000011e6                RTC_IRQHandler
+                0x000011e6                DMA1_Channel7_IRQHandler
+                0x000011e6                LED_IRQHandler
+                0x000011e6                CAN1_RX1_IRQHandler
+                0x000011e6                DVP_IRQHandler
+                0x000011e6                UART5_IRQHandler
+                0x000011e6                USBSS_IRQHandler
+                0x000011e6                SWPMI_IRQHandler
+                0x000011e6                USBPDWakeUp_IRQHandler
+                0x000011e6                EXTI15_8_IRQHandler
+                0x000011e6                TIM4_IRQHandler
+                0x000011e6                DMA2_Channel1_IRQHandler
+                0x000011e6                SWPMI_WKUP_IRQHandler
+                0x000011e6                USBPD_WKUP_IRQHandler
+                0x000011e6                I2C1_EV_IRQHandler
+                0x000011e6                USBSSWakeup_IRQHandler
+                0x000011e6                UART2_IRQHandler
+                0x000011e6                USART4_IRQHandler
+                0x000011e6                PWMX_IRQHandler
+                0x000011e6                DMA1_Channel6_IRQHandler
+                0x000011e6                UART4_IRQHandler
+                0x000011e6                DMA2_Channel4_IRQHandler
+                0x000011e6                TIM3_IRQHandler
+                0x000011e6                RCC_IRQHandler
+                0x000011e6                TIM1_TRG_COM_IRQHandler
+                0x000011e6                DMA1_Channel1_IRQHandler
+                0x000011e6                DMA2_Channel7_IRQHandler
+                0x000011e6                QSPI1_IRQHandler
+                0x000011e6                EXTI15_10_IRQHandler
+                0x000011e6                ADC_IRQHandler
+                0x000011e6                IPC_CH3_Handler
+                0x000011e6                DMA1_Channel8_IRQHandler
+                0x000011e6                I3C_EV_IRQHandler
+                0x000011e6                TMR2_IRQHandler
+                0x000011e6                I3C_WKUP_IRQHandler
+                0x000011e6                DefaultIRQHandler
+                0x000011e6                TIM12_IRQHandler
+                0x000011e6                TIM7_IRQHandler
+                0x000011e6                CAN2_TX_IRQHandler
+                0x000011e6                TIM5_IRQHandler
+                0x000011e6                I2C3_EV_IRQHandler
+                0x000011e6                USB_IRQHandler
+                0x000011e6                EXTI9_5_IRQHandler
+                0x000011e6                PIOC_IRQHandler
+                0x000011e6                TIM9_IRQHandler
+                0x000011e6                LTDC_IRQHandler
+                0x000011e6                SAI_IRQHandler
+                0x000011e6                SPI2_IRQHandler
+                0x000011e6                OSC32KCal_IRQHandler
+                0x000011e6                IPC_CH1_Handler
+                0x000011e6                I2C_IRQHandler
+                0x000011e6                LPTIM1_WKUP_IRQHandler
+                0x000011e6                TIM10_BRK_IRQHandler
+                0x000011e6                TIM9_CC_IRQHandler
+                0x000011e6                CAN1_TX_IRQHandler
+                0x000011e6                DMA2_Channel5_IRQHandler
+                0x000011e6                USB2_IRQHandler
+                0x000011e6                USBHSWakeUp_IRQHandler
+                0x000011e6                DMA1_Channel5_IRQHandler
+                0x000011e6                EXTI4_IRQHandler
+                0x000011e6                USB_LP_CAN1_RX0_IRQHandler
+                0x000011e6                QSPI2_IRQHandler
+                0x000011e6                RNG_IRQHandler
+                0x000011e6                USB_HP_CAN1_TX_IRQHandler
+                0x000011e6                CMPWakeUp_IRQHandler
+                0x000011e6                DMA1_Channel3_IRQHandler
+                0x000011e6                FSMC_IRQHandler
+                0x000011e6                ETH_IRQHandler
+                0x000011e6                TIM1_UP_IRQHandler
+                0x000011e6                LPTIMWakeUp_IRQHandler
+                0x000011e6                WWDG_IRQHandler
+                0x000011e6                USBHSWakeup_IRQHandler
+                0x000011e6                DMA2_Channel11_IRQHandler
+                0x000011e6                WDOG_BAT_IRQHandler
+                0x000011e6                Ecall_U_Mode_Handler
+                0x000011e6                I2C4_EV_IRQHandler
+                0x000011e6                CAN3_TX_IRQHandler
+                0x000011e6                TMR3_IRQHandler
+                0x000011e6                DMA2_Channel6_IRQHandler
+                0x000011e6                TIM2_IRQHandler
+                0x000011e6                SW_Handler
+                0x000011e6                TIM1_BRK_IRQHandler
+                0x000011e6                GPHA_IRQHandler
+                0x000011e6                OPA_IRQHandler
+                0x000011e6                DMA2_Channel10_IRQHandler
+                0x000011e6                EXTI1_IRQHandler
+                0x000011e6                SPI0_IRQHandler
+                0x000011e6                USB2_HOST_IRQHandler
+                0x000011e6                LPTIM2_WKUP_IRQHandler
+                0x000011e6                RTCAlarm_IRQHandler
+                0x000011e6                TIM11_IRQHandler
+                0x000011e6                TIM10_UP_IRQHandler
+                0x000011e6                TIM9_TRG_COM_IRQHandler
+                0x000011e6                UART7_IRQHandler
+                0x000011e6                USART2_IRQHandler
+                0x000011e6                UART6_IRQHandler
+                0x000011e6                UHSIF_IRQHandler
+                0x000011e6                ETHWakeUp_IRQHandler
+                0x000011e6                I2C2_ER_IRQHandler
+                0x000011e6                DMA1_Channel2_IRQHandler
+                0x000011e6                TIM8_BRK_IRQHandler
+                0x000011e6                TIM2_TRG_IRQHandler
+                0x000011e6                CAN1_SCE_IRQHandler
+                0x000011e6                FLASH_IRQHandler
+                0x000011e6                USBFSWakeUp_IRQHandler
+                0x000011e6                USART1_IRQHandler
+                0x000011e6                OTG_FS_IRQHandler
+                0x000011e6                SPI3_IRQHandler
+                0x000011e6                USBFS_WakeUp_IRQHandler
+                0x000011e6                UART3_IRQHandler
+                0x000011e6                I2C1_ER_IRQHandler
+                0x000011e6                FMC_IRQHandler
+                0x000011e6                USB2_DEVICE_IRQHandler
+                0x000011e6                LPTIM1_IRQHandler
+                0x000011e6                DFSDM1_IRQHandler
+                0x000011e6                I2C4_ER_IRQHandler
+                0x000011e6                SERDES_IRQHandler
+                0x000011e6                USBSS_LINK_IRQHandler
+                0x000011e6                USBWakeUp_IRQHandler
+                0x000011e6                DMA2_Channel3_IRQHandler
+ .text.strlen   0x000011e8       0x12 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+                0x000011e8                strlen
  .text.mini_vpprintf
-                0x00001206      0x1d6 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.printf   0x000013dc       0x28 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
-                0x000013dc                printf
+                0x000011fa      0x1d6 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.printf   0x000013d0       0x28 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+                0x000013d0                printf
  .text.mini_vsnprintf
-                0x00001404       0x3a C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.sprintf  0x0000143e       0x24 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
-                0x0000143e                sprintf
- .text.memset   0x00001462       0x12 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
-                0x00001462                memset
+                0x000013f8       0x3a C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.sprintf  0x00001432       0x24 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+                0x00001432                sprintf
+ .text.memset   0x00001456       0x12 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+                0x00001456                memset
  .text.ssd1306_setbuf.constprop.0
-                0x00001474       0x12 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00001468       0x12 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.ModePufferLoop
-                0x00001486      0x39a C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x0000147a      0x39a C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.ModeMenuLoop
-                0x00001820      0x184 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .text.memcpy   0x000019a4       0x1c C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
-                0x000019a4                memcpy
- .text.putchar  0x000019c0       0x64 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
-                0x000019c0                putchar
+                0x00001814      0x18c C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .text.memcpy   0x000019a0       0x1c C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+                0x000019a0                memcpy
+ .text.putchar  0x000019bc       0x64 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+                0x000019bc                putchar
  .text.ModeTestWirelessRX
-                0x00001a24       0x62 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00001a20       0x62 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.ModeExampleWirelessRX
-                0x00001a86        0x2 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00001a82        0x2 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.SystemInit
-                0x00001a88       0x7c C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
-                0x00001a88                SystemInit
+                0x00001a84       0x7c C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+                0x00001a84                SystemInit
+ .text.ISLER_BEANBOY_INTERNAL_CALLBACK
+                0x00001b00       0x4e C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.LLE_IRQHandler
-                0x00001b04       0xc6 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00001b4e       0x90 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.ModeExampleLoop
-                0x00001bca      0x1b2 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00001bde      0x1d0 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.SetupRegisterMap.isra.0
-                0x00001d7c       0x84 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00001dae       0x84 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.startup.main
-                0x00001e00      0x6a8 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
-                0x00001e00                main
+                0x00001e32      0x6c2 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+                0x00001e32                main
  .text.ModeTestLoop
-                0x000024a8        0xc C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x000024f4        0xc C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .text.__divdi3
-                0x000024b4      0x3e2 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
-                0x000024b4                __divdi3
+                0x00002500      0x3e2 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
+                0x00002500                __divdi3
  .text.__moddi3
-                0x00002896      0x3be C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
-                0x00002896                __moddi3
+                0x000028e2      0x3be C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
+                0x000028e2                __moddi3
  .text.__adddf3
-                0x00002c54      0x8c6 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
-                0x00002c54                __adddf3
+                0x00002ca0      0x8c6 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
+                0x00002ca0                __adddf3
  .text.__muldf3
-                0x0000351a      0x556 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
-                0x0000351a                __muldf3
+                0x00003566      0x556 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
+                0x00003566                __muldf3
  .text.__subdf3
-                0x00003a70      0x8b6 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
-                0x00003a70                __subdf3
+                0x00003abc      0x8b6 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
+                0x00003abc                __subdf3
  .text.__fixdfsi
-                0x00004326       0x66 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
-                0x00004326                __fixdfsi
+                0x00004372       0x66 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
+                0x00004372                __fixdfsi
  .text.__floatsidf
-                0x0000438c       0x76 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
-                0x0000438c                __floatsidf
- .text.__gesf2  0x00004402       0x9a C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
-                0x00004402                __gesf2
-                0x00004402                __gtsf2
+                0x000043d8       0x76 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
+                0x000043d8                __floatsidf
+ .text.__gesf2  0x0000444e       0x9a C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
+                0x0000444e                __gesf2
+                0x0000444e                __gtsf2
  .text.__floatsisf
-                0x0000449c       0xda C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
-                0x0000449c                __floatsisf
+                0x000044e8       0xda C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
+                0x000044e8                __floatsisf
  .text.__clzsi2
-                0x00004576       0x6e C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
-                0x00004576                __clzsi2
+                0x000045c2       0x6e C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
+                0x000045c2                __clzsi2
  *(.rodata)
  *(.rodata*)
+ *fill*         0x00004630        0x0 
  .rodata.ModePufferLoop.str1.4
-                0x000045e4      0x17c C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00004630      0x17c C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
                                  0x77 (size before relaxing)
  .rodata.ModeMenuLoop.str1.4
-                0x00004760        0x5 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x000047ac        0x5 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .rodata.ModeTestWirelessRX.str1.4
-                0x00004760       0x2e C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x000047ac       0x2e C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .rodata.ModeExampleLoop.str1.4
-                0x00004760       0x17 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x000047ac       0x17 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .rodata.SetupRegisterMap.isra.0.str1.4
-                0x00004760       0x1a C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x000047ac       0x1a C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .rodata.main.str1.4
-                0x00004760       0x30 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x000047ac       0x30 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .rodata.str1.4
-                0x00004760       0x6c C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x000047ac       0x6c C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .rodata.fontdata
-                0x00004760      0x800 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x000047ac      0x800 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .rodata.LSM6DS3Regmap.1
-                0x00004f60       0x1e C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- *fill*         0x00004f7e        0x2 
+                0x00004fac       0x1e C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ *fill*         0x00004fca        0x2 
  .rodata.ssd1306_init_array
-                0x00004f80       0x23 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- *fill*         0x00004fa3        0x1 
+                0x00004fcc       0x23 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ *fill*         0x00004fef        0x1 
  .rodata.gameModes
-                0x00004fa4       0x10 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00004ff0       0x10 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .rodata.channel_map
-                0x00004fb4       0x28 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00005000       0x28 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .rodata.__clz_tab
-                0x00004fdc      0x100 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clz.o)
-                0x00004fdc                __clz_tab
+                0x00005028      0x100 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clz.o)
+                0x00005028                __clz_tab
  *(.gnu.linkonce.t.*)
-                0x000050dc                        . = ALIGN (0x4)
+                0x00005128                        . = ALIGN (0x4)
 
-.rela.dyn       0x000050dc        0x0
+.rela.dyn       0x00005128        0x0
  .rela.text.handle_reset
-                0x000050dc        0x0 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00005128        0x0 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
 
-.fini           0x000050dc        0x0
+.fini           0x00005128        0x0
  *(SORT_NONE(.fini))
-                0x000050dc                        . = ALIGN (0x4)
+                0x00005128                        . = ALIGN (0x4)
                 [!provide]                        PROVIDE (_etext = .)
                 [!provide]                        PROVIDE (_eitcm = .)
 
-.preinit_array  0x000050dc        0x0
+.preinit_array  0x00005128        0x0
                 [!provide]                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array)
                 [!provide]                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x000050dc        0x0
-                0x000050dc                        PROVIDE (__init_array_start = .)
+.init_array     0x00005128        0x0
+                0x00005128                        PROVIDE (__init_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*))
  *(.init_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .ctors)
-                0x000050dc                        PROVIDE (__init_array_end = .)
+                0x00005128                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x000050dc        0x0
+.fini_array     0x00005128        0x0
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*))
  *(.fini_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .dtors)
@@ -565,77 +567,77 @@ LOAD C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gc
  *(SORT_BY_NAME(.dtors.*))
  *(.dtors)
 
-.dalign         0x200009b0        0x0 load address 0x000050dc
-                0x200009b0                        . = ALIGN (0x4)
-                0x200009b0                        PROVIDE (_data_vma = .)
+.dalign         0x200009a4        0x0 load address 0x00005128
+                0x200009a4                        . = ALIGN (0x4)
+                0x200009a4                        PROVIDE (_data_vma = .)
 
-.dlalign        0x000050dc        0x0
-                0x000050dc                        . = ALIGN (0x4)
-                0x000050dc                        PROVIDE (_data_lma = .)
+.dlalign        0x00005128        0x0
+                0x00005128                        . = ALIGN (0x4)
+                0x00005128                        PROVIDE (_data_lma = .)
 
-.data           0x200009b0      0xa54 load address 0x000050dc
-                0x200009b0                        . = ALIGN (0x4)
-                0x20000dac                        __global_pointer$ = (. + 0x3fc)
+.data           0x200009a8      0xa54 load address 0x00005128
+                0x200009a8                        . = ALIGN (0x4)
+                0x20000da4                        __global_pointer$ = (. + 0x3fc)
  *(.gnu.linkonce.r.*)
  *(.data .data.*)
  *(.gnu.linkonce.d.*)
-                0x200009b0                        . = ALIGN (0x8)
+                0x200009a8                        . = ALIGN (0x8)
  *(.sdata .sdata.*)
  .sdata._rand_lfsr
-                0x200009b0        0x4 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x200009a8        0x4 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  *(.sdata2*)
  *(.gnu.linkonce.s.*)
-                0x200009b8                        . = ALIGN (0x8)
- *fill*         0x200009b4        0x4 
+                0x200009b0                        . = ALIGN (0x8)
+ *fill*         0x200009ac        0x4 
  *(.srodata.cst16)
  *(.srodata.cst8)
- .srodata.cst8  0x200009b8       0x28 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+ .srodata.cst8  0x200009b0       0x28 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  *(.srodata.cst4)
- .srodata.cst4  0x200009e0        0xc C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+ .srodata.cst4  0x200009d8        0xc C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  *(.srodata.cst2)
  *(.srodata .srodata.*)
  .srodata.QMC6309Regmap.0
-                0x200009ec        0x4 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x200009e4        0x4 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .srodata.fish0
-                0x200009f0      0x1e4 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x200009e8      0x1e4 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .srodata.fish1
-                0x20000bd4      0x2c4 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x20000bcc      0x2c4 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .srodata.fish2
-                0x20000e98      0x364 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x20000e90      0x364 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .srodata.bubblemirror
-                0x200011fc      0x104 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x200011f4      0x104 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .srodata.bubble
-                0x20001300      0x104 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
-                0x20001404                        . = ALIGN (0x4)
-                0x20001404                        PROVIDE (_edata = .)
+                0x200012f8      0x104 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+                0x200013fc                        . = ALIGN (0x4)
+                0x200013fc                        PROVIDE (_edata = .)
 
-.bss            0x20001408      0xc78 load address 0x00005b30
-                0x20001408                        . = ALIGN (0x4)
-                0x20001408                        PROVIDE (_sbss = .)
+.bss            0x20001400      0xc78 load address 0x00005b7c
+                0x20001400                        . = ALIGN (0x4)
+                0x20001400                        PROVIDE (_sbss = .)
  *(.sbss*)
  .sbss.frameentropy
-                0x20001408        0x4 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x20001400        0x4 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .sbss.iSLERChannel
-                0x2000140c        0x1 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- *fill*         0x2000140d        0x3 
+                0x20001404        0x1 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ *fill*         0x20001405        0x3 
  .sbss.lastfifo
-                0x20001410        0x4 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x20001408        0x4 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .sbss.tuneFilter
-                0x20001414        0x4 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x2000140c        0x4 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .sbss.tuneFilter2M
-                0x20001418        0x4 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x20001410        0x4 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  *(.gnu.linkonce.sb.*)
  *(.bss*)
- *fill*         0x2000141c        0x4 
+ *fill*         0x20001414        0x4 
  .bss.gameUnion
-                0x20001420       0x20 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .bss.LLE_BUF   0x20001440      0x440 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x20001418       0x20 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .bss.LLE_BUF   0x20001438      0x440 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .bss.ssd1306_buffer
-                0x20001880      0x800 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x20001878      0x800 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  *(.gnu.linkonce.b.*)
  *(COMMON*)
-                0x20002080                        . = ALIGN (0x4)
-                0x20002080                        PROVIDE (_ebss = .)
+                0x20002078                        . = ALIGN (0x4)
+                0x20002078                        PROVIDE (_ebss = .)
                 [!provide]                        PROVIDE (_end = _ebss)
                 [!provide]                        PROVIDE (end = .)
                 0x20003000                        PROVIDE (_eusrstack = (ORIGIN (RAM) + LENGTH (RAM)))
@@ -651,7 +653,7 @@ OUTPUT(firmware.elf elf32-littleriscv)
 .riscv.attributes
                 0x00000000       0x4b
  .riscv.attributes
-                0x00000000       0x4b C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000000       0x4b C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .riscv.attributes
                 0x0000004b       0x47 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
  .riscv.attributes
@@ -675,158 +677,158 @@ OUTPUT(firmware.elf elf32-littleriscv)
  .riscv.attributes
                 0x00000311       0x47 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
 
-.debug_info     0x00000000     0x8fd8
- .debug_info    0x00000000     0x322f C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .debug_info    0x0000322f      0xe6d C:\Users\Andy\AppData\Local\Temp\ccxcAqPy.debug.temp.o
-                0x0000322f                ch32fun.c.87fb9ac7
- .debug_info    0x0000409c     0x24db C:\Users\Andy\AppData\Local\Temp\cc8IvH0t.debug.temp.o
-                0x0000409c                firmware.c.f25aebc6
- .debug_info    0x00006577      0x7a0 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
- .debug_info    0x00006d17      0x7eb C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
- .debug_info    0x00007502      0x4d9 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
- .debug_info    0x000079db      0x6a8 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
- .debug_info    0x00008083      0x4d9 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
- .debug_info    0x0000855c      0x1c6 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
- .debug_info    0x00008722      0x268 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
- .debug_info    0x0000898a      0x1f7 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
- .debug_info    0x00008b81      0x213 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
- .debug_info    0x00008d94       0xed C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clz.o)
- .debug_info    0x00008e81      0x157 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
+.debug_info     0x00000000     0x8ff1
+ .debug_info    0x00000000     0x3256 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .debug_info    0x00003256      0xe6d C:\Users\Andy\AppData\Local\Temp\cchwHGBR.debug.temp.o
+                0x00003256                ch32fun.c.87fb9ac7
+ .debug_info    0x000040c3     0x24cd C:\Users\Andy\AppData\Local\Temp\ccArxumd.debug.temp.o
+                0x000040c3                firmware.c.764153b0
+ .debug_info    0x00006590      0x7a0 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
+ .debug_info    0x00006d30      0x7eb C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
+ .debug_info    0x0000751b      0x4d9 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
+ .debug_info    0x000079f4      0x6a8 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
+ .debug_info    0x0000809c      0x4d9 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
+ .debug_info    0x00008575      0x1c6 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
+ .debug_info    0x0000873b      0x268 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
+ .debug_info    0x000089a3      0x1f7 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
+ .debug_info    0x00008b9a      0x213 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
+ .debug_info    0x00008dad       0xed C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clz.o)
+ .debug_info    0x00008e9a      0x157 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
 
-.debug_abbrev   0x00000000     0x1874
- .debug_abbrev  0x00000000      0x25f C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .debug_abbrev  0x0000025f      0x2c6 C:\Users\Andy\AppData\Local\Temp\ccxcAqPy.debug.temp.o
- .debug_abbrev  0x00000525      0x47d C:\Users\Andy\AppData\Local\Temp\cc8IvH0t.debug.temp.o
- .debug_abbrev  0x000009a2      0x1b2 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
- .debug_abbrev  0x00000b54      0x1d3 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
- .debug_abbrev  0x00000d27      0x186 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
- .debug_abbrev  0x00000ead      0x185 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
- .debug_abbrev  0x00001032      0x186 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
- .debug_abbrev  0x000011b8      0x15b C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
- .debug_abbrev  0x00001313      0x164 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
- .debug_abbrev  0x00001477      0x156 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
- .debug_abbrev  0x000015cd      0x16d C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
- .debug_abbrev  0x0000173a       0x70 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clz.o)
- .debug_abbrev  0x000017aa       0xca C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
+.debug_abbrev   0x00000000     0x1862
+ .debug_abbrev  0x00000000      0x24d C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .debug_abbrev  0x0000024d      0x2c6 C:\Users\Andy\AppData\Local\Temp\cchwHGBR.debug.temp.o
+ .debug_abbrev  0x00000513      0x47d C:\Users\Andy\AppData\Local\Temp\ccArxumd.debug.temp.o
+ .debug_abbrev  0x00000990      0x1b2 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
+ .debug_abbrev  0x00000b42      0x1d3 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
+ .debug_abbrev  0x00000d15      0x186 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
+ .debug_abbrev  0x00000e9b      0x185 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
+ .debug_abbrev  0x00001020      0x186 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
+ .debug_abbrev  0x000011a6      0x15b C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
+ .debug_abbrev  0x00001301      0x164 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
+ .debug_abbrev  0x00001465      0x156 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
+ .debug_abbrev  0x000015bb      0x16d C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
+ .debug_abbrev  0x00001728       0x70 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clz.o)
+ .debug_abbrev  0x00001798       0xca C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
 
 .debug_loclists
-                0x00000000     0x7a9a
+                0x00000000     0x7afa
  .debug_loclists
-                0x00000000     0x288c C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000000     0x28ec C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .debug_loclists
-                0x0000288c      0x81f C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
+                0x000028ec      0x81f C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
  .debug_loclists
-                0x000030ab      0x6cc C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
+                0x0000310b      0x6cc C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
  .debug_loclists
-                0x00003777     0x19c3 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
+                0x000037d7     0x19c3 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
  .debug_loclists
-                0x0000513a      0xb99 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
+                0x0000519a      0xb99 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
  .debug_loclists
-                0x00005cd3     0x1747 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
+                0x00005d33     0x1747 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
  .debug_loclists
-                0x0000741a       0xca C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
+                0x0000747a       0xca C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
  .debug_loclists
-                0x000074e4      0x1c6 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
+                0x00007544      0x1c6 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
  .debug_loclists
-                0x000076aa       0xba C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
+                0x0000770a       0xba C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
  .debug_loclists
-                0x00007764      0x277 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
+                0x000077c4      0x277 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
  .debug_loclists
-                0x000079db       0xbf C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
+                0x00007a3b       0xbf C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
 
-.debug_aranges  0x00000000      0x3c0
+.debug_aranges  0x00000000      0x3c8
  .debug_aranges
-                0x00000000      0x268 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000000      0x270 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .debug_aranges
-                0x00000268       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
+                0x00000270       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
  .debug_aranges
-                0x00000288       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
+                0x00000290       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
  .debug_aranges
-                0x000002a8       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
+                0x000002b0       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
  .debug_aranges
-                0x000002c8       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
+                0x000002d0       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
  .debug_aranges
-                0x000002e8       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
+                0x000002f0       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
  .debug_aranges
-                0x00000308       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
+                0x00000310       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
  .debug_aranges
-                0x00000328       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
+                0x00000330       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
  .debug_aranges
-                0x00000348       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
+                0x00000350       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
  .debug_aranges
-                0x00000368       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
+                0x00000370       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
  .debug_aranges
-                0x00000388       0x18 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clz.o)
+                0x00000390       0x18 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clz.o)
  .debug_aranges
-                0x000003a0       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
+                0x000003a8       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
 
 .debug_rnglists
-                0x00000000     0x1154
+                0x00000000     0x117a
  .debug_rnglists
-                0x00000000      0x516 C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000000      0x53c C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
  .debug_rnglists
-                0x00000516      0x11c C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
+                0x0000053c      0x11c C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
  .debug_rnglists
-                0x00000632       0xe0 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
+                0x00000658       0xe0 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
  .debug_rnglists
-                0x00000712      0x36a C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
+                0x00000738      0x36a C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
  .debug_rnglists
-                0x00000a7c      0x1b4 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
+                0x00000aa2      0x1b4 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
  .debug_rnglists
-                0x00000c30      0x37c C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
+                0x00000c56      0x37c C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
  .debug_rnglists
-                0x00000fac       0x2b C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
+                0x00000fd2       0x2b C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
  .debug_rnglists
-                0x00000fd7       0x6d C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
+                0x00000ffd       0x6d C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
  .debug_rnglists
-                0x00001044       0x50 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
+                0x0000106a       0x50 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
  .debug_rnglists
-                0x00001094       0x98 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
+                0x000010ba       0x98 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
  .debug_rnglists
-                0x0000112c       0x28 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
+                0x00001152       0x28 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
 
-.debug_line     0x00000000     0xe36f
- .debug_line    0x00000000     0x6b4f C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .debug_line    0x00006b4f       0x76 C:\Users\Andy\AppData\Local\Temp\ccxcAqPy.debug.temp.o
- .debug_line    0x00006bc5       0xad C:\Users\Andy\AppData\Local\Temp\cc8IvH0t.debug.temp.o
- .debug_line    0x00006c72      0xaf6 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
- .debug_line    0x00007768      0xaf9 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
- .debug_line    0x00008261     0x2031 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
- .debug_line    0x0000a292     0x1244 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
- .debug_line    0x0000b4d6     0x212e C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
- .debug_line    0x0000d604      0x1f0 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
- .debug_line    0x0000d7f4      0x269 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
- .debug_line    0x0000da5d      0x3f6 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
- .debug_line    0x0000de53      0x3c0 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
- .debug_line    0x0000e213       0x3f C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clz.o)
- .debug_line    0x0000e252      0x11d C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
+.debug_line     0x00000000     0xe401
+ .debug_line    0x00000000     0x6be1 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .debug_line    0x00006be1       0x76 C:\Users\Andy\AppData\Local\Temp\cchwHGBR.debug.temp.o
+ .debug_line    0x00006c57       0xad C:\Users\Andy\AppData\Local\Temp\ccArxumd.debug.temp.o
+ .debug_line    0x00006d04      0xaf6 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
+ .debug_line    0x000077fa      0xaf9 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
+ .debug_line    0x000082f3     0x2031 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
+ .debug_line    0x0000a324     0x1244 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
+ .debug_line    0x0000b568     0x212e C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
+ .debug_line    0x0000d696      0x1f0 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
+ .debug_line    0x0000d886      0x269 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
+ .debug_line    0x0000daef      0x3f6 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
+ .debug_line    0x0000dee5      0x3c0 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
+ .debug_line    0x0000e2a5       0x3f C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clz.o)
+ .debug_line    0x0000e2e4      0x11d C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
 
-.debug_str      0x00000000     0x1dfc
- .debug_str     0x00000000     0x1dfc C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+.debug_str      0x00000000     0x1dfb
+ .debug_str     0x00000000     0x1dfb C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
                                 0x1d4 (size before relaxing)
- .debug_str     0x00001dfc      0x6ea C:\Users\Andy\AppData\Local\Temp\ccxcAqPy.debug.temp.o
- .debug_str     0x00001dfc     0x1274 C:\Users\Andy\AppData\Local\Temp\cc8IvH0t.debug.temp.o
- .debug_str     0x00001dfc      0x284 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
- .debug_str     0x00001dfc      0x284 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
- .debug_str     0x00001dfc      0x2bf C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
- .debug_str     0x00001dfc      0x3d9 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
- .debug_str     0x00001dfc      0x2bf C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
- .debug_str     0x00001dfc      0x1cc C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
- .debug_str     0x00001dfc      0x269 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
- .debug_str     0x00001dfc      0x1d9 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
- .debug_str     0x00001dfc      0x24a C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
- .debug_str     0x00001dfc      0x1d2 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clz.o)
- .debug_str     0x00001dfc      0x1ef C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
+ .debug_str     0x00001dfb      0x6ea C:\Users\Andy\AppData\Local\Temp\cchwHGBR.debug.temp.o
+ .debug_str     0x00001dfb     0x1273 C:\Users\Andy\AppData\Local\Temp\ccArxumd.debug.temp.o
+ .debug_str     0x00001dfb      0x284 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
+ .debug_str     0x00001dfb      0x284 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_moddi3.o)
+ .debug_str     0x00001dfb      0x2bf C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
+ .debug_str     0x00001dfb      0x3d9 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
+ .debug_str     0x00001dfb      0x2bf C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
+ .debug_str     0x00001dfb      0x1cc C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
+ .debug_str     0x00001dfb      0x269 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
+ .debug_str     0x00001dfb      0x1d9 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
+ .debug_str     0x00001dfb      0x24a C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
+ .debug_str     0x00001dfb      0x1d2 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clz.o)
+ .debug_str     0x00001dfb      0x1ef C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
 
 .debug_line_str
                 0x00000000      0x8ad
  .debug_line_str
-                0x00000000      0x8ad C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
+                0x00000000      0x8ad C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
                                 0x1a6 (size before relaxing)
  .debug_line_str
-                0x000008ad      0x233 C:\Users\Andy\AppData\Local\Temp\ccxcAqPy.debug.temp.o
+                0x000008ad      0x233 C:\Users\Andy\AppData\Local\Temp\cchwHGBR.debug.temp.o
  .debug_line_str
-                0x000008ad      0x2a5 C:\Users\Andy\AppData\Local\Temp\cc8IvH0t.debug.temp.o
+                0x000008ad      0x2a5 C:\Users\Andy\AppData\Local\Temp\ccArxumd.debug.temp.o
  .debug_line_str
                 0x000008ad      0x24c C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_divdi3.o)
  .debug_line_str
@@ -850,13 +852,13 @@ OUTPUT(firmware.elf elf32-littleriscv)
  .debug_line_str
                 0x000008ad      0x24c C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
 
-.debug_frame    0x00000000      0xaf8
- .debug_frame   0x00000000      0x92c C:\Users\Andy\AppData\Local\Temp\cc7dLqNT.ltrans0.ltrans.o
- .debug_frame   0x0000092c       0x4c C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
- .debug_frame   0x00000978       0x60 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
- .debug_frame   0x000009d8       0x48 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
- .debug_frame   0x00000a20       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
- .debug_frame   0x00000a40       0x40 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
- .debug_frame   0x00000a80       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
- .debug_frame   0x00000aa0       0x38 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
- .debug_frame   0x00000ad8       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
+.debug_frame    0x00000000      0xb30
+ .debug_frame   0x00000000      0x964 C:\Users\Andy\AppData\Local\Temp\cc7vDGUk.ltrans0.ltrans.o
+ .debug_frame   0x00000964       0x4c C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(adddf3.o)
+ .debug_frame   0x000009b0       0x60 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(muldf3.o)
+ .debug_frame   0x00000a10       0x48 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(subdf3.o)
+ .debug_frame   0x00000a58       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(fixdfsi.o)
+ .debug_frame   0x00000a78       0x40 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsidf.o)
+ .debug_frame   0x00000ab8       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(gesf2.o)
+ .debug_frame   0x00000ad8       0x38 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(floatsisf.o)
+ .debug_frame   0x00000b10       0x20 C:/Users/Andy/AppData/Local/xpack-riscv-none-elf-gcc/14.2.0-3/bin/../lib/gcc/riscv-none-elf/14.2.0\libgcc.a(_clzsi2.o)
