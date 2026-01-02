@@ -31,7 +31,7 @@ void * game;
 #include "mode_puffer.h"
 
 // Include name of mode here.
-const char * gameModes[] = { "Menu", "Example", "Test", "Pass the Puffer" };
+const char * gameModes[] = { "Menu", "Example", "Test", "Puffer Pass" };
 
 #include "mode_menu.h"
 
