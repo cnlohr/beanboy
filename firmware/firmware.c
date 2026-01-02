@@ -85,7 +85,7 @@ int main()
 
 	game = &gameUnion.template;
 
-	SelectMode( 0 ); // Menu mode
+	SelectMode( 2 ); // Menu mode NOCHECKIN
 
 	uint32_t lastClickedMask = 0;
 	while(1)
