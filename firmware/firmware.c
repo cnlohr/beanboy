@@ -109,6 +109,7 @@ int main()
 
 		unsigned now = SysTick->CNT;
 		unsigned deltaUS = (now - lastStart)/48; // Wacky math to make sure we don't lose microseconds.
+		//printf("%d,%d,%d\n",now,lastStart,deltaUS);
 		if( gameUnion.template.Update )
 		{
 			gameUnion.template.Update( &gameUnion, deltaUS, pressures, clickedMask, lastClickedMask );

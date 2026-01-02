@@ -6,14 +6,16 @@ typedef struct ModePuffer_t
 	UpdateFunction Update;
 	WirelessRXFunction WirelessRX;
 
+	
     int16_t frameNum;
-	int64_t curTime;
+	uint32_t spriteTime;
     int16_t popNum;
     int16_t curPoke;
+	int16_t displayAdd;
 } ModePuffer;
 
-static const int64_t TimePerTick = 20000; 
-static const int64_t TicksPerLoop = 32;
+static const uint32_t TimePerTick = 85000; 
+static const uint32_t TicksPerLoop = 21;
 static const int16_t SinStepsPerFrame = 5; //This number should be coprime with ticksperloop if it's not itself prime
 static const int16_t imageOffset = 12; //Fish Images are 90 pixels square, so the coordinate we want it drawn on is 45 pixels right and down from where we actually need to draw it
 static const char* NewGameText1 = "-Press R to";
@@ -33,13 +35,13 @@ void ModePufferWirelessRX( uint8_t * txmac, uint8_t * message, int messageLength
 }
 
 int getNewPufferPokes(){
-	return ((rand() % 35) + 4);
+	return ((rand() % 35) + 20);
 }
 int getRandExtraPokes(){
-	return (rand() % 7);
+	return (rand() % 5) + 10;
 }
 
-double badSin(int degrees){
+int badSin(int degrees){
 	//0 returns 1
 	//90 returns 0
 	//180 returns -1
@@ -54,20 +56,26 @@ double badSin(int degrees){
 
 void ModePufferLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32_t clickedMask, uint32_t lastClickMask )
 {
+	
 	ModePuffer * m = (ModePuffer *)mode;
 	uint32_t newClickedMask = (clickedMask & ( clickedMask ^ lastClickMask ) );
     ssd1306_setbuf(0x00); // Clear screen
-
+	
 	if(m->curPoke < m->popNum){
 		//Only update frame information if the game is still playing
-		m->curTime += deltaTime;
-		m->frameNum += (int)(m->curTime / TimePerTick);
-		m->curTime = m->curTime % TimePerTick;
-		m->curPoke += (int)(m->frameNum / TicksPerLoop);
-		m->frameNum = m->frameNum % TicksPerLoop;
+		m->spriteTime += deltaTime;
+		while(m->spriteTime > TimePerTick){
+			m->spriteTime -= TimePerTick;
+			m->frameNum++;
+		}
+		while(m->frameNum > TicksPerLoop){
+			m->frameNum -= TicksPerLoop;
+			m->curPoke++;
+		}
+		//printf("%d,%d\n",m->spriteTime,deltaTime);
 	}
-    
-
+	//printf("%d\n",deltaTime);
+	
 	if(newClickedMask & 2){
 		//Pressed the button
 		m->curPoke++;
@@ -76,10 +84,11 @@ void ModePufferLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint
 		//Reset the game
 		m->curPoke = 0;
 		m->frameNum = 0;
-		m->curTime = 0;
+		m->spriteTime = 0;
 		m->popNum = getNewPufferPokes();
+		m->displayAdd = getRandExtraPokes();
 	}
-
+	
     if(m->popNum == 0){
 		ssd1306_drawstr_sz(5,0,TitleText,1,1);
 		ssd1306_drawstr_sz(0,20,Instructions1,1,1);
@@ -93,30 +102,22 @@ void ModePufferLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint
 		ssd1306_drawstr_sz(0,72,NewGameText2,1,1);
 	}else{
 		int radialSteps = (m->frameNum * SinStepsPerFrame) % TicksPerLoop;
-		int sinDegrees = radialSteps * 360 / TicksPerLoop;
+		int sinDegrees = radialSteps * 360  / TicksPerLoop;
 		int cosDegrees = (sinDegrees + 90) % 360;
-		float displayedPokes = (m->curPoke + getRandExtraPokes())/m->popNum;
+		int displayedPokes = (m->curPoke + m->displayAdd)*100/m->popNum;
+		//printf("%d\n",displayedPokes);
 		//render the fish during the game
-		if(  displayedPokes  >  0.9f  ){
-			RenderBSprite(&fish2, 34+29*badSin(sinDegrees)-imageOffset,34+29*badSin(cosDegrees)-imageOffset);
-		}else if(  displayedPokes  >  0.65f  ){
-			RenderBSprite(&fish1, 34+17*badSin(sinDegrees)-imageOffset,34+17*badSin(cosDegrees)-imageOffset);
-		}else if(  displayedPokes  >  0.3f  ){
-			RenderBSprite(&fish0, 34+5*badSin(sinDegrees)-imageOffset,34+5*badSin(cosDegrees)-imageOffset);
+		if(  displayedPokes  >  90  ){
+			RenderBSprite(&fish2, 64+24*badSin(sinDegrees)-imageOffset,64+28*badSin(cosDegrees)-imageOffset);
+		}else if(  displayedPokes  >  65  ){
+			RenderBSprite(&fish1, 64+17*badSin(sinDegrees)-imageOffset,64+17*badSin(cosDegrees)-imageOffset);
+		}else if(  displayedPokes  >  30  ){
+			RenderBSprite(&fish0, 64+5*badSin(sinDegrees)-imageOffset,64+5*badSin(cosDegrees)-imageOffset);
 		}else{
-			RenderBSprite(&fish0, 34-imageOffset,34-imageOffset);
+			RenderBSprite(&fish0, 64-imageOffset,64-imageOffset);
 		}
 
-		char st[128];
-		//sprintf( st, "%d", m->frameNum );
-		//ssd1306_drawstr_sz(0, 60, st, 1, 2 );
-		sprintf( st, "%d", m->curPoke );
-		ssd1306_drawstr_sz(0, 80, st, 1, 2 );
-		sprintf( st, "%d", m->popNum );
-		ssd1306_drawstr_sz(0, 100, st, 1, 2 );
 	}
-    
-	
 	
 	ssd1306_refresh();
 }
@@ -131,8 +132,11 @@ void EnterPufferMode( ModePuffer * m )
 
     m->popNum = 0;
     m->curPoke = 0;
-	m->curTime = 0;
+	m->spriteTime = 0;
 	m->frameNum = 0;
+	m->displayAdd = 0;
+
+	seed(frameentropy);
 }
 
 #endif
