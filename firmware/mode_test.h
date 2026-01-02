@@ -81,7 +81,7 @@ void CoreLoop()
 
 	uint32_t cimutag;
 	uint32_t cimudat;
-	int16_t cimu[3];
+	int16_t cimu[3] = { 0 };
 
 	unsigned nextdeadline = SysTick->CNT;
 	void * nextjump = &&lsm6_getcimu;
@@ -158,10 +158,10 @@ void CoreLoop()
 		cimutag >>= 3;
 		if( cimutag == 1 )
 		{
-			static int32_t ctot = 0;
-			static uint32_t last_time;
+			//static int32_t ctot = 0;
+			//static uint32_t last_time;
 			//ctot += cimu[2];
-			uint32_t now = SysTick->CNT;
+			//uint32_t now = SysTick->CNT;
 			//printf( "%d\n", now );
 			//printf( "%d\n", now - last_time );
 			//last_time = now;
@@ -180,7 +180,7 @@ void CoreLoop()
 		}
 		else
 		{
-			printf( "Confusing tag: %d\n", cimutag );
+			printf( "Confusing tag: %d\n", (int)cimutag );
 		}
 		nextjump = &&lsm6_process;
 		goto cont;

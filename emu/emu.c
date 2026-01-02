@@ -2,6 +2,13 @@
 #include <string.h>
 #include <stdarg.h>
 
+#ifdef WIN32
+#include <winsock2.h>
+#include <windows.h>
+#include <winsock.h>
+#include <iphlpapi.h>
+#endif
+
 #include "os_generic.h"
 #include "emu_ch570.h"
 
@@ -161,7 +168,16 @@ int main( int argc, char ** argv )
 	}
 	fclose( f );
 	ch570WriteMemory( firmware, len, 0x00000000 );
-	ch570Resume();	
+	ch570Resume();
+
+	// Set MAC (unique for each instance)
+	srand( (uint32_t)OGGetAbsoluteTime() );
+	ch570flash[0x0003f018] = ((rand()) & (~1)) | 2;
+	ch570flash[0x0003f019] = rand();
+	ch570flash[0x0003f01a] = rand();
+	ch570flash[0x0003f01b] = rand();
+	ch570flash[0x0003f01c] = rand();
+	ch570flash[0x0003f01d] = rand();
 
 	ch570thread = OGCreateThread( core_execution, 0 );
 

@@ -487,11 +487,285 @@ static uint32_t STK_CTLR;
 static uint32_t STK_ZERO;
 static uint32_t DMDATA[2];
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Radio
+
+uint32_t radioBufferInRAMAddress = 0;
+
+#define BEANBOYPORT 4269
+
+#ifdef WIN32
+#define MSG_NOSIGNAL 0	
+
+// convert a string represenation of an IP address into its numeric equivalent
+static uint32_t Inet_AtoN(const char * buf)
+{
+   // net_server inexplicably doesn't have this function; so I'll just fake it
+   uint32_t ret = 0;
+   int shift = 24;  // fill out the MSB first
+   int startQuad = 1;
+   while((shift >= 0)&&(*buf))
+   {
+      if (startQuad)
+      {
+         unsigned char quad = (unsigned char) atoi(buf);
+         ret |= (((uint32_t)quad) << shift);
+         shift -= 8;
+      }
+      startQuad = (*buf == '.');
+      buf++;
+   }
+   return ret;
+}
+
+#else
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <net/if.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <ifaddrs.h>
+#include <poll.h>
+
+static uint32_t SockAddrToUint32(struct sockaddr * a)
+{
+   return ((a)&&(a->sa_family == AF_INET)) ? ntohl(((struct sockaddr_in *)a)->sin_addr.s_addr) : 0;
+}
+#endif
+
+int emusock = 0;
+
+void CheckSock()
+{
+	if( emusock )
+	{
+		return;
+	}
+
+#ifdef WIN32
+	WSADATA wd;
+	int r = WSAStartup( 0x0202, &wd );
+#endif
+
+	int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+	if( sockfd < 0 )
+	{
+		fprintf( stderr, "Error: can't create socket (%d)\n", sockfd );
+		exit( -6 );
+    }
+
+	int opt = 1;
+	if( setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, (const char*)&opt, sizeof(opt)))
+	{
+        fprintf( stderr, "Error: can't SO_BROADCAST setsockopt.\n" );
+        exit( -9 );
+    }
+
+	if( setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt , sizeof(opt)))
+	{
+        fprintf( stderr, "Error: can't SO_REUSEADDR setsockopt.\n" );
+        exit( -9 );
+	}
+
+	// Optionally.
+	#ifndef WIN32
+		setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, (const char*)&opt , sizeof(opt));
+	#endif
+
+	struct sockaddr_in serveraddr = { 0 };
+	serveraddr.sin_family = AF_INET;
+	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serveraddr.sin_port = htons((unsigned short)BEANBOYPORT);
+
+	if (bind(sockfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0)
+	{
+        fprintf( stderr, "Error: can't bind.\n" );
+        exit( -9 );
+	}
+
+	#ifdef WIN32
+		DWORD timeout = 0 * 1000;
+		setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof timeout);
+	#else
+		struct timeval tv;
+		tv.tv_sec = 0;
+		tv.tv_usec = 0;
+		setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
+	#endif
+
+
+	emusock = sockfd;
+}
+
+int DidRadioRX()
+{
+	uint32_t rpt = radioBufferInRAMAddress;
+	if( rpt - 0x20000000 < 0 || rpt - 0x20000000 > RAM_SIZE - 0x110 ) return 0;
+
+	CheckSock();
+	uint8_t * regptr = (rpt - 0x20000000) + ch570ram;
+#ifdef WIN32
+	WSAPOLLFD fds = { .fd = emusock, .events = POLLIN };
+	int ep = WSAPoll( &fds, 1, 0 );
+#else
+	struct pollfd fds = { .fd = emusock, .events = POLLIN };
+	int ep = poll( &fds, 1, 0);
+#endif
+
+	if( ep == -1 || fds.revents == 0 ) return 0;
+
+	int r = recv( emusock, regptr, 256, MSG_NOSIGNAL );
+
+	return !!r;
+}
+
+void RadioAckRX()
+{
+	uint32_t rpt = radioBufferInRAMAddress;
+	if( rpt - 0x20000000 < 0 || rpt - 0x20000000 > RAM_SIZE - 0x110 ) return;
+
+	uint8_t * regptr = (rpt - 0x20000000) + ch570ram;
+
+	regptr[1] = 0;
+	regptr[0] = 0;
+}
+
+void RadioTX( uint8_t * tx )
+{
+	CheckSock();
+
+	// Cause random failures.
+	if( (rand()%10) == 0 ) return;
+
+	// From https://stackoverflow.com/a/683707/2926815
+#if defined(WIN32)
+		// Windows XP style implementation
+
+		// Adapted from example code at http://msdn2.microsoft.com/en-us/library/aa365917.aspx
+		// Now get Windows' IPv4 addresses table.  Once again, we gotta call GetIpAddrTable()
+		// multiple times in order to deal with potential race conditions properly.
+		MIB_IPADDRTABLE * ipTable = NULL;
+		{
+			ULONG bufLen = 0;
+			for (int i=0; i<5; i++)
+			{
+				DWORD ipRet = GetIpAddrTable(ipTable, &bufLen, 0);
+				if (ipRet == ERROR_INSUFFICIENT_BUFFER)
+				{
+					free(ipTable);  // in case we had previously allocated it
+					ipTable = (MIB_IPADDRTABLE *) malloc(bufLen);
+				}
+				else if (ipRet == NO_ERROR) break;
+				else
+				{
+					free(ipTable);
+					ipTable = NULL;
+					break;
+				}
+			}
+		}
+
+		if (ipTable)
+		{
+			// Try to get the Adapters-info table, so we can given useful names to the IP
+			// addresses we are returning.  Gotta call GetAdaptersInfo() up to 5 times to handle
+			// the potential race condition between the size-query call and the get-data call.
+			// I love a well-designed API :^P
+			IP_ADAPTER_INFO * pAdapterInfo = NULL;
+			{
+				ULONG bufLen = 0;
+				for (int i=0; i<5; i++)
+				{
+					DWORD apRet = GetAdaptersInfo(pAdapterInfo, &bufLen);
+					if (apRet == ERROR_BUFFER_OVERFLOW)
+					{
+						free(pAdapterInfo);  // in case we had previously allocated it
+						pAdapterInfo = (IP_ADAPTER_INFO *) malloc(bufLen);
+					}
+					else if (apRet == ERROR_SUCCESS) break;
+					else
+					{
+						free(pAdapterInfo);
+						pAdapterInfo = NULL;
+						break;
+					}
+				}
+			}
+
+			for (DWORD i=0; i<ipTable->dwNumEntries; i++)
+			{
+				const MIB_IPADDRROW * row = &ipTable->table[i];
+
+				// Now lookup the appropriate adaptor-name in the pAdaptorInfos, if we can find it
+				const char * name = NULL;
+				const char * desc = NULL;
+				if (pAdapterInfo)
+				{
+					IP_ADAPTER_INFO * next = pAdapterInfo;
+					while((next)&&(name==NULL))
+					{
+						IP_ADDR_STRING * ipAddr = &next->IpAddressList;
+						while(ipAddr)
+						{
+							if (Inet_AtoN(ipAddr->IpAddress.String) == ntohl(row->dwAddr))
+							{
+								name = next->AdapterName;
+								desc = next->Description;
+								break;
+							}
+							ipAddr = ipAddr->Next;
+						}
+						next = next->Next;
+					}
+				}
+				char buf[128];
+				if (name == NULL)
+				{
+					sprintf(buf, "unnamed-%i", i);
+					name = buf;
+				}
+
+				struct sockaddr_in dest = { 0 };
+				dest.sin_family = AF_INET;
+				dest.sin_addr.s_addr = row->dwAddr;
+				dest.sin_port = htons((unsigned short)BEANBOYPORT);
+
+				sendto( emusock, tx, tx[1], MSG_NOSIGNAL, (struct sockaddr*) &dest, sizeof(dest) );
+			}
+
+			free(pAdapterInfo);
+			free(ipTable);
+		}
+#else
+
+	// BSD-style implementation
+	struct ifaddrs * ifap;
+	if (getifaddrs(&ifap) == 0)
+	{
+		struct ifaddrs * p = ifap;
+		while(p)
+		{
+			struct sockaddr_in dest = { 0 };
+			dest.sin_family = AF_INET;
+			dest.sin_addr = ((struct sockaddr_in *)p->ifa_addr)->sin_addr;
+			dest.sin_port = htons((unsigned short)BEANBOYPORT);
+
+			//printf( "SEND: %d\n", 
+			sendto( emusock, tx, tx[1], MSG_NOSIGNAL, (struct sockaddr*) &dest, sizeof(dest) );
+
+			p = p->ifa_next;
+		}
+		freeifaddrs(ifap);
+	}
+
+#endif
+}
+
 uint32_t GetSTK()
 {
 	double dt = OGGetAbsoluteTime();
 //	if (STK_CTLR & 2)
-		dt *= 48000000;
+		dt *= 44500000;
 //	else
 //		dt *= 6000000;
 	return ((uint32_t)dt) - STK_ZERO;
@@ -614,6 +888,28 @@ static int CHPLoad(uint32_t address, uint32_t* regret, int size)
 	else if( address >= 0x4000c000 && address <= 0x4000e000 )
 	{
 		// radio.
+		if( address == 0x4000c14c ) // BB->BB19
+		{
+			//LLE_BUF
+			*regret = DidRadioRX();
+		}
+		else if( address == 0x4000c27c ) // LL->RXBUF
+		{
+			*regret = radioBufferInRAMAddress;
+		}
+		else
+		{
+			*regret  = 0;
+		}
+	}
+	else if( address == 0xe000e053 )
+	{
+		// Interrupt stuff.
+		*regret  = 0;
+	}
+	else if( address == 0xe000e415 )
+	{
+		// Interrupt stuff.
 		*regret  = 0;
 	}
 	else if (address >= 0x40000000 && address < 0x50000000)
@@ -787,6 +1083,36 @@ static int CHPStore(uint32_t address, uint32_t regset, int size)
 	else if( address >= 0x4000c000 && address <= 0x4000e000 )
 	{
 		// radio.
+		if( address == 0x4000c14c ) // BB->BB19
+		{
+			//LLE_BUF
+			RadioAckRX();
+		}
+		else if( address == 0x4000c27c ) // LL->RXBUF
+		{
+			radioBufferInRAMAddress = regset;
+		}
+		else if( address == 0x4000c278 ) // LL->TXBUF
+		{
+			// TX
+			if( regset - 0x20000000 < 0 || regset - 0x20000000 > RAM_SIZE - 0x110 )
+			{
+				// Invalid
+			}
+			else
+			{
+				uint8_t * regptr = (regset - 0x20000000) + ch570ram;
+				RadioTX( regptr );
+			}
+		}
+	}
+	else if( address == 0xe000e053 )
+	{
+		// Interrupt stuff.
+	}
+	else if( address == 0xe000e415 )
+	{
+		// Interrupt stuff.
 	}
 	else if (address >= 0x40000000 && address < 0x50000000)
 	{
