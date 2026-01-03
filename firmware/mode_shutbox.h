@@ -13,6 +13,8 @@ typedef struct ModeShut_t
 	int selected;
 
 	int gameState;
+
+	uint64_t animTimer;
 } ModeShut;
 
 static const int shutterWidth = 22;
@@ -22,8 +24,16 @@ static const int closedShutterHeight = 22;
 
 static const char* deathText1 = "Game Over!";
 static const char* deathText2 = "Your Score:";
-static const char* deathText3 = "-Press R to";
-static const char* deathText4 = " play again!";
+static const char* deathText3 = "R to Restart";
+static const char* deathText4 = "L to Leave";
+
+static const char* winText1 = "You Shut";
+static const char* winText1_2 = "the Box!";
+static const char* winText2 = "C to Continue";
+static const int   boxStaticTime = 60000;
+static const int   boxMovingTime = 1250000;
+static const int   boxMovePixels = 27;
+
 
 int rollDice(){
 	//more instructions but also more realistic!
@@ -86,6 +96,7 @@ void ModeShutLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 					memset(m->shutters, 0, sizeof(int)*10);
 					m->remainingRoll = rollDice();
 					m->selected = 0;
+					m->gameState = 2;
 				}
 				//Check if we need to reroll
 				if(m->remainingRoll == 0){
@@ -103,6 +114,7 @@ void ModeShutLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 			}
 
 			//draw screen
+			if(m->gameState != 0){break;}//Cancels out a flash frame of drawing the empty board before the box on hardware
 			for(int x=0; x<5; x++){
 				for(int y=0; y<2; y++){
 					if(m->shutters[x+y*5]==0){
@@ -133,14 +145,14 @@ void ModeShutLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 			break;
 
 		case 1:
-			ssd1306_drawstr_sz(10,10,deathText1,1,1);
-			ssd1306_drawstr_sz(10,22,deathText2,1,1);
+			ssd1306_drawstr_sz(24,10,deathText1,1,1);
+			ssd1306_drawstr_sz(20,22,deathText2,1,1);
 
-			sprintf(t,"%d",m->score);
-			ssd1306_drawstr_sz(20,43,t,1,3);
+			sprintf(t,"%3d",m->score);
+			ssd1306_drawstr_sz(30,48,t,1,3);
 
-			ssd1306_drawstr_sz(10,90,deathText3,1,1);
-			ssd1306_drawstr_sz(10,102,deathText4,1,1);
+			ssd1306_drawstr_sz(17,90,deathText3,1,1);
+			ssd1306_drawstr_sz(24,102,deathText4,1,1);
 
 			if(newClickedMask & 4){//Right
 				m->gameState = 0;
@@ -148,7 +160,48 @@ void ModeShutLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 				m->remainingRoll = rollDice();
 				m->selected = 0;
 				m->score=0;
+			}if(newClickedMask & 1){
+				SelectMode(0);
 			}
+			break;
+		case 2:
+			
+			if(m->animTimer <= (boxMovingTime+boxStaticTime)){
+				m->animTimer += deltaTime;
+			}
+
+			if(m->animTimer < boxStaticTime){
+				ssd1306_drawstr_sz(24,3,winText1,1,1);
+				ssd1306_drawstr_sz(44,15,winText1_2,1,1);
+				RenderBSprite(&closed_box, 0, 16+openShutterHeight-closedShutterHeight);
+			}else if(m->animTimer < (boxStaticTime + boxMovingTime)){
+				int movePix = boxMovePixels * (m->animTimer-boxStaticTime) / boxMovingTime;
+				ssd1306_drawstr_sz(24,3,winText1,1,1);
+				ssd1306_drawstr_sz(44,15,winText1_2,1,1);
+				RenderBSprite(&closed_box, 0, 16+openShutterHeight-closedShutterHeight+movePix);
+			}else{
+				//The box is shut, display the happy box
+				ssd1306_drawstr_sz(24,3,winText1,1,1);
+				ssd1306_drawstr_sz(44,15,winText1_2,1,1);
+				ssd1306_drawstr_sz(3,28,deathText3,1,1);
+				ssd1306_drawstr_sz(3,40,deathText4,1,1);
+				ssd1306_drawstr_sz(3,52,winText2,1,1);
+				RenderBSprite(&closed_box, 0, 16+openShutterHeight-closedShutterHeight+boxMovePixels);
+			}
+			
+			//ssd1306_drawstr_sz(3,3,winText1,1,1);
+
+			if(newClickedMask&2){//Any button to continue
+				m->gameState = 0;
+				m->animTimer = 0;
+			}else if(newClickedMask&4){
+				m->score = 0;
+				m->gameState = 0;
+				m->animTimer = 0;
+			}else if(newClickedMask & 1){
+				SelectMode(0);
+			}
+			
 			break;
 	}
 	
@@ -168,6 +221,11 @@ void EnterShutMode( ModeShut * m )
 	m->score = 0;
 	m->selected = 0;
 	m->remainingRoll = rollDice();
+	m->animTimer = 0;
+	/*
+	for(int i=2; i<10; i++){
+		m->shutters[i] = 1;
+	}*/
 }
 
 #endif
