@@ -3,7 +3,8 @@
 #ifndef _MODE_TEST_H
 #define _MODE_TEST_H
 
-#include "test/bunny.c"
+#include "test/bunny.h"
+#include "test/bean.h"
 
 typedef struct ModeTest_t
 {
@@ -375,6 +376,8 @@ void CoreLoop()
 	uint32_t cimutag;
 	uint32_t cimudat;
 	int16_t cimu[3] = { 0 };
+	int32_t dispPixel[3] = { 0, 0, 0 };
+
 
 	// IMU (updates)
 	int32_t currentQuat[4] = { 1<<30, 0, 0, 0 };
@@ -407,6 +410,10 @@ void CoreLoop()
 			R8_SPI0_FIFO = 0xd9;
 			R8_SPI0_FIFO = 0x11;
 
+
+			const uint8_t * indices3d;
+			const int16_t * vertices3d;
+
 			// We've loaded up the point, now, figure out the next one.
 			if( 0 )
 			{
@@ -417,42 +424,69 @@ void CoreLoop()
 			{
 				static int percent_on_line;
 				static int lineid;
+				int totalLines = 0;
 
-				const int bunnylines = (sizeof(bunny_lines)/sizeof(bunny_lines[0])/2);
 				if( 0 )
 				{
+					totalLines = (sizeof(bunny_lines)/sizeof(bunny_lines[0])/2);
+					indices3d = bunny_lines;
+					vertices3d = bunny_verts;
+
 					_rand_lfsr_update();
-					lineid = _rand_lfsr%bunnylines;
+					lineid = _rand_lfsr%totalLines;
+					_rand_lfsr_update();
+					percent_on_line = _rand_lfsr & 0xffff;
+				}
+				else if( 1 )
+				{
+					totalLines = (sizeof(bean_lines)/sizeof(bean_lines[0])/2);
+					indices3d = bean_lines;
+					vertices3d = bean_verts;
+
+					_rand_lfsr_update();
+					lineid = _rand_lfsr%totalLines;
 					_rand_lfsr_update();
 					percent_on_line = _rand_lfsr & 0xffff;
 				}
 				else
 				{
-					percent_on_line+=4829;
-					if( percent_on_line >= 65536 )
+					totalLines = (sizeof(bunny_lines)/sizeof(bunny_lines[0])/2);
+					indices3d = bunny_lines;
+					vertices3d = bunny_verts;
+
+					int zspeed = 30000000/((-dispPixel[2]>>10));
+					if( zspeed < 4000 ) zspeed = 4000;
+					if( zspeed > 65534 ) zspeed = 65534;
+					percent_on_line+= zspeed;
+					if( percent_on_line >= 65536 ||- dispPixel[2] < 0  )
 					{
 						percent_on_line -= 65536;
+						if( percent_on_line < 0 ) percent_on_line = 0;
+						if( percent_on_line > 65535 ) percent_on_line = 65535;
+
 						if( 0 )
 						{
 							_rand_lfsr_update();
-							lineid = _rand_lfsr%bunnylines;
+							lineid = _rand_lfsr%totalLines;
 						}
 						else
 						{
 							lineid++;
-							if( lineid == 22 ) lineid = 0;
+							if( lineid == totalLines ) lineid = 0;
 						}
 					}
 				}
 
-				int vid0 = bunny_lines[lineid*2+0]*3; // Todo: Optimize!
-				int vid1 = bunny_lines[lineid*2+1]*3;
-				int32_t laX = bunny_verts[vid0+0];
-				int32_t laY = bunny_verts[vid0+1];
-				int32_t laZ = bunny_verts[vid0+2];
-				int32_t lbX = bunny_verts[vid1+0];
-				int32_t lbY = bunny_verts[vid1+1];
-				int32_t lbZ = bunny_verts[vid1+2];
+
+
+				int vid0 = indices3d[lineid*2+0]*3; // Todo: Optimize!
+				int vid1 = indices3d[lineid*2+1]*3;
+				int32_t laX = vertices3d[vid0+0];
+				int32_t laY = vertices3d[vid0+1];
+				int32_t laZ = vertices3d[vid0+2];
+				int32_t lbX = vertices3d[vid1+0];
+				int32_t lbY = vertices3d[vid1+1];
+				int32_t lbZ = vertices3d[vid1+2];
 
 				int invpercent = 65535-percent_on_line;
 
@@ -461,15 +495,14 @@ void CoreLoop()
 					(( laY * percent_on_line) + ( lbY * invpercent ))>>8,
 					(( laZ * percent_on_line) + ( lbZ * invpercent ))>>8 };
 
-				int32_t vo[3];
-				RotateVectorByQuaternion_Fix24_rough( vo, objectToWorldQuat, vIn );
+				RotateVectorByQuaternion_Fix24_rough( dispPixel, objectToWorldQuat, vIn );
 
 				// Bunny is rotated in bunny-local coordinates, where
 				// X, Y and Z are all rotated in 3D space, so z = -1..1
 
 
-				x_coord = (vo[0]>>17) + 64;
-				y_coord = (vo[1]>>17) + 64;
+				x_coord = (dispPixel[0]>>17) + 64;
+				y_coord = (dispPixel[1]>>17) + 64;
 			}
 
 			while( R16_SPI0_TOTAL_CNT );
