@@ -26,7 +26,6 @@ void ModeExampleLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uin
 {
 	DoI2C();
 
-	printf( "%d %d %d %d\n", imuViewQuatFix24[0], imuViewQuatFix24[1], imuViewQuatFix24[2], imuViewQuatFix24[3] );
 	int i;
 	ModeExample * m = (ModeExample *)mode;
  
