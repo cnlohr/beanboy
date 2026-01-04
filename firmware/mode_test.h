@@ -89,7 +89,7 @@ void SlowGameCheck()
 
 		if( tbtn == 0 && !wasdown && nowdown )
 		{
-			testMode->animationType = (testMode->animationType+1)&3;
+			testMode->animationType = (testMode->animationType+1)&7;
 		}
 	}
 	fastgamestate = ( fastgamestate + 1 ) & 0x3f;
@@ -151,20 +151,18 @@ void CoreLoop()
 			funDigitalWrite( SSD1306_DC_PIN, FUN_LOW );
 			funDigitalWrite( SSD1306_CS_PIN, FUN_LOW );
 
-			R16_SPI0_TOTAL_CNT = 8;
+			R16_SPI0_TOTAL_CNT = 6;
 
-			// TODO: Try other methods to turn off while loading.
-			// Otherwise the display captures the current X and last frame's Y
-			// The D9 method doesn't work super well.
-			R8_SPI0_FIFO = 0xd9;
-			R8_SPI0_FIFO = 0x0f;
+			// Blank, so if we get a race condition we don't draw an errant pixel.
+			R8_SPI0_FIFO = 0xdc;
+			R8_SPI0_FIFO = 0;
+
 			R8_SPI0_FIFO = 0xd3;
 			if( (unsigned)(x_coord) > 127 || ((unsigned)(y_coord) > 127 ) ) y_coord = 0; // OOB = blackout
 			R8_SPI0_FIFO = x_coord;
 			R8_SPI0_FIFO = 0xdc;
 			R8_SPI0_FIFO = y_coord;
-			R8_SPI0_FIFO = 0xd9;
-			R8_SPI0_FIFO = 0x11;
+
 
 			const uint8_t * indices3d;
 			const int16_t * vertices3d;
@@ -202,7 +200,7 @@ void CoreLoop()
 				}*/
 
 				int at = testMode->animationType;
-				switch( at )
+				switch( at & 3 )
 				{
 				case 0:
 					_rand_lfsr_update();
@@ -297,7 +295,8 @@ void CoreLoop()
 				y_coord = -wypos + 64;
 
 				// Make sparkley effect.
-				if( ((SysTick->CNT>>8) & 0x3f) < 3 ) skip = (SysTick->CNT & 0xf) ;
+				if( ! ( testMode->animationType & 0x4 ) )
+					if( ((SysTick->CNT>>8) & 0x3f) < 2 ) skip = (SysTick->CNT & 0xf) ;
 			}
 
 			while( R16_SPI0_TOTAL_CNT );
@@ -307,7 +306,7 @@ void CoreLoop()
 		pixelNumber++;
 		if( !nextjump )
 		{
-			nextjump = cimudat ? &&base_loop_logic : &&lsm6_getcimu;
+			nextjump = cimudat ? &&lsm6_getcimu : &&base_loop_logic;
 		}
 		goto *nextjump;
 
