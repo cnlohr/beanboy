@@ -144,9 +144,9 @@ void CoreLoop()
 				}
 				else
 				{
-					int32_t relz = -dispPixel[2];
+					int32_t relz = -dispPixel[2]+1000000;
 
-					int zspeed = 60000000/((relz>>10)+100);
+					int zspeed = 60000000/((relz>>10));
 
 					if( zspeed < 3000 ) zspeed = 3000;
 					if( zspeed > 65534 ) zspeed = 65534;
@@ -210,8 +210,8 @@ void CoreLoop()
 				x_coord =  wxpos + 64;
 				y_coord = -wypos + 64;
 
-				// MAke sparkley effect.
-				if( (SysTick->CNT & 0x3f) < 3 ) skip = (SysTick->CNT & 0xf) ;
+				// Make sparkley effect.
+				if( ((SysTick->CNT>>8) & 0x3f) < 3 ) skip = (SysTick->CNT & 0xf) ;
 			}
 
 			while( R16_SPI0_TOTAL_CNT );
@@ -224,36 +224,41 @@ void CoreLoop()
 	base_loop_logic:
 	{
 		// This can take a while, it's all fine.   This happens when we have free time.
+		// TODO: Make this only happen every so often.
 
 		//////////////////////////////////////////////////////////////////////////
 		// Push the square wave towards the user.
 
+		if( (int32_t)(SysTick->CNT - logicTickNext) > 0 )
+		{
 
-		int32_t unrotated[3] = { 0, 0, 1<<24 };
-		int32_t rotated[3];
-		int32_t rotatedFinal[3];
-		RotateVectorByQuaternion_Fix24_rough( rotated, objectQuatx24, unrotated );
-		RotateVectorByQuaternion_Fix24_rough( rotated, viewQuatx24,   rotated );
+			logicTickNext += 400000;
 
-		// Ideal rotation = rotated[x] = -2^16.
-		// nudge objectQuat left and right based on the value of [z] being > or < 0.
+			int32_t unrotated[3] = { 0, 0, 1<<24 };
+			int32_t rotated[3];
+			int32_t rotatedFinal[3];
+			RotateVectorByQuaternion_Fix24_rough( rotated, objectQuatx24, unrotated );
+			RotateVectorByQuaternion_Fix24_rough( rotated, viewQuatx24,   rotated );
 
-		// Cross between ideal and what we have.
-		int32_t dragcenter[4] = { 0, 0, 0, 0 };
+			// Ideal rotation = rotated[x] = -2^16.
+			// nudge objectQuat left and right based on the value of [z] being > or < 0.
 
-		//CrossProduct_Fix24( dragcenter + 1, ideal, rotated );
-		// Because we are only rotating around Y all we need is the Y component of the corrective amount.
-		dragcenter[2] = rotated[2];
+			// Cross between ideal and what we have.
+			int32_t dragcenter[4] = { 0, 0, 0, 0 };
 
-		// Don't yank.
-		dragcenter[2] >>= 8;
+			//CrossProduct_Fix24( dragcenter + 1, ideal, rotated );
+			// Because we are only rotating around Y all we need is the Y component of the corrective amount.
+			dragcenter[2] = rotated[2];
 
-		// Because we only have one term, normalizing is ez.
-		dragcenter[0] = rsqrtx24_rough((1<<24) - mul2x30(dragcenter[2], dragcenter[2] ));
+			// Don't yank.
+			dragcenter[2] >>= 10;
 
-		QuatApplyQuat_Fix24( objectQuatx24, objectQuatx24, dragcenter );
-		QuatNormalize_Fix24( objectQuatx24, objectQuatx24 );
+			// Because we only have one term, normalizing is ez.
+			dragcenter[0] = rsqrtx24_rough((1<<24) - mul2x30(dragcenter[2], dragcenter[2] ));
 
+			QuatApplyQuat_Fix24( objectQuatx24, objectQuatx24, dragcenter );
+			QuatNormalize_Fix24( objectQuatx24, objectQuatx24 );
+		}
 		nextjump = &&lsm6_getcimu;
 		goto cont;
 	}
@@ -329,7 +334,7 @@ void CoreLoop()
 			funDigitalWrite( PIN_SCL, 1 );
 
 			int32_t eulerAngles[3];
-			const int32_t eulerScale = 15500000;// /8 if running at 1.66kHz instead of 208 Hz
+			const int32_t eulerScale = 15500000*2;// XXX Change me when you change IMU update rate.
 
 			// Step 9: validation.  Make sure your gyroBias = eulerScale * 2^16 * 200,
 			// and in the correct directions and doesn't change as you rotate the system.
@@ -463,9 +468,9 @@ void CoreLoop()
 		//memcpy(correctiveLast, corrective_quaternion + 1, 12);
 
 		//int32_t gyroBiasTug = 1<<8;
-		int32_t correctiveForceTug = 1<<22;
+		int32_t correctiveForceTug = 1<<21;
 		
-		const int gyroBiasForce = 1<<10;
+		const int gyroBiasForce = 1<<9;
 
 		int32_t confidences[3] = {
 			(gyroBiasForce>>3) - dotm_mulhs3( (const int32_t[3]){ gyroBiasForce, 0, 0 }, what_we_think_is_up ),
@@ -485,9 +490,12 @@ void CoreLoop()
 		// Tricky if you take a negative number and >> it, then it will be sticky at -1.
 		// Surely there's a more elegant way of doing this!
 		const int histeresis = 2;
-		if( gbadg[0] < 0 ) { if( gbadg[0] < -histeresis ) gbadg[0] += histeresis; else gbadg[0] = 0; } else { if( gbadg[0] > histeresis ) gbadg[0]-= histeresis;  else gbadg[0] = 0; }
-		if( gbadg[1] < 0 ) { if( gbadg[1] < -histeresis ) gbadg[1] += histeresis; else gbadg[1] = 0; } else { if( gbadg[1] > histeresis ) gbadg[1]-= histeresis;  else gbadg[1] = 0; }
-		if( gbadg[2] < 0 ) { if( gbadg[2] < -histeresis ) gbadg[2] += histeresis; else gbadg[2] = 0; } else { if( gbadg[2] > histeresis ) gbadg[2]-= histeresis;  else gbadg[2] = 0; }
+		if( gbadg[0] < 0 ) { if( gbadg[0] < -histeresis ) gbadg[0] += histeresis; else gbadg[0] = 0; }
+		else { if( gbadg[0] > histeresis ) gbadg[0]-= histeresis;  else gbadg[0] = 0; }
+		if( gbadg[1] < 0 ) { if( gbadg[1] < -histeresis ) gbadg[1] += histeresis; else gbadg[1] = 0; }
+		else { if( gbadg[1] > histeresis ) gbadg[1]-= histeresis;  else gbadg[1] = 0; }
+		if( gbadg[2] < 0 ) { if( gbadg[2] < -histeresis ) gbadg[2] += histeresis; else gbadg[2] = 0; } 
+		else { if( gbadg[2] > histeresis ) gbadg[2]-= histeresis;  else gbadg[2] = 0; }
 
 		gyroBias[0] += gbadg[0];
 		gyroBias[1] += gbadg[1];
@@ -532,7 +540,7 @@ void CoreLoop()
 		RotateVectorByQuaternion_Fix24_rough( rotatedAccel, invq,   accel_up_Fix24 );
 
 		static int32_t averageAccel[3];
-		const int32_t accelGamma = 500000;
+		const int32_t accelGamma = 100000;
 		averageAccel[0] =  mul2x24( averageAccel[0], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[0], accelGamma );
 		averageAccel[1] =  mul2x24( averageAccel[1], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[1], accelGamma );
 		averageAccel[2] =  mul2x24( averageAccel[2], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[2], accelGamma );
@@ -548,9 +556,9 @@ void CoreLoop()
 
 
 		// Gravity
-		dongleVelocity[0] += _mulhs(diffAccel[0], -1500000 );
-		dongleVelocity[1] += _mulhs(diffAccel[1], -1500000 );
-		dongleVelocity[2] += _mulhs(diffAccel[2], -1500000 );
+		dongleVelocity[0] += _mulhs(diffAccel[0], -300000 );
+		dongleVelocity[1] += _mulhs(diffAccel[1], -300000 );
+		dongleVelocity[2] += _mulhs(diffAccel[2], -300000 );
 
 		// Drag
 		dongleVelocity[0] -= _mulhs(dongleVelocity[0], 12000000 );
@@ -628,13 +636,13 @@ void EnterTestMode( ModeTest * m )
 	SendStart();
 	SendByteNoAck( LSM6DS3_ADDRESS<<1 );
 	SendByteNoAck( 0x11 );
-	SendByteNoAck( 0x9d ); // 3.33kHz gyro updates
+	SendByteNoAck( 0x8d ); // 3.33kHz gyro updates
 	SendStop();
 
 	SendStart();
 	SendByteNoAck( LSM6DS3_ADDRESS<<1 );
 	SendByteNoAck( 0x10 );
-	SendByteNoAck( 0x7a ); // 833Hz Accel updates
+	SendByteNoAck( 0x8a ); // 833Hz Accel updates
 	SendStop();
 
 
