@@ -1,4 +1,9 @@
-// TODO: Further improve icos_S4_BAM32!!
+//
+// TODO:
+// Add drag to pull logo front.
+// Use lowpass on accel for bouncy.
+// Fix IMU for other usage.
+//
 
 #ifndef _MODE_TEST_H
 #define _MODE_TEST_H
@@ -41,11 +46,28 @@ void CoreLoop()
 	int32_t dispPixel[3] = { 0, 0, 0 };
 	int32_t gyroBias[3] = { 0, 0, 0 };
 
+	uint32_t logicTick;
+
+	// In world space
+	int32_t worldTranslate[3] = { 0 };
+	int32_t dongleVelocity[3] = { 0 };
+
+	// In object space.
+	int32_t accel_up_Fix29Norm[3] = { 0 };
+	int32_t accel_up_Fix24[3] = { 0 };
+
 	// IMU (updates)
 	int32_t currentQuat[4] = { 1<<30, 0, 0, 0 };
-	int32_t objectToWorldQuat[4] = { 1<<30, 0, 0, 0 };
 
-	unsigned nextdeadline = SysTick->CNT;
+	int32_t viewQuatx24[4] = { 1<<24, 0, 0, 0 };
+	int32_t objectQuatx24[4] = { 1<<24, 0, 0, 0 };
+
+	int32_t loccenter[3] = { 0 };
+	int32_t loccenter_filt[3] = { 0 };
+
+	int skip = 0;	
+	uint32_t nextdeadline = SysTick->CNT;
+	uint32_t logicTickNext = SysTick->CNT;
 	void * nextjump = &&lsm6_getcimu;
 
 	cont:
@@ -72,7 +94,6 @@ void CoreLoop()
 			R8_SPI0_FIFO = 0xd9;
 			R8_SPI0_FIFO = 0x11;
 
-
 			const uint8_t * indices3d;
 			const int16_t * vertices3d;
 
@@ -81,6 +102,11 @@ void CoreLoop()
 			{
 				x_coord = pixelNumber&0x7f;
 				y_coord = (pixelNumber>>7)&0x7f;
+			}
+			else if( skip )
+			{
+				// Skip (For sparkle)
+				skip--;
 			}
 			else
 			{
@@ -116,11 +142,14 @@ void CoreLoop()
 				}
 				else
 				{
-					int zspeed = 30000000/((-dispPixel[2]>>10));
-					if( zspeed < 4000 ) zspeed = 4000;
+					int32_t relz = -dispPixel[2];
+
+					int zspeed = 30000000/((relz>>10));
+
+					if( zspeed < 3000 ) zspeed = 3000;
 					if( zspeed > 65534 ) zspeed = 65534;
 					percent_on_line+= zspeed;
-					if( percent_on_line >= 65536 ||- dispPixel[2] < 0  )
+					if( percent_on_line >= 65536 || relz < 0  )
 					{
 						percent_on_line -= 65536;
 						if( percent_on_line < 0 ) percent_on_line = 0;
@@ -155,14 +184,32 @@ void CoreLoop()
 					(( laY * percent_on_line) + ( lbY * invpercent ))>>8,
 					(( laZ * percent_on_line) + ( lbZ * invpercent ))>>8 };
 
-				RotateVectorByQuaternion_Fix24_rough( dispPixel, objectToWorldQuat, vIn );
+
+				RotateVectorByQuaternion_Fix24_rough( vIn, objectQuatx24, vIn );
+				RotateVectorByQuaternion_Fix24_rough( dispPixel, viewQuatx24, vIn );
+
+				dispPixel[0] += worldTranslate[0];
+				dispPixel[1] += worldTranslate[1];
+				dispPixel[2] += worldTranslate[2];
 
 				// Bunny is rotated in bunny-local coordinates, where
 				// X, Y and Z are all rotated in 3D space, so z = -1..1
 
+				dispPixel[0] -= loccenter_filt[0];
+				dispPixel[1] -= loccenter_filt[1];
+				dispPixel[2] -= loccenter_filt[2];
+
+				//int32_t wxpos = _mulhs( dispPixel[0]/((dispPixel[2]+2000000)), 20000 );
+				//int32_t wypos = _mulhs( dispPixel[1]/((dispPixel[2]+2000000)), 20000 );
+				int32_t wxpos = dispPixel[0]/((dispPixel[2]+44000000)>>8);
+				int32_t wypos = dispPixel[1]/((dispPixel[2]+44000000)>>8);
+
 				// convert from RHS (World) to NDC
-				x_coord = (dispPixel[0]>>17) + 64;
-				y_coord = -(dispPixel[1]>>17) + 64;
+				x_coord =  wxpos + 64;
+				y_coord = -wypos + 64;
+
+				// MAke sparkley effect.
+				if( (SysTick->CNT & 0x3f) < 3 ) skip = 6;
 			}
 
 			while( R16_SPI0_TOTAL_CNT );
@@ -171,6 +218,59 @@ void CoreLoop()
 		}
 		pixelNumber++;
 		goto *nextjump;
+
+	base_loop_logic:
+	{
+		//if( ( SysTick->CNT & 0xf ) == 7) Delay_Us(1000);
+
+		int32_t unrotated[3] = { 1<<24, 0, 0 };
+		int32_t rotated[3];
+		int32_t rotatedFinal[3];
+		RotateVectorByQuaternion_Fix24_rough( rotated, objectQuatx24, unrotated );
+		RotateVectorByQuaternion_Fix24_rough( rotated, viewQuatx24,   rotated );
+
+		// Ideal rotation = rotated[z] = -2^16.
+		// nudge objectQuat left and right based on the value of [y] being > or < 0.
+
+		// Cross between ideal and what we have.
+		int32_t dragcenter[4] = { 0, 0, 0, 0 };
+
+		//CrossProduct_Fix24( dragcenter + 1, ideal, rotated );
+		// Because we are only rotating around Y all we need is the Y component of the corrective amount.
+		dragcenter[2] = rotated[1];;
+
+		// Don't yank.
+		dragcenter[2] >>= 10;
+
+		// Because we only have one term, normalizing is ez.
+		dragcenter[0] = rsqrtx24_rough((1<<24) - mul2x30(dragcenter[2], dragcenter[2] ));
+
+		QuatApplyQuat_Fix24( objectQuatx24, objectQuatx24, dragcenter );
+		QuatNormalize_Fix24( objectQuatx24, objectQuatx24 );
+
+
+
+//		int32_t dragcenter[4];
+//		CreateQuatFromTwoVectorRotation_Fix30OutFix29In(dragcenter, ideal, rotated);
+
+//		dragcenter[0]>>=6;
+//		dragcenter[1]>>=6;
+//		dragcenter[2]>>=6;
+//		dragcenter[3]>>=6;
+
+//		QuatApplyQuat_Fix24( objectQuat, objectQuat, dragcenter );
+//		printf( "%d %d %d %d\n", dragcenter[0], dragcenter[1], dragcenter[2], dragcenter[3] );
+
+//		printf( "%d %d %d\n", rotated[0], rotated[1], rotated[2] );
+//		QuatApplyQuat_Fix30( currentQuat, currentQuat, thisQ );
+//		QuatNormalize_Fix30( currentQuat, currentQuat );
+//		QuatNormalize_Fix30(objectQuat, objectQuat);
+
+
+
+		nextjump = &&lsm6_getcimu;
+		goto cont;
+	}
 
 	lsm6_getcimu:
 		SendStart();
@@ -192,7 +292,7 @@ void CoreLoop()
 			nextjump = &&lsm6_pull0;
 			goto cont;
 		}
-		nextjump = &&lsm6_getcimu;
+		nextjump = &&base_loop_logic;
 		goto cont;
 
 	lsm6_force_fifo_reset:
@@ -207,7 +307,7 @@ void CoreLoop()
 		SendByteNoAck( 0x2e );
 		SendStop();
 		Delay_Ms(20);
-		nextjump = &&lsm6_getcimu;
+		nextjump = &&base_loop_logic;
 		goto cont;
 
 	lsm6_pull0:
@@ -239,7 +339,8 @@ void CoreLoop()
 			static int gyronum = 0;
 			gyronum++;	
 			// Based on the euler angles, apply a change to the rotation matrix.
-funDigitalWrite( PIN_SCL, 1 );
+
+			funDigitalWrite( PIN_SCL, 1 );
 
 			int32_t eulerAngles[3];
 			const int32_t eulerScale = 15500000;// /8 if running at 1.66kHz instead of 208 Hz
@@ -268,12 +369,12 @@ funDigitalWrite( PIN_SCL, 1 );
 			QuatApplyQuat_Fix30( currentQuat, currentQuat, thisQ );
 			QuatNormalize_Fix30( currentQuat, currentQuat );
 
-			objectToWorldQuat[0] = currentQuat[0]/64;
-			objectToWorldQuat[1] =-currentQuat[1]/64;
-			objectToWorldQuat[2] =-currentQuat[2]/64;
-			objectToWorldQuat[3] =-currentQuat[3]/64;
+			viewQuatx24[0] = currentQuat[0]>>6;
+			viewQuatx24[1] =-currentQuat[1]>>6;
+			viewQuatx24[2] =-currentQuat[2]>>6;
+			viewQuatx24[3] =-currentQuat[3]>>6;
 
-funDigitalWrite( PIN_SCL, 0 );
+			funDigitalWrite( PIN_SCL, 0 );
 
 			if( 0 )
 			{
@@ -291,13 +392,10 @@ funDigitalWrite( PIN_SCL, 0 );
 		}
 		else if( cimutag == 2 )
 		{
-
-funDigitalWrite( PIN_SCL, 1 );
-			static int32_t correctiveLast[3];
+			funDigitalWrite( PIN_SCL, 1 );
 
 			static int accelnum = 0;
 
-			int32_t accel_up_Fix24[3];
 			const int32_t accelScale = 1<<27;
 			// Get into correct coordinate frame (you may have to mess with these)
 			// I.e. making some negative.
@@ -310,13 +408,14 @@ funDigitalWrite( PIN_SCL, 1 );
 				mul2x24(accel_up_Fix24[2],accel_up_Fix24[2]);
 			int32_t maga24recip = rsqrtx24_good( maga24 );
 
-			int32_t accel_up_Fix29Norm[3];
 			accel_up_Fix29Norm[0] = (accel_up_Fix24[0] * (int64_t)maga24recip)>>19;
 			accel_up_Fix29Norm[1] = (accel_up_Fix24[1] * (int64_t)maga24recip)>>19;
 			accel_up_Fix29Norm[2] = (accel_up_Fix24[2] * (int64_t)maga24recip)>>19;
 			int32_t newscale = mul2x24(accel_up_Fix29Norm[0],accel_up_Fix29Norm[0]) +
 				mul2x24(accel_up_Fix29Norm[1],accel_up_Fix29Norm[1]) +
 				mul2x24(accel_up_Fix29Norm[2],accel_up_Fix29Norm[2]);
+
+			funDigitalWrite( PIN_SCL, 0 );
 
 			// Get an initial guess
 			if( accelnum++ == 0 )
@@ -327,74 +426,10 @@ funDigitalWrite( PIN_SCL, 1 );
 			}
 			else
 			{
-				// STEP 5: Determine our "error" based on accelerometer.
-				// NOTE: This step could be done on the inner loop if you want, and done over
-				// every accelerometer cycle, or it can be done on the outside, every few cycles.
-				// all that realy matters is that it is done periodically.
 
-				// STEP 6: Examine vectors.  Generally speaking, we want an "up" vector, not a gravity vector.
-				// this is "up" in the controller's point of view.
-				int32_t cquat_x24[4] = {
-					currentQuat[0] >> 6, 
-					currentQuat[1] >> 6, 
-					currentQuat[2] >> 6, 
-					currentQuat[3] >> 6 };
-
-				// Step 6A: Next, compute what we think "up" should be from our point of view.  We will use +Y Up.
-				int32_t what_we_think_is_up[3] = {0, 1<<29, 0};
-				RotateVectorByInverseOfQuaternion_Fix24(what_we_think_is_up, cquat_x24, what_we_think_is_up);
-
-				// Step 6B: Next, we determine how far off we are.  This will tell us our error.
-				int32_t corrective_quaternion[4];
-
-				// TRICKY: The ouput of this is actually the axis of rotation, which is ironically
-				// in vector-form the same as a quaternion.  So we can write directly into the quat.
-				CrossProduct_Fix30OutFix29In(corrective_quaternion + 1, accel_up_Fix29Norm, what_we_think_is_up);
-
-//				printf( "x %d %d %d // %d %d %d  / %d %d %d\n",
-//					corrective_quaternion[1], corrective_quaternion[2], corrective_quaternion[3], 
-//					accel_up_Fix29Norm[0], accel_up_Fix29Norm[1], accel_up_Fix29Norm[2],
-//					what_we_think_is_up[0], what_we_think_is_up[1], what_we_think_is_up[2] );
-
-				// Now, we apply this in step 7.
-
-				// First, we can compute what the drift values of our axes are, to anti-drift them.
-				// If you do only this, you will always end up in an unstable oscillation.
-				memcpy(correctiveLast, corrective_quaternion + 1, 12);
-
-				int32_t gyroBiasTug = 1<<6;
-				int32_t correctiveForceTug = 1<<22;
-
-				// XXX TODO: We need to multiply by amount the accelerometer gives us assurance.
-				gyroBias[0] += _mulhs( fixedsqrt_x30(corrective_quaternion[1]), gyroBiasTug );
-				gyroBias[1] += _mulhs( fixedsqrt_x30(corrective_quaternion[2]), gyroBiasTug );
-				gyroBias[2] += _mulhs( fixedsqrt_x30(corrective_quaternion[3]), gyroBiasTug );
-
-//printf( "%d %d %d\n", gyroBias[0], gyroBias[1], gyroBias[2] );
-//printf( "%d %d\n",corrective_quaternion[1], fixedsqrt_x30(corrective_quaternion[1]));
-//				float corrective_force = 0.0005f;
-
-				// Second, we can apply a very small corrective tug.  This helps prevent oscillation
-				// about the correct answer.  This acts sort of like a P term to a PID loop.
-				// This is actually the **primary**, or fastest responding thing.
-				corrective_quaternion[1] = _mulhs( corrective_quaternion[1], correctiveForceTug );
-				corrective_quaternion[2] = _mulhs( corrective_quaternion[2], correctiveForceTug );
-				corrective_quaternion[3] = _mulhs( corrective_quaternion[3], correctiveForceTug );
-
-				// x^2+y^2+z^2+q^2 -> ALGEBRA! -> sqrt( 1-x^2-y^2-z^2 ) = w
-				corrective_quaternion[0] = fixedsqrt_x30((1<<30) - mul2x30(corrective_quaternion[1], corrective_quaternion[1] )
-													 - mul2x30( corrective_quaternion[2], corrective_quaternion[2] )
-													 - mul2x30( corrective_quaternion[3], corrective_quaternion[3] ) );
-
-				QuatApplyQuat_Fix30( currentQuat, currentQuat, corrective_quaternion );
+				nextjump = &&continue_accelerometer_logic;
+				goto cont;
 			}
-
-			// Validate:
-			//   Among other tests:
-			//   Apply a strong bias to the IMU falsely, then make sure in all orientations the gyroBias term doesn't spin around.
-
-funDigitalWrite( PIN_SCL, 0 );
-
 		}
 		else if( cimutag == 3 )
 		{
@@ -406,19 +441,164 @@ funDigitalWrite( PIN_SCL, 0 );
 		}
 		nextjump = &&lsm6_getcimu;
 		goto cont;
-/*
-	lsm6_process:
-		nextjump = &&lsm6_1;
+
+
+
+
+	continue_accelerometer_logic:
+		// STEP 5: Determine our "error" based on accelerometer.
+		// NOTE: This step could be done on the inner loop if you want, and done over
+		// every accelerometer cycle, or it can be done on the outside, every few cycles.
+		// all that realy matters is that it is done periodically.
+
+		funDigitalWrite( PIN_SCL, 1 );
+		// STEP 6: Examine vectors.  Generally speaking, we want an "up" vector, not a gravity vector.
+		// this is "up" in the controller's point of view.
+		int32_t cquat_x24[4] = {
+			currentQuat[0] >> 6, 
+			currentQuat[1] >> 6, 
+			currentQuat[2] >> 6, 
+			currentQuat[3] >> 6 };
+
+		// Step 6A: Next, compute what we think "up" should be from our point of view.  We will use +Y Up.
+		int32_t what_we_think_is_up[3] = {0, -1<<29, 0};
+		RotateVectorByInverseOfQuaternion_Fix24(what_we_think_is_up, cquat_x24, what_we_think_is_up);
+
+		// Step 6B: Next, we determine how far off we are.  This will tell us our error.
+		int32_t corrective_quaternion[4];
+
+		// TRICKY: The ouput of this is actually the axis of rotation, which is ironically
+		// in vector-form the same as a quaternion.  So we can write directly into the quat.
+		CrossProduct_Fix30OutFix29In(corrective_quaternion + 1, what_we_think_is_up, accel_up_Fix29Norm);
+
+		// Now, we apply this in step 7.
+
+		// First, we can compute what the drift values of our axes are, to anti-drift them.
+		// If you do only this, you will always end up in an unstable oscillation.
+		//memcpy(correctiveLast, corrective_quaternion + 1, 12);
+
+		//int32_t gyroBiasTug = 1<<8;
+		int32_t correctiveForceTug = 1<<22;
+		
+		const int gyroBiasForce = 1<<10;
+
+		int32_t confidences[3] = {
+			(gyroBiasForce>>3) - dotm_mulhs3( (const int32_t[3]){ gyroBiasForce, 0, 0 }, what_we_think_is_up ),
+			(gyroBiasForce>>3) - dotm_mulhs3( (const int32_t[3]){ 0, gyroBiasForce, 0 }, what_we_think_is_up ),
+			(gyroBiasForce>>3) - dotm_mulhs3( (const int32_t[3]){ 0, 0, gyroBiasForce }, what_we_think_is_up ) };
+
+		if( confidences[0] < 0 ) confidences[0] = -confidences[0];
+		if( confidences[1] < 0 ) confidences[1] = -confidences[1];
+		if( confidences[2] < 0 ) confidences[2] = -confidences[2];
+
+		// XXX TODO: We need to multiply by amount the accelerometer gives us assurance.
+		int32_t gbadg[3] = {
+			_mulhs( fixedsqrt_x30(corrective_quaternion[1]), confidences[0] ),
+			_mulhs( fixedsqrt_x30(corrective_quaternion[2]), confidences[1] ),
+			_mulhs( fixedsqrt_x30(corrective_quaternion[3]), confidences[2] ) };
+
+		// Tricky if you take a negative number and >> it, then it will be sticky at -1.
+		// Surely there's a more elegant way of doing this!
+		const int histeresis = 2;
+		if( gbadg[0] < 0 ) { if( gbadg[0] < -histeresis ) gbadg[0] += histeresis; else gbadg[0] = 0; } else { if( gbadg[0] > histeresis ) gbadg[0]-= histeresis;  else gbadg[0] = 0; }
+		if( gbadg[1] < 0 ) { if( gbadg[1] < -histeresis ) gbadg[1] += histeresis; else gbadg[1] = 0; } else { if( gbadg[1] > histeresis ) gbadg[1]-= histeresis;  else gbadg[1] = 0; }
+		if( gbadg[2] < 0 ) { if( gbadg[2] < -histeresis ) gbadg[2] += histeresis; else gbadg[2] = 0; } else { if( gbadg[2] > histeresis ) gbadg[2]-= histeresis;  else gbadg[2] = 0; }
+
+		gyroBias[0] += gbadg[0];
+		gyroBias[1] += gbadg[1];
+		gyroBias[2] += gbadg[2];
+
+		//printf( "%d %d %d\n",confidences[0], _mulhs( fixedsqrt_x30(corrective_quaternion[2]), confidences[1] ), confidences[2] );
+
+		// Second, we can apply a very small corrective tug.  This helps prevent oscillation
+		// about the correct answer.  This acts sort of like a P term to a PID loop.
+		// This is actually the **primary**, or fastest responding thing.
+		corrective_quaternion[1] = _mulhs( corrective_quaternion[1], correctiveForceTug );
+		corrective_quaternion[2] = _mulhs( corrective_quaternion[2], correctiveForceTug );
+		corrective_quaternion[3] = _mulhs( corrective_quaternion[3], correctiveForceTug );
+
+
+		// x^2+y^2+z^2+q^2 -> ALGEBRA! -> sqrt( 1-x^2-y^2-z^2 ) = w
+		corrective_quaternion[0] = fixedsqrt_x30((1<<30) - mul2x30(corrective_quaternion[1], corrective_quaternion[1] )
+											 - mul2x30( corrective_quaternion[2], corrective_quaternion[2] )
+											 - mul2x30( corrective_quaternion[3], corrective_quaternion[3] ) );
+
+
+		QuatApplyQuat_Fix30( currentQuat, currentQuat, corrective_quaternion );
+		funDigitalWrite( PIN_SCL, 0 );	
+
+
+		// TODO: Need to stop windup around 
+
+		// Validate:
+		//   Among other tests:
+		//   Apply a strong bias to the IMU falsely, then make sure in all orientations the gyroBias term doesn't spin around.
+		nextjump = &&game_logic_after_accel;
 		goto cont;
 
-	lsm6_1:
-		nextjump = &&lsm6_2;
-		goto cont;
+	game_logic_after_accel:
 
-	lsm6_2:
+		// Gravity
+		dongleVelocity[0] += _mulhs(accel_up_Fix24[0], -100000 );
+		dongleVelocity[1] += _mulhs(accel_up_Fix24[1], -100000 );
+		dongleVelocity[2] += _mulhs(accel_up_Fix24[2], -100000 );
+
+		// Drag
+		dongleVelocity[0] -= _mulhs(dongleVelocity[0], 12000000 );
+		dongleVelocity[1] -= _mulhs(dongleVelocity[1], 12000000 );
+		dongleVelocity[2] -= _mulhs(dongleVelocity[2], 12000000 );
+
+		worldTranslate[0] += mul2x24(dongleVelocity[0],100000000);
+		worldTranslate[1] += mul2x24(dongleVelocity[1],100000000);
+		worldTranslate[2] += mul2x24(dongleVelocity[2],100000000);
+
+		int32_t offset[3] = { 0, 0, 0 };
+
+		//int32_t quse[4] = { currentQuat[0], currentQuat[1], currentQuat[2], currentQuat[3] };
+
+		//RotateVectorByQuaternion_Fix24_rough( offset, quse, offset );
+
+
+		int32_t tcenter[3] = {
+			( worldTranslate[0] + offset[0] ) <<1,
+			( worldTranslate[1] + offset[1] ) <<1,
+			( worldTranslate[2] + offset[2] ) <<1,
+		};
+
+		int32_t dist = fixedsqrt_x30( _mulhs( tcenter[0], tcenter[0] ) +
+			_mulhs( tcenter[1], tcenter[1] ) + _mulhs( tcenter[2], tcenter[2] )  );
+		dist-= 1000000;
+
+		if( dist > 0 )
+		{
+			dist>>=8;
+			int32_t resistance[3] = {
+				_mulhs( tcenter[0], -dist ),
+				_mulhs( tcenter[1], -dist ),
+				_mulhs( tcenter[2], -dist ),
+			};
+			dongleVelocity[0] += resistance[0]>>4;
+			dongleVelocity[1] += resistance[1]>>4;
+			dongleVelocity[2] += resistance[2]>>4;
+		}
+
+		//RotateVectorByQuaternion_Fix24_rough( loccenter, viewQuat, worldTranslate );
+
+		const int32_t loccenter_epsilon = 100000;
+		loccenter_filt[0] = mul2x24( loccenter_filt[0], (1<<24)-loccenter_epsilon ) + mul2x24(  worldTranslate[0], loccenter_epsilon );
+		loccenter_filt[1] = mul2x24( loccenter_filt[1], (1<<24)-loccenter_epsilon ) + mul2x24(  worldTranslate[1], loccenter_epsilon );
+		loccenter_filt[2] = mul2x24( loccenter_filt[2], (1<<24)-loccenter_epsilon ) + mul2x24(  worldTranslate	[2], loccenter_epsilon );
+
+
+		// Drag object to kinda look at the user.
+
+		//QuatApplyQuat_Fix30( currentQuat, currentQuat, corrective_quaternion );
+
+		//int32_t objectQuat[4] = { 1<<30, 0, 0, 0 };
+
 		nextjump = &&lsm6_getcimu;
 		goto cont;
-*/
+	
 
 }
 
@@ -445,6 +625,13 @@ void EnterTestMode( ModeTest * m )
 	SendByteNoAck( 0x11 );
 	SendByteNoAck( 0x9d ); // 1.66kHz = 8d (does not work at all at 6.66, and works worse at 3.33 = 9d)
 	SendStop();
+
+	SendStart();
+	SendByteNoAck( LSM6DS3_ADDRESS<<1 );
+	SendByteNoAck( 0x10 );
+	SendByteNoAck( 0x7a ); // 208*4 +/- 8g
+	SendStop();
+
 
 	funDigitalWrite( SSD1306_CS_PIN, FUN_HIGH );
 
