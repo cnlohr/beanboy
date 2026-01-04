@@ -14,7 +14,16 @@ typedef struct ModeTest_t
 {
 	UpdateFunction Update;
 	WirelessRXFunction WirelessRX;
+
+	int tbtn;
+	int tppressures[4];
+
+	int timeMenuDown;
+	int model;
+	int animationType;
 } ModeTest;
+
+ModeTest * testMode;
 
 void ModeTestWirelessRX( uint8_t * txmac, uint8_t * message, int messageLength, int rssi )
 {
@@ -27,6 +36,74 @@ void ModeTestWirelessRX( uint8_t * txmac, uint8_t * message, int messageLength, 
 	printf( "\n" );
 }
 
+
+int SlowGameCheck()
+{
+	static int fastgamestate = 0;
+
+	if( ( fastgamestate & 0xf ) == 0 )
+	{
+		// try GPIO_CFGLR_IN_PUPD, GPIO_ModeIN_Floating, GPIO_CFGLR_OUT_10Mhz_PP as well
+		funPinMode( PA3, GPIO_ModeIN_Floating );
+		funPinMode( PA8, GPIO_ModeIN_Floating );
+		funPinMode( PA9, GPIO_ModeIN_Floating );
+		testMode->tbtn = (fastgamestate>>4)&3;
+
+		switch( testMode->tbtn )
+		{
+		case 0:
+			funPinMode( PA8, GPIO_CFGLR_OUT_10Mhz_PP );
+			funDigitalWrite( PA3, 1 );
+			break;
+		case 1:
+			funPinMode( PA9, GPIO_CFGLR_OUT_10Mhz_PP );
+			funDigitalWrite( PA8, 1 );
+			break;
+		case 2:
+			funPinMode( PA3, GPIO_CFGLR_OUT_10Mhz_PP );
+			funDigitalWrite( PA9, 1 );
+			break;
+		}
+		lastfifo = 0;
+		EventRelease();
+	}
+	else if ( (fastgamestate & 0xf) == 4 )
+	{
+		int tbtn = testMode->tbtn;
+		int lastp = testMode->tppressures[tbtn];
+		testMode->tppressures[tbtn] = lastfifo;
+		int wasdown = lastp < 1000;
+		int nowdown = lastfifo < 1000;
+
+		// Handle exiting.
+		if( tbtn == 1 )
+		{
+			if( !nowdown )
+			{
+				if( testMode->timeMenuDown > 0 ) testMode->timeMenuDown--;
+			}
+			else
+			{
+				if( testMode->timeMenuDown++ > 80 )
+				{
+					asm volatile( ".option push\n.option norelax\njr x0\n.option pop" );
+				}
+			}
+		}
+
+		if( tbtn == 2 && !wasdown && nowdown )
+		{
+			testMode->model = (testMode->model+1)&1;
+		}
+
+		if( tbtn == 0 && !wasdown && nowdown )
+		{
+			testMode->animationType = (testMode->animationType+1)&3;
+		}
+	}
+	fastgamestate = ( fastgamestate + 1 ) & 0x3f;
+	return 0;
+}
 
 void CoreLoop() __HIGH_CODE;
 
@@ -115,43 +192,53 @@ void CoreLoop()
 				static int percent_on_line;
 				static int lineid;
 				int totalLines = 0;
-
-				if( 0 )
+				int modelScale[3] = { 1<<24, 1<<24, 1<<24 };
+				if( testMode->model )
 				{
 					totalLines = (sizeof(bunny_lines)/sizeof(bunny_lines[0])/2);
 					indices3d = bunny_lines;
 					vertices3d = bunny_verts;
+					modelScale[0] = (1<<25)-(1<<23);
+					modelScale[1] = (1<<25)-(1<<23);
+					modelScale[2] =-(1<<25)+(1<<23);
 				} else {
 					totalLines = (sizeof(bean_lines)/sizeof(bean_lines[0])/2);
 					indices3d = bean_lines;
 					vertices3d = bean_verts;
 				}
 
-				if( 0 )
+				int at = testMode->animationType;
+				switch( at )
 				{
+				case 0:
 					_rand_lfsr_update();
 					lineid = _rand_lfsr%totalLines;
 					_rand_lfsr_update();
 					percent_on_line = _rand_lfsr & 0xffff;
-				}
-				else if( 0 )
+					break;
+				case 1:
+				case 2:
+				case 3:
 				{
-
-					_rand_lfsr_update();
-					lineid = _rand_lfsr%totalLines;
-					_rand_lfsr_update();
-					percent_on_line = _rand_lfsr & 0xffff;
-				}
-				else
-				{
-					int32_t relz = -dispPixel[2]+1000000;
-
-					int zspeed = 60000000/((relz>>10));
-
-					if( zspeed < 3000 ) zspeed = 3000;
-					if( zspeed > 65534 ) zspeed = 65534;
+					int zspeed;
+					if( at == 1 )
+					{
+						int32_t relz = -dispPixel[2]+1000000;
+						zspeed = 60000000/((relz>>10));
+						if( relz < 0 ) zspeed = 65536;
+						if( zspeed < 3000 ) zspeed = 3000;
+						if( zspeed > 65534 ) zspeed = 65534;
+					}
+					else if( at == 2 )
+					{
+						zspeed = 100;
+					}
+					else if( at == 3 )
+					{
+						zspeed += SysTick->CNT & 0xff;
+					}
 					percent_on_line+= zspeed;
-					if( percent_on_line >= 65536 || relz < 0  )
+					if( percent_on_line >= 65536  )
 					{
 						percent_on_line -= 65536;
 						if( percent_on_line < 0 ) percent_on_line = 0;
@@ -168,6 +255,8 @@ void CoreLoop()
 							if( lineid == totalLines ) lineid = 0;
 						}
 					}
+				}
+					break;
 				}
 
 				int vid0 = indices3d[lineid*2+0]*3; // Todo: Optimize!
@@ -190,6 +279,10 @@ void CoreLoop()
 				RotateVectorByQuaternion_Fix24_rough( vIn, objectQuatx24, vIn );
 				RotateVectorByQuaternion_Fix24_rough( dispPixel, viewQuatx24, vIn );
 
+				dispPixel[0] = mul2x24( dispPixel[0], modelScale[0] );
+				dispPixel[1] = mul2x24( dispPixel[1], modelScale[1] );
+				dispPixel[2] = mul2x24( dispPixel[2], modelScale[2] );
+
 				dispPixel[0] += worldTranslate[0];
 				dispPixel[1] += worldTranslate[1];
 				dispPixel[2] += worldTranslate[2];
@@ -200,6 +293,9 @@ void CoreLoop()
 			//	dispPixel[0] -= loccenter_filt[0];
 			//	dispPixel[1] -= loccenter_filt[1];
 			//	dispPixel[2] -= loccenter_filt[2];
+
+				// Animate going to main menu
+				dispPixel[2] += testMode->timeMenuDown * 6000000;
 
 				//int32_t wxpos = _mulhs( dispPixel[0]/((dispPixel[2]+2000000)), 20000 );
 				//int32_t wypos = _mulhs( dispPixel[1]/((dispPixel[2]+2000000)), 20000 );
@@ -258,6 +354,12 @@ void CoreLoop()
 
 			QuatApplyQuat_Fix24( objectQuatx24, objectQuatx24, dragcenter );
 			QuatNormalize_Fix24( objectQuatx24, objectQuatx24 );
+		}
+		else
+		{
+			funDigitalWrite( PIN_SCL, 1 );
+			if( SlowGameCheck() ) return;
+			funDigitalWrite( PIN_SCL, 0 );
 		}
 		nextjump = &&lsm6_getcimu;
 		goto cont;
@@ -618,7 +720,7 @@ void CoreLoop()
 void ModeTestLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32_t clickedMask, uint32_t lastClickMask )
 {
 	int i;
-	ModeTest * m = (ModeTest *)mode;
+	testMode = (ModeTest *)mode;
 
 	CoreLoop();
 }
@@ -630,13 +732,19 @@ void EnterTestMode( ModeTest * m )
 	m->Update = ModeTestLoop;
 	m->WirelessRX = ModeTestWirelessRX;
 
+	testMode->animationType = 1;
+	testMode->model = 0;
+	testMode->timeMenuDown = 0;
+
 	funDigitalWrite( SSD1306_DC_PIN, FUN_LOW );
 	funDigitalWrite( SSD1306_CS_PIN, FUN_LOW );
+
+	SetupI2C();
 
 	SendStart();
 	SendByteNoAck( LSM6DS3_ADDRESS<<1 );
 	SendByteNoAck( 0x11 );
-	SendByteNoAck( 0x8d ); // 3.33kHz gyro updates
+	SendByteNoAck( 0x8d ); // 1.66kHz gyro updates
 	SendStop();
 
 	SendStart();

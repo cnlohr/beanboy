@@ -8,6 +8,7 @@ typedef struct ModeMenu_t
 	WirelessRXFunction WirelessRX;
 
 	int selectedEntry;
+	int frameNumber;
 } ModeMenu;
 
 void ModeMenuLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32_t clickedMask, uint32_t lastClickMask )
@@ -39,13 +40,14 @@ void ModeMenuLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 	}
 	m->selectedEntry = ent;
 
-	if( newClickedMask & 2 )
+	if( (newClickedMask & 2) && (m->frameNumber > 2 ) )
 	{
 		SelectMode( m->selectedEntry );
 	}
 
 	// Output screen contents to OLED display.
 	ssd1306_refresh();
+	m->frameNumber++;
 }
 
 void EnterMenuMode( ModeMenu * m )
@@ -53,6 +55,7 @@ void EnterMenuMode( ModeMenu * m )
 	memset( m, 0, sizeof( *m ) );
 	m->Update = ModeMenuLoop;
 	m->selectedEntry = 1;
+	m->frameNumber = 0;
 }
 
 #endif

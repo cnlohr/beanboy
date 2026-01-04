@@ -1,0 +1,5 @@
+firmware.elf
+firmware.lst
+firmware.map
+firmware.hex
+firmware_ext.bin

@@ -130,7 +130,7 @@ int main()
 			}
 
 			int i;
-			fprintf( fAssets, "const bsprite %s = {\n", baseName );
+			fprintf( fAssets, "const bsprite %s   __attribute__((section(\".rodata\"))) = {\n", baseName );
 			fprintf( fAssets, "\t.w = %d,\n", ow/16 );
 			fprintf( fAssets, "\t.h = %d,\n", oh);
 			fprintf( fAssets, "\t.data = {" );

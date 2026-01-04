@@ -491,8 +491,6 @@ static void BeanboySetup()
 	funPinMode( PA10, GPIO_CFGLR_OUT_10Mhz_PP );
 	funDigitalWrite( PA10, 0 ); // D/C
 
-	SetupI2C();
-
 	ssd1306_rst();
 
 	ssd1306_spi_init();
