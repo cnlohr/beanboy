@@ -24,11 +24,14 @@ void ModeExampleWirelessRX( uint8_t * txmac, uint8_t * message, int messageLengt
 
 void ModeExampleLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32_t clickedMask, uint32_t lastClickMask )
 {
+	DoI2C();
 
+	printf( "%d %d %d %d\n", imuViewQuatFix24[0], imuViewQuatFix24[1], imuViewQuatFix24[2], imuViewQuatFix24[3] );
 	int i;
 	ModeExample * m = (ModeExample *)mode;
  
 	ssd1306_setbuf(0x00); // Clear screen
+	funDigitalWrite( PIN_SCL, 1 );
 
 	// Draw stuff to screen
 	char st[128];
@@ -38,6 +41,7 @@ void ModeExampleLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uin
 	sprintf( st, "%3d %d", (int)m->frameNumber, (int)pressures[3] );
 	ssd1306_drawstr_sz(0, 24, st, 1, 2 );
 
+	funDigitalWrite( PIN_SCL, 0 );
 	int btn;
 	for( btn = 0; btn < 3; btn++ )
 	{
@@ -47,14 +51,16 @@ void ModeExampleLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uin
 		ssd1306_drawCircle( x, y, p, 1 );
 		//ssd1306_fillCircle( x, y, p, 1 );
 	}
+	funDigitalWrite( PIN_SCL, 1 );
 
-	for( i = 0; i < 10; i++ )
+	for( i = 0; i < 3; i++ )
 	{
 		int x = (rand() % (128+80))-40;
 		int y = (rand() % (128+80))-40;
 		RenderBSprite( (i&1)?&bubble:&bubblemirror, x, y );
 	}
 
+	funDigitalWrite( PIN_SCL, 0 );
 	// Output screen contents to OLED display.
 	ssd1306_refresh();
 	int32_t us = m->usTilNextSend -= deltaTime;
@@ -72,6 +78,7 @@ void EnterExampleMode( ModeExample * m )
 	m->Update = ModeExampleLoop;
 	m->WirelessRX = ModeExampleWirelessRX;
 	m->frameNumber = 0;
+	SetupI2C();
 }
 
 

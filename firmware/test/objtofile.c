@@ -28,7 +28,7 @@ int main( int argc, char ** argv )
 	snprintf( outname, sizeof(outname)-1, "%s.h", argv[1] );
 
 	FILE * bh = fopen( outname, "w" );
-	fprintf( bh, "#include <stdint.h>\nint16_t %s_verts[] = {\n", argv[1] );
+	fprintf( bh, "#include <stdint.h>\nconst int16_t %s_verts[]  __attribute__((section(\".rodata\"))) = {\n", argv[1] );
 	while( line = fgets( buffer, sizeof(buffer)-1, f ) )
 	{
 		if( line[0] == 'v' )
@@ -42,7 +42,7 @@ int main( int argc, char ** argv )
 			if( mode == 1 )
 			{
 				mode = 2;
-				fprintf( bh, "};\nuint8_t %s_lines[] = {\n", argv[1] );
+				fprintf( bh, "};\nconst uint8_t %s_lines[]  __attribute__((section(\".rodata\"))) = {\n", argv[1] );
 			}
 
 			int x, y;

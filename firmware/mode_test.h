@@ -25,18 +25,6 @@ typedef struct ModeTest_t
 
 ModeTest * testMode;
 
-void ModeTestWirelessRX( uint8_t * txmac, uint8_t * message, int messageLength, int rssi )
-{
-	printf( "%02x:%02x:%02x:%02x:%02x:%02x:%3d %d:", txmac[0], txmac[1], txmac[2], txmac[3], txmac[4], txmac[5], rssi, messageLength );
-	int i;
-	for( i = 0; i < messageLength; i++ )
-	{
-		printf( "%02x ", message[i] );
-	}
-	printf( "\n" );
-}
-
-
 int SlowGameCheck()
 {
 	static int fastgamestate = 0;
@@ -120,7 +108,6 @@ void CoreLoop()
 	uint32_t cimudat;
 	int16_t cimu[3] = { 0 };
 	int32_t dispPixel[3] = { 0, 0, 0 };
-	int32_t gyroBias[3] = { 0, 0, 0 };
 
 	uint32_t logicTick;
 
@@ -136,6 +123,10 @@ void CoreLoop()
 	int32_t currentQuat[4] = { 1<<30, 0, 0, 0 };
 	int32_t corrective_quaternion[4]; // Internal, for gravity updates.
 	int32_t what_we_think_is_up[3];
+	int32_t gyroBias[3] = { 0, 0, 0 };
+	int gyronum = 0;
+	int accelnum = 0;
+
 
 
 	int32_t viewQuatx24[4] = { 1<<24, 0, 0, 0 };
@@ -192,15 +183,11 @@ void CoreLoop()
 				static int percent_on_line;
 				static int lineid;
 				int totalLines = 0;
-				int modelScale[3] = { 1<<24, 1<<24, 1<<24 };
 				if( testMode->model )
 				{
 					totalLines = (sizeof(bunny_lines)/sizeof(bunny_lines[0])/2);
 					indices3d = bunny_lines;
 					vertices3d = bunny_verts;
-					modelScale[0] = (1<<25)-(1<<23);
-					modelScale[1] = (1<<25)-(1<<23);
-					modelScale[2] =-(1<<25)+(1<<23);
 				} else {
 					totalLines = (sizeof(bean_lines)/sizeof(bean_lines[0])/2);
 					indices3d = bean_lines;
@@ -278,10 +265,6 @@ void CoreLoop()
 
 				RotateVectorByQuaternion_Fix24_rough( vIn, objectQuatx24, vIn );
 				RotateVectorByQuaternion_Fix24_rough( dispPixel, viewQuatx24, vIn );
-
-				dispPixel[0] = mul2x24( dispPixel[0], modelScale[0] );
-				dispPixel[1] = mul2x24( dispPixel[1], modelScale[1] );
-				dispPixel[2] = mul2x24( dispPixel[2], modelScale[2] );
 
 				dispPixel[0] += worldTranslate[0];
 				dispPixel[1] += worldTranslate[1];
@@ -429,7 +412,6 @@ void CoreLoop()
 		cimutag >>= 3;
 		if( cimutag == 1 )
 		{
-			static int gyronum = 0;
 			gyronum++;	
 			// Based on the euler angles, apply a change to the rotation matrix.
 
@@ -468,7 +450,7 @@ void CoreLoop()
 			viewQuatx24[3] =-currentQuat[3]>>6;
 
 			funDigitalWrite( PIN_SCL, 0 );
-
+#if 0
 			if( 0 )
 			{
 				static int32_t debugGyroAccum[3] = { 0 };
@@ -477,7 +459,7 @@ void CoreLoop()
 				debugGyroAccum[2] += eulerAngles[2];
 				//printf( "%d %d %d\n", (int) debugGyroAccum[0], (int)debugGyroAccum[1], (int)debugGyroAccum[2] );
 			}
-
+#endif
 			// STEP 4: Validate yor values by doing 4 90 degree turns
 			//  across multiple axes.
 			// i.e. rotate controller down, clockwise from top, up, counter-clockwise.
@@ -486,8 +468,6 @@ void CoreLoop()
 		else if( cimutag == 2 )
 		{
 			funDigitalWrite( PIN_SCL, 1 );
-
-			static int accelnum = 0;
 
 			const int32_t accelScale = 1<<27;
 			// Get into correct coordinate frame (you may have to mess with these)
@@ -551,7 +531,7 @@ void CoreLoop()
 		}
 		else
 		{
-			printf( "Confusing tag: %d\n", (int)cimutag );
+			//printf( "Confusing tag: %d\n", (int)cimutag );
 		}
 		nextjump = &&lsm6_getcimu;
 		goto cont;
@@ -627,8 +607,9 @@ void CoreLoop()
 		//   Apply a strong bias to the IMU falsely, then make sure in all orientations the gyroBias term doesn't spin around.
 
 
-		// We're actually done with IMU work.
 
+		// We're actually done with IMU work.
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 		// But we still have time, so let's handle letting our object bounce around.
@@ -730,7 +711,7 @@ void EnterTestMode( ModeTest * m )
 {
 	memset( m, 0, sizeof(*m) );
 	m->Update = ModeTestLoop;
-	m->WirelessRX = ModeTestWirelessRX;
+	m->WirelessRX = 0;
 
 	testMode->animationType = 1;
 	testMode->model = 0;

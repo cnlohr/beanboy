@@ -1,7 +1,15 @@
 #ifndef _BEANBOY_H
 #define _BEANBOY_H
 
+void ssd1306_drawPixel(uint32_t x, uint32_t y, int color) __HIGH_CODE;
+
+
 #include "fixedmath.h"
+
+//#define 	NRODATA   __attribute__((section(".text")))
+//#define 	ST(str)   ({ static const NRODATA char c[] = (str); &c[0]; })
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -325,9 +333,23 @@ void ProcessQMC6309()
 
 }
 
-void ProcessLSM6DS3() __HIGH_CODE;
+// Should expose.
+int32_t imuViewQuatFix24[4] = { 1<<24, 0, 0, 0 };
+int32_t imuAccelUpFix29Norm[3] = { 0 };
+int32_t imuAccelUpFix24[3] = { 0 };
+int32_t imuViewQuatFix30[4] = { 1<<30, 0, 0, 0 };
+
+void ProcessLSM6DS3();
 void ProcessLSM6DS3()
 {
+	int32_t corrective_quaternion[4]; // Internal, for gravity updates.
+	int32_t what_we_think_is_up[3];
+	int32_t gyroBias[3] = { 0, 0, 0 };
+	int gyronum = 0;
+	static int accelnum = 0;
+
+resample:
+
 	SendStart();
 	SendByteNoAck( LSM6DS3_ADDRESS<<1 );
 	SendByteNoAck( 0x3a );
@@ -336,8 +358,7 @@ void ProcessLSM6DS3()
 
 	uint32_t sw = 0;
 	sw = GetByte( 0 );
-	sw |= GetByte( 0 ) << 8ULL;
-	sw |= GetByte( 1 ) << 16ULL;
+	sw |= GetByte( 1 ) << 8ULL;
 
 	SendStop();
 
@@ -351,47 +372,215 @@ void ProcessLSM6DS3()
 			2, "LSM6DS3 Overflow" );
 		return;
 	}
-
-	printf( "%06x ", (unsigned int)sw );
-	//pattern |= GetByte( 0 ) << 8;
-
-	int samp = 0;
-	int samps = (sw & 0x7ff); // If LSMDS3 probably divide by 6?
-
-	// practical maximum
-	if( samps > 63 ) samps = 63;
-
-	if( samps == 0 )
+	else if( ( sw & 0x7ff ) <= 0 )
 	{
 		return;
 	}
 
 	SendStart();
 	SendByteNoAck( LSM6DS3_ADDRESS<<1 );
-	SendByteNoAck( 0x20 );
+	SendByteNoAck( 0x78 );
 	SendStart();
 	SendByteNoAck( (LSM6DS3_ADDRESS<<1)|1 );
-
-	uint32_t ta = GetByte( 0 );
-	ta |= GetByte( 0 )<<8; // Ignore FIFO status 4
-
-	for( samp = 0; samp < samps; samp++ )
-	{
-		int i;
-		for( i = 0; i < 6; i++ )
-		{
-			uint16_t val = GetByte( 0 );
-			int end = (i==5 && samp == samps-1);
-			if( end ) printf( "." );
-			val |= GetByte( end ) << 8;
-			if( samp == 0 )
-				printf( "%04x ", val );
-		}
-		//printf( "\n" );
-	}
-	printf( "\n" );
-
+	uint32_t cimutag = GetByte( 0 ); // FIFO Tag
+	uint32_t cimu[3];
+	uint32_t tmp = GetByte( 0 );
+	cimu[0] = tmp | GetByte( 0 ) << 8;
+	tmp = GetByte( 0 );
+	cimu[1] = tmp | GetByte( 0 ) << 8;
+	tmp = GetByte( 0 );
+	cimu[2] = tmp | GetByte( 1 ) << 8;
 	SendStop();
+
+	cimutag >>= 3;
+	if( cimutag == 1 )
+	{
+		gyronum++;	
+		// Based on the euler angles, apply a change to the rotation matrix.
+
+		funDigitalWrite( PIN_SCL, 1 );
+
+		int32_t eulerAngles[3];
+		const int32_t eulerScale = 15500000*64;// XXX Change me when you change IMU update rate.
+
+		// Step 9: validation.  Make sure your gyroBias = eulerScale * 2^16 * 200,
+		// and in the correct directions and doesn't change as you rotate the system.
+		//cimu[0] += 200; cimu[1] += 200; cimu[2] += 200;
+
+		// STEP 1:  Visually inspect the gyro values.
+		// STEP 2:  Integrate the gyro values, verify they are correct.
+
+		// We bring the IMU into our world coordinate frame here. 
+		// YOU MAY NEED TO add negatives to specific terms here.
+		eulerAngles[0] = -_mulhs( cimu[0]<<16, eulerScale ) + gyroBias[0];
+		eulerAngles[1] =  _mulhs( cimu[1]<<16, eulerScale ) + gyroBias[1];
+		eulerAngles[2] = -_mulhs( cimu[2]<<16, eulerScale ) + gyroBias[2];
+
+		int32_t thisQ[4];
+
+		// STEP 3:  Integrate gyro values into a quaternion.
+		// This step is validated by working with just one axis at a time
+		// then apply a coordinate frame to ld->fqQuat and validate that it is
+		// correct.
+
+		QuatFromEuler_Fix30( thisQ, eulerAngles );
+		QuatApplyQuat_Fix30( imuViewQuatFix30, imuViewQuatFix30, thisQ );
+		QuatNormalize_Fix30( imuViewQuatFix30, imuViewQuatFix30 );
+
+		imuViewQuatFix24[0] = imuViewQuatFix30[0]>>6;
+		imuViewQuatFix24[1] =-imuViewQuatFix30[1]>>6;
+		imuViewQuatFix24[2] =-imuViewQuatFix30[2]>>6;
+		imuViewQuatFix24[3] =-imuViewQuatFix30[3]>>6;
+
+		funDigitalWrite( PIN_SCL, 0 );
+
+#if 0
+		{
+			static int32_t debugGyroAccum[3] = { 0 };
+			debugGyroAccum[0] += eulerAngles[0];
+			debugGyroAccum[1] += eulerAngles[1];
+			debugGyroAccum[2] += eulerAngles[2];
+			//printf( "%d %d %d\n", (int) debugGyroAccum[0], (int)debugGyroAccum[1], (int)debugGyroAccum[2] );
+		}
+#endif
+		// STEP 4: Validate yor values by doing 4 90 degree turns
+		//  across multiple axes.
+		// i.e. rotate controller down, clockwise from top, up, counter-clockwise.
+		// while investigating quaternion.  It should return to identity.
+	}
+	else if( cimutag == 2 )
+	{
+		funDigitalWrite( PIN_SCL, 1 );
+
+		const int32_t accelScale = 1<<27;
+		// Get into correct coordinate frame (you may have to mess with these)
+		// I.e. making some negative.
+		imuAccelUpFix24[0] = -_mulhs( cimu[0]<<16, accelScale );
+		imuAccelUpFix24[1] =  _mulhs( cimu[1]<<16, accelScale );
+		imuAccelUpFix24[2] = -_mulhs( cimu[2]<<16, accelScale );
+
+		int32_t maga24 = mul2x24(imuAccelUpFix24[0],imuAccelUpFix24[0]) +
+			mul2x24(imuAccelUpFix24[1],imuAccelUpFix24[1]) +
+			mul2x24(imuAccelUpFix24[2],imuAccelUpFix24[2]);
+		int32_t maga24recip = rsqrtx24_good( maga24 );
+
+		imuAccelUpFix29Norm[0] = (imuAccelUpFix24[0] * (int64_t)maga24recip)>>19;
+		imuAccelUpFix29Norm[1] = (imuAccelUpFix24[1] * (int64_t)maga24recip)>>19;
+		imuAccelUpFix29Norm[2] = (imuAccelUpFix24[2] * (int64_t)maga24recip)>>19;
+		int32_t newscale = mul2x24(imuAccelUpFix29Norm[0],imuAccelUpFix29Norm[0]) +
+			mul2x24(imuAccelUpFix29Norm[1],imuAccelUpFix29Norm[1]) +
+			mul2x24(imuAccelUpFix29Norm[2],imuAccelUpFix29Norm[2]);
+
+		funDigitalWrite( PIN_SCL, 0 );
+
+		// Get an initial guess
+		if( accelnum++ == 0 )
+		{
+			int32_t ideal_up[3] = {0, 1<<29, 0};
+
+			CreateQuatFromTwoVectorRotation_Fix30OutFix29In(imuViewQuatFix30, ideal_up, imuAccelUpFix29Norm);
+		}
+		else
+		{
+			// STEP 6: Determine our "error" based on accelerometer.
+			// NOTE: This step could be done on the inner loop if you want, and done over
+			// every accelerometer cycle, or it can be done on the outside, every few cycles.
+			// all that realy matters is that it is done periodically.
+
+			// STEP 6A: Examine vectors.  Generally speaking, we want an "up" vector, not a gravity vector.
+			// this is "up" in the controller's point of view.
+			int32_t cquat_x24[4] = {
+				imuViewQuatFix30[0] >> 6, 
+				imuViewQuatFix30[1] >> 6, 
+				imuViewQuatFix30[2] >> 6, 
+				imuViewQuatFix30[3] >> 6 };
+
+			// Step 6A: Next, compute what we think "up" should be from our point of view.  We will use +Y Up.
+			RotateVectorByInverseOfQuaternion_Fix24(what_we_think_is_up, cquat_x24, (const int32_t[3]){0, -1<<29, 0});
+
+			// Step 6C: Next, we determine how far off we are.  This will tell us our error.
+
+			// TRICKY: The ouput of this is actually the axis of rotation, which is ironically
+			// in vector-form the same as a quaternion.  So we can write directly into the quat.
+			CrossProduct_Fix30OutFix29In(corrective_quaternion + 1, what_we_think_is_up, imuAccelUpFix29Norm);
+
+
+			// Now, we apply this in step 7.
+
+			// First, we can compute what the drift values of our axes are, to anti-drift them.
+			// If you do only this, you will always end up in an unstable oscillation.
+			//memcpy(correctiveLast, corrective_quaternion + 1, 12);
+
+			//int32_t gyroBiasTug = 1<<8;
+			int32_t correctiveForceTug = 1<<21;
+			
+			const int gyroBiasForce = 1<<9;
+
+			int32_t confidences[3] = {
+				(gyroBiasForce>>3) - dotm_mulhs3( (const int32_t[3]){ gyroBiasForce, 0, 0 }, what_we_think_is_up ),
+				(gyroBiasForce>>3) - dotm_mulhs3( (const int32_t[3]){ 0, gyroBiasForce, 0 }, what_we_think_is_up ),
+				(gyroBiasForce>>3) - dotm_mulhs3( (const int32_t[3]){ 0, 0, gyroBiasForce }, what_we_think_is_up ) };
+
+			if( confidences[0] < 0 ) confidences[0] = -confidences[0];
+			if( confidences[1] < 0 ) confidences[1] = -confidences[1];
+			if( confidences[2] < 0 ) confidences[2] = -confidences[2];
+
+			// XXX TODO: We need to multiply by amount the accelerometer gives us assurance.
+			int32_t gbadg[3] = {
+				_mulhs( fixedsqrt_x30(corrective_quaternion[1]), confidences[0] ),
+				_mulhs( fixedsqrt_x30(corrective_quaternion[2]), confidences[1] ),
+				_mulhs( fixedsqrt_x30(corrective_quaternion[3]), confidences[2] ) };
+
+			// Tricky if you take a negative number and >> it, then it will be sticky at -1.
+			// Surely there's a more elegant way of doing this!
+			const int histeresis = 2;
+			if( gbadg[0] < 0 ) { if( gbadg[0] < -histeresis ) gbadg[0] += histeresis; else gbadg[0] = 0; }
+			else { if( gbadg[0] > histeresis ) gbadg[0]-= histeresis;  else gbadg[0] = 0; }
+			if( gbadg[1] < 0 ) { if( gbadg[1] < -histeresis ) gbadg[1] += histeresis; else gbadg[1] = 0; }
+			else { if( gbadg[1] > histeresis ) gbadg[1]-= histeresis;  else gbadg[1] = 0; }
+			if( gbadg[2] < 0 ) { if( gbadg[2] < -histeresis ) gbadg[2] += histeresis; else gbadg[2] = 0; } 
+			else { if( gbadg[2] > histeresis ) gbadg[2]-= histeresis;  else gbadg[2] = 0; }
+
+			gyroBias[0] += gbadg[0];
+			gyroBias[1] += gbadg[1];
+			gyroBias[2] += gbadg[2];
+
+			//printf( "%d %d %d\n",confidences[0], _mulhs( fixedsqrt_x30(corrective_quaternion[2]), confidences[1] ), confidences[2] );
+
+			// Second, we can apply a very small corrective tug.  This helps prevent oscillation
+			// about the correct answer.  This acts sort of like a P term to a PID loop.
+			// This is actually the **primary**, or fastest responding thing.
+			corrective_quaternion[1] = _mulhs( corrective_quaternion[1], correctiveForceTug );
+			corrective_quaternion[2] = _mulhs( corrective_quaternion[2], correctiveForceTug );
+			corrective_quaternion[3] = _mulhs( corrective_quaternion[3], correctiveForceTug );
+
+
+			// x^2+y^2+z^2+q^2 -> ALGEBRA! -> sqrt( 1-x^2-y^2-z^2 ) = w
+			corrective_quaternion[0] = fixedsqrt_x30((1<<30) - mul2x30(corrective_quaternion[1], corrective_quaternion[1] )
+												 - mul2x30( corrective_quaternion[2], corrective_quaternion[2] )
+												 - mul2x30( corrective_quaternion[3], corrective_quaternion[3] ) );
+
+
+			QuatApplyQuat_Fix30( imuViewQuatFix30, imuViewQuatFix30, corrective_quaternion );
+			funDigitalWrite( PIN_SCL, 0 );	
+
+			// Validate:
+			//   Among other tests:
+			//   Apply a strong bias to the IMU falsely, then make sure in all orientations the gyroBias term doesn't spin around.
+
+
+		}
+	}
+	else if( cimutag == 3 )
+	{
+		// Temperature
+	}
+	else
+	{
+		//printf( "Confusing tag: %d\n", (int)cimutag );
+	}
+
+	goto resample;
 }
 
 void SetupI2C()
@@ -399,10 +588,10 @@ void SetupI2C()
 
 #if 1
 	// Actuall LSM6DSR
-	const static uint8_t LSM6DS3Regmap[] = {
+	const static uint8_t LSM6DS3Regmap[]  __attribute__((section(".rodata"))) = {
 		0x12, 0x44, // CTRL3_C - unset reboot. + BDU
-		0x10, 0x5a, // CTRL1_XL - 208Hz, +/-8g
-		0x11, 0x5d, // CTRL2_G - 208Hz, 4000dps
+		0x10, 0x4a, // CTRL1_XL - 103Hz, +/-8g
+		0x11, 0x4d, // CTRL2_G - 103Hz, 4000dps
 
 		0x0a, 0x28, // FIFO_CTRL5 - Disable FIFO (will re-enable)
 		0x06, 0x60, // FIFO_CTRL1 - FIFO size.
@@ -418,7 +607,7 @@ void SetupI2C()
 		0x13, 0x01, // CTRL4_C - Stop on fth
 	};
 #else
-	const static uint8_t LSM6DS3Regmap[] = {
+	const static uint8_t LSM6DS3Regmap[]  __attribute__((section(".rodata"))) = {
 		0x12, 0x44, // CTRL3_C - unset reboot. + BDU
 		0x10, 0x5a, // CTRL1_XL - 208Hz, +/-8g
 		0x11, 0x54, // CTRL2_G - 208Hz, 1000dps
@@ -443,7 +632,7 @@ void SetupI2C()
 
 	SetupRegisterMap( LSM6DS3_ADDRESS, LSM6DS3Regmap, sizeof(LSM6DS3Regmap)/2, "LSM6DS3" );
 
-	const static uint8_t QMC6309Regmap[] = {
+	const static uint8_t QMC6309Regmap[]  __attribute__((section(".rodata"))) = {
 		0x0b, 0x48, // CTRL2 = ODR = 200Hz
 		0x0a, 0x19, // CTRL3 = OSR = 8, OSR2=16
 	};
@@ -461,7 +650,7 @@ void DoI2C()
 	//Scan(); // 0x6A, 0x7C
 
 	ProcessLSM6DS3();
-	ProcessQMC6309();
+	//ProcessQMC6309();
 
 	DSCL_OUTPUT;
 	DSDA_OUTPUT;

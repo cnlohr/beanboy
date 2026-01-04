@@ -32,7 +32,7 @@ void * game;
 #include "mode_shutbox.h"
 
 // Include name of mode here.
-const char * gameModes[] = { "Menu", "Example", "Test", "Puffer", "ShutBox" };
+const char * gameModes[] = { "Menu", "Example", "Idle", "Puffer", "ShutBox" };
 
 #include "mode_menu.h"
 

@@ -1,5 +1,5 @@
 #include <stdint.h>
-int16_t bean_verts[] = {
+const int16_t bean_verts[] __attribute__((section(".rodata"))) = {
 	16410, 19979, -10554,
 	16410, 19979, 10554,
 	-4353, 26280, -11205,
@@ -51,7 +51,7 @@ int16_t bean_verts[] = {
 	15806, -2184, -9816,
 	15806, 2184, -9816,
 };
-uint8_t bean_lines[] = {
+const uint8_t bean_lines[]  __attribute__((section(".rodata"))) = {
 	4, 3,
 	6, 1,
 	7, 2,
