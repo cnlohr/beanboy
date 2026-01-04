@@ -83,7 +83,8 @@ int SlowGameCheck()
 
 		if( tbtn == 2 && !wasdown && nowdown )
 		{
-			testMode->model = (testMode->model+1)&1;
+			testMode->model = (testMode->model+1);
+			if( testMode->model == 2 ) testMode->model = 0;
 		}
 
 		if( tbtn == 0 && !wasdown && nowdown )
@@ -185,16 +186,21 @@ void CoreLoop()
 				static int percent_on_line;
 				static int lineid;
 				int totalLines = 0;
-				if( testMode->model )
+				if( testMode->model == 1 )
 				{
 					totalLines = (sizeof(bunny_lines)/sizeof(bunny_lines[0])/2);
 					indices3d = bunny_lines;
 					vertices3d = bunny_verts;
-				} else {
+				} else if( testMode->model == 0 ) {
 					totalLines = (sizeof(bean_lines)/sizeof(bean_lines[0])/2);
 					indices3d = bean_lines;
 					vertices3d = bean_verts;
 				}
+				/*} else {
+					totalLines = (sizeof(kd_lines)/sizeof(kd_lines[0])/2);
+					indices3d = kd_lines;
+					vertices3d = kd_verts;
+				}*/
 
 				int at = testMode->animationType;
 				switch( at )
