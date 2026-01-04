@@ -23,344 +23,6 @@ void ModeTestWirelessRX( uint8_t * txmac, uint8_t * message, int messageLength, 
 	printf( "\n" );
 }
 
-static inline int32_t _mulhs( int32_t a, int32_t b )
-{
-	int32_t ret;
-	asm volatile( "mulh %[out], %[a], %[b]" : [out]"=r"(ret) : [a]"r"(a), [b]"r"(b) : );
-	return ret;
-}
-
-//https://www.coranac.com/2009/07/sines/
-
-int32_t isin_S4(int32_t x) __HIGH_CODE;
-
-//https://www.coranac.com/2009/07/sines/
-/// A sine approximation via a fourth-order cosine approx.
-/// @param x   angle (with 2^24 units/circle)
-/// @return     Sine value (Q12)
-int32_t isin_S4(int32_t x)
-{
-	int c, x2, y;
-	// qN = 13 -> 25
-	// qA = 12 -> 24
-/// = 26-bit unit circle, 24-bit output
-///	static const int qN= 25, qA= 24, B=19900<<12, C=3516<<12; // TODO :Make better C/B
-/// static const int qM= 20;
-
-/// = 24-bit unit circle, 24-bit output
-// c = 1-pi/4 => 0.214601837 * 1<<(qA+2)
-// c = 14401685.493383168
-// b = 2-pi/4 => 1.214601837 * (1<<26)
-	const int tune = 120000; // Tuning manual, by cnlohr
-	const int qN= 22, qA= 24, B=40755275+tune, C=7202343+tune;
-	const int qM= 17;
-
-	c= x<<(30-qN);				// Semi-circle info into carry.
-	x -= 1<<qN;					// sine -> cosine calc
-	x= x<<(31-qN);				// Mask with PI
-	x= x>>(31-qN);				// Note: SIGNED shift! (to qN)
-	x= (x*(int64_t)x)>>(2*qN-qM);			// x=x^2 To Q14
-
-	y= B - ((x*(int64_t)C)>>qM);			// B - x^2*C
-	y= (1<<qA)-((x*(int64_t)y)>>18);		// A - x^2*(B-x^2*C)
-
-	// Added by cnlohr
-	int retune = (x*(int64_t)y)>>24;
-	y -= retune;
- 
-	return c>=0 ? y : -y;
-}
-
-
-//https://www.coranac.com/2009/07/sines/
-// Based on isin_S4, but fiddled to get the right range.
-// 0...2^32 for a full circle in,
-//  Out = -2^30 to 2^30
-
-int32_t isin_S4_BAM32(int32_t x) __HIGH_CODE;
-int32_t isin_S4_BAM32(int32_t x)
-{
-	int c, x2, y;
-
-	// I fiddled til I got what I wanted.
-
-	const int zerotune = 1500;
-	const int tune = 5000;// 360000;
-	const int qN= 30, qA= 30, B=40755275+tune, C=7202343+tune-zerotune;
-	const int qM= 16;
-	const int qMO = (qM+(25-qA));
-
-	c = x<<(30-qN);				// Semi-circle info into carry.
-	x -= 1<<qN;					// sine -> cosine calc
-	x= x<<(31-qN);				// Mask with PI
-	x= x>>(31-qN);				// Note: SIGNED shift! (to qN)
-	x= (x*(int64_t)x)>>(2*qN-qM);			// x=x^2 To Q14
-
-	y = B - ((x*(int64_t)C)>>qM);				// B - x^2*C
-	y = (1<<qA)-((x*(int64_t)y)>>(qMO));		// A - x^2*(B-x^2*C)
-
-	y -= ((x*(int64_t)y*800)>>(32));
-
-	//y = (1<<qA)-((x*(int64_t)y)>>(qMO));		// A - x^2*(B-x^2*C)
-
-	return c>=0 ? y : -y;
-}
-
-
-
-
-
-static inline int32_t icos_S4(int32_t x) { return isin_S4( x+(1<<22)); }
-static inline int32_t icos_S4_BAM32(int32_t x) { return isin_S4_BAM32( x+(1<<30)); }
-
-int32_t mul3x24( int32_t a, int32_t b, int32_t c ) __HIGH_CODE;
-int32_t mul3x24( int32_t a, int32_t b, int32_t c )
-{
-	// XXX TODO: Can this be improved?
-	int32_t intermediate = (a * (int64_t)b) >> 24;
-	return (intermediate * (int64_t)c) >> 24;
-}
-
-int32_t mul3x30( int32_t a, int32_t b, int32_t c ) __HIGH_CODE;
-int32_t mul3x30( int32_t a, int32_t b, int32_t c )
-{
-	int32_t intermediate = (a * (int64_t)b) >> 30;
-	return (intermediate * (int64_t)c) >> 30;
-}
-
-int32_t mul2x24( int32_t a, int32_t b ) __HIGH_CODE;
-int32_t mul2x24( int32_t a, int32_t b )
-{
-	return (a * (int64_t)b) >> 24;
-}
-
-int32_t mul2x30( int32_t a, int32_t b ) __HIGH_CODE;
-int32_t mul2x30( int32_t a, int32_t b )
-{
-	return (a * (int64_t)b) >> 30;
-}
-
-// Only really suitable for noramalization.
-int32_t rsqrtx24_rough( int32_t a )
-{
-	// Computes 1/sqrt(n)
-	int32_t x2 = a >> 1;
-
-	// Would be great if we had a better first guess.
-	int32_t y = 1<<24;
-
-	int iter = 0;
-	for( iter = 0; iter < 4; iter++ )
-	{
-		y = mul2x24(y, ( (3<<23) - mul3x24( x2, y, y ) ));
-	}
-
-	return y;
-}
-
-// Only really suitable for noramalization.
-int32_t rsqrtx30_rough( int32_t a )
-{
-	// Computes 1/sqrt(n)
-	int32_t x2 = a >> 1;
-
-	// Would be great if we had a better first guess.
-	int32_t y = 1<<30;
-
-	int iter = 0;
-	for( iter = 0; iter < 4; iter++ )
-	{
-		y = mul2x30(y, ( (3<<30) - mul3x30( x2, y, y ) ));
-	}
-
-	return y;
-}
-
-void QuatApplyQuat_Fix24( int32_t qout[4], int32_t q1[4], int32_t q2[4] ) __HIGH_CODE;
-void QuatApplyQuat_Fix24( int32_t qout[4], int32_t q1[4], int32_t q2[4] )
-{
-	int32_t tmpw, tmpx, tmpy;
-    tmpw    = mul2x24(q1[0], q2[0]) - mul2x24(q1[1], q2[1]) - mul2x24(q1[2], q2[2]) - mul2x24(q1[3], q2[3]);
-    tmpx    = mul2x24(q1[0], q2[1]) + mul2x24(q1[1], q2[0]) + mul2x24(q1[2], q2[3]) - mul2x24(q1[3], q2[2]);
-    tmpy    = mul2x24(q1[0], q2[2]) - mul2x24(q1[1], q2[3]) + mul2x24(q1[2], q2[0]) + mul2x24(q1[3], q2[1]);
-    qout[3] = mul2x24(q1[0], q2[3]) + mul2x24(q1[1], q2[2]) - mul2x24(q1[2], q2[1]) + mul2x24(q1[3], q2[0]);
-    qout[2] = tmpy;
-    qout[1] = tmpx;
-    qout[0] = tmpw;
-}
-
-
-void QuatApplyQuat_Fix30( int32_t qout[4], int32_t q1[4], int32_t q2[4] ) __HIGH_CODE;
-void QuatApplyQuat_Fix30( int32_t qout[4], int32_t q1[4], int32_t q2[4] )
-{
-	int32_t tmpw, tmpx, tmpy;
-    tmpw    = mul2x30(q1[0], q2[0]) - mul2x30(q1[1], q2[1]) - mul2x30(q1[2], q2[2]) - mul2x30(q1[3], q2[3]);
-    tmpx    = mul2x30(q1[0], q2[1]) + mul2x30(q1[1], q2[0]) + mul2x30(q1[2], q2[3]) - mul2x30(q1[3], q2[2]);
-    tmpy    = mul2x30(q1[0], q2[2]) - mul2x30(q1[1], q2[3]) + mul2x30(q1[2], q2[0]) + mul2x30(q1[3], q2[1]);
-    qout[3] = mul2x30(q1[0], q2[3]) + mul2x30(q1[1], q2[2]) - mul2x30(q1[2], q2[1]) + mul2x30(q1[3], q2[0]);
-    qout[2] = tmpy;
-    qout[1] = tmpx;
-    qout[0] = tmpw;
-}
-
-void QuatNormalize_Fix24(int32_t* qout, const int32_t* qin)
-{
-    int32_t qmag = mul2x24( qin[0], qin[0] ) + mul2x24( qin[1], qin[1] ) +
-		mul2x24( qin[2], qin[2] ) + mul2x24( qin[3], qin[3] );
-    qmag       = rsqrtx24_rough(qmag);
-
-    qout[0]    = mul2x24( qin[0], qmag );
-    qout[1]    = mul2x24( qin[1], qmag );
-    qout[2]    = mul2x24( qin[2], qmag );
-    qout[3]    = mul2x24( qin[3], qmag );
-}
-
-
-void QuatNormalize_Fix30(int32_t* qout, const int32_t* qin)
-{
-    int32_t qmag = mul2x30( qin[0], qin[0] ) + mul2x30( qin[1], qin[1] ) +
-		mul2x30( qin[2], qin[2] ) + mul2x30( qin[3], qin[3] );
-    qmag       = rsqrtx30_rough(qmag);
-
-    qout[0]    = mul2x30( qin[0], qmag );
-    qout[1]    = mul2x30( qin[1], qmag );
-    qout[2]    = mul2x30( qin[2], qmag );
-    qout[3]    = mul2x30( qin[3], qmag );
-}
-
-
-// Tested, working, before we devolve down into a world of madness.
-void QuatFromEuler_Fix24( int32_t q[4], const int32_t e[3] ) __HIGH_CODE;
-void QuatFromEuler_Fix24( int32_t q[4], const int32_t e[3] )
-{
-	int32_t pitchhalf = e[0]/2;
-	int32_t yawhalf   = e[1]/2;
-	int32_t rollhalf  = e[2]/2;
-	int32_t cr    = icos_S4(pitchhalf);
-	int32_t sr    = isin_S4(pitchhalf); // Pitch: About X
-	int32_t cp    = icos_S4(yawhalf);
-	int32_t sp    = isin_S4(yawhalf); // Yaw:   About Y
-	int32_t cy    = icos_S4(rollhalf);
-	int32_t sy    = isin_S4(rollhalf); // Roll:  About Z
-
-	q[0]        = mul3x24( cr, cp, cy ) + mul3x24( sr, sp, sy );
-	q[1]        = mul3x24( sr, cp, cy ) - mul3x24( cr, sp, sy );
-	q[2]        = mul3x24( cr, sp, cy ) + mul3x24( sr, cp, sy );
-	q[3]        = mul3x24( cr, cp, sy ) - mul3x24( sr, sp, cy );
-}
-
-void QuatFromEuler_Fix30( int32_t q[4], const int32_t e[3] ) __HIGH_CODE;
-void QuatFromEuler_Fix30( int32_t q[4], const int32_t e[3] )
-{
-	int32_t pitchhalf = e[0];
-	int32_t yawhalf   = e[1];
-	int32_t rollhalf  = e[2];
-	int32_t cr    = icos_S4_BAM32(pitchhalf);
-	int32_t sr    = isin_S4_BAM32(pitchhalf); // Pitch: About X
-	int32_t cp    = icos_S4_BAM32(yawhalf);
-	int32_t sp    = isin_S4_BAM32(yawhalf); // Yaw:   About Y
-	int32_t cy    = icos_S4_BAM32(rollhalf);
-	int32_t sy    = isin_S4_BAM32(rollhalf); // Roll:  About Z
-
-	q[0]        = mul3x30( cr, cp, cy ) + mul3x30( sr, sp, sy );
-	q[1]        = mul3x30( sr, cp, cy ) - mul3x30( cr, sp, sy );
-	q[2]        = mul3x30( cr, sp, cy ) + mul3x30( sr, cp, sy );
-	q[3]        = mul3x30( cr, cp, sy ) - mul3x30( sr, sp, cy );
-}
-
-// TODO:
-// 
-//  Can we do things like cross products faster by adding and shifting in pairs or doing so less accurately?
-//
-//    i.e. _mulhs() to >> by 32 instead of 24?
-
-void CrossProduct_Fix24(int32_t* p, const int32_t* a, const int32_t* b) __HIGH_CODE;
-void CrossProduct_Fix24(int32_t* p, const int32_t* a, const int32_t* b)
-{
-    int32_t tx = mul2x24( a[1], b[2] ) - mul2x24( a[2], b[1] );
-    int32_t ty = mul2x24( a[2], b[0] ) - mul2x24( a[0], b[2] );
-    p[2]       = mul2x24( a[0], b[1] ) - mul2x24( a[1], b[0] );
-    p[1]       = ty;
-    p[0]       = tx;
-}
-
-void CrossProduct_Fix24_to_16_rough(int32_t* p, const int32_t* a, const int32_t* b) __HIGH_CODE;
-void CrossProduct_Fix24_to_16_rough(int32_t* p, const int32_t* a, const int32_t* b)
-{
-    int32_t tx = _mulhs( a[1], b[2] ) - _mulhs( a[2], b[1] );
-    int32_t ty = _mulhs( a[2], b[0] ) - _mulhs( a[0], b[2] );
-    p[2]       = _mulhs( a[0], b[1] ) - _mulhs( a[1], b[0] );
-    p[1]       = ty;
-    p[0]       = tx;
-}
-
-// this takes about 5.48us.
-void RotateVectorByQuaternion_Fix24(int32_t* pout, const int32_t* q, const int32_t* p) __HIGH_CODE;
-void RotateVectorByQuaternion_Fix24(int32_t* pout, const int32_t* q, const int32_t* p)
-{
-    // return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
-    int32_t iqo[3];
-    CrossProduct_Fix24(iqo, q + 1 /*.xyz*/, p);
-    iqo[0] += mul2x24(q[0], p[0]);
-    iqo[1] += mul2x24(q[0], p[1]);
-    iqo[2] += mul2x24(q[0], p[2]);
-    int32_t ret[3];
-    CrossProduct_Fix24(ret, q + 1 /*.xyz*/, iqo);
-    pout[0] = ret[0] * 2 + p[0];
-    pout[1] = ret[1] * 2 + p[1];
-    pout[2] = ret[2] * 2 + p[2];
-}
-
-
-// Inaccurate version of rotate vector by quaternion, throws away about 8 bits of precision.
-// This took about 4.5us before inlining the cross product.
-// This takes about 3.5us @75MHz  (Before manually registerifying the inputs)
-// After, it takes about 2.1us
-void RotateVectorByQuaternion_Fix24_rough(int32_t* pout, const int32_t* q, const int32_t* p) __HIGH_CODE;
-void RotateVectorByQuaternion_Fix24_rough(int32_t* pout, const int32_t* q, const int32_t* p)
-{
-    // return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
-    int32_t iqoX, iqoY, iqoZ;
-	int32_t q0 = q[0], q1 = q[1], q2 = q[2], q3 = q[3];
-	int32_t p0 = p[0], p1 = p[1], p2 = p[2];
-
-    iqoX = _mulhs( q2, p2 ) - _mulhs( q3, p1 );
-    iqoY = _mulhs( q3, p0 ) - _mulhs( q1, p2 );
-    iqoZ = _mulhs( q1, p1 ) - _mulhs( q2, p0 );
-
-    iqoX += _mulhs(q0, p0);
-    iqoY += _mulhs(q0, p1);
-    iqoZ += _mulhs(q0, p2);
-
-	// Fixup 16-bit to 24-bit fixed.
-	iqoX <<= 8;
-	iqoY <<= 8;
-	iqoZ <<= 8;
-
-	// We cannot combine the shifts, because q is still limited to a 24-bit number.
-	pout[0] = ( (_mulhs( q2, iqoZ ) - _mulhs( q3, iqoY ))<<9 ) + p0;
-    pout[1] = ( (_mulhs( q3, iqoX ) - _mulhs( q1, iqoZ ))<<9 ) + p1;
-    pout[2] = ( (_mulhs( q1, iqoY ) - _mulhs( q2, iqoX ))<<9 ) + p2;
-}
-
-// slow for some reason
-void RotateVectorByInverseOfQuaternion_Fix24(int32_t* pout, const int32_t* q, const int32_t* p) __HIGH_CODE;
-void RotateVectorByInverseOfQuaternion_Fix24(int32_t* pout, const int32_t* q, const int32_t* p)
-{
-    // General note: Performing a transform this way can be about 20-30% slower than a well formed 3x3 matrix.
-    // return v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
-    int32_t iqo[3];
-    CrossProduct_Fix24(iqo, p, q + 1 /*.xyz*/);
-    iqo[0] += mul2x24( q[0], p[0] );
-    iqo[1] += mul2x24( q[0], p[1] );
-    iqo[2] += mul2x24( q[0], p[2] );
-    int32_t ret[3];
-    CrossProduct_Fix24(ret, iqo, q + 1 /*.xyz*/);
-    pout[0] = ret[0] * 2.0 + p[0];
-    pout[1] = ret[1] * 2.0 + p[1];
-    pout[2] = ret[2] * 2.0 + p[2];
-}
-
 
 void CoreLoop() __HIGH_CODE;
 
@@ -377,7 +39,7 @@ void CoreLoop()
 	uint32_t cimudat;
 	int16_t cimu[3] = { 0 };
 	int32_t dispPixel[3] = { 0, 0, 0 };
-
+	int32_t gyroBias[3] = { 0, 0, 0 };
 
 	// IMU (updates)
 	int32_t currentQuat[4] = { 1<<30, 0, 0, 0 };
@@ -431,17 +93,21 @@ void CoreLoop()
 					totalLines = (sizeof(bunny_lines)/sizeof(bunny_lines[0])/2);
 					indices3d = bunny_lines;
 					vertices3d = bunny_verts;
+				} else {
+					totalLines = (sizeof(bean_lines)/sizeof(bean_lines[0])/2);
+					indices3d = bean_lines;
+					vertices3d = bean_verts;
+				}
 
+				if( 0 )
+				{
 					_rand_lfsr_update();
 					lineid = _rand_lfsr%totalLines;
 					_rand_lfsr_update();
 					percent_on_line = _rand_lfsr & 0xffff;
 				}
-				else if( 1 )
+				else if( 0 )
 				{
-					totalLines = (sizeof(bean_lines)/sizeof(bean_lines[0])/2);
-					indices3d = bean_lines;
-					vertices3d = bean_verts;
 
 					_rand_lfsr_update();
 					lineid = _rand_lfsr%totalLines;
@@ -450,10 +116,6 @@ void CoreLoop()
 				}
 				else
 				{
-					totalLines = (sizeof(bunny_lines)/sizeof(bunny_lines[0])/2);
-					indices3d = bunny_lines;
-					vertices3d = bunny_verts;
-
 					int zspeed = 30000000/((-dispPixel[2]>>10));
 					if( zspeed < 4000 ) zspeed = 4000;
 					if( zspeed > 65534 ) zspeed = 65534;
@@ -477,8 +139,6 @@ void CoreLoop()
 					}
 				}
 
-
-
 				int vid0 = indices3d[lineid*2+0]*3; // Todo: Optimize!
 				int vid1 = indices3d[lineid*2+1]*3;
 				int32_t laX = vertices3d[vid0+0];
@@ -500,9 +160,9 @@ void CoreLoop()
 				// Bunny is rotated in bunny-local coordinates, where
 				// X, Y and Z are all rotated in 3D space, so z = -1..1
 
-
+				// convert from RHS (World) to NDC
 				x_coord = (dispPixel[0]>>17) + 64;
-				y_coord = (dispPixel[1]>>17) + 64;
+				y_coord = -(dispPixel[1]>>17) + 64;
 			}
 
 			while( R16_SPI0_TOTAL_CNT );
@@ -576,36 +236,38 @@ void CoreLoop()
 		cimutag >>= 3;
 		if( cimutag == 1 )
 		{
-			static int gyronum = 0; gyronum++;	
+			static int gyronum = 0;
+			gyronum++;	
 			// Based on the euler angles, apply a change to the rotation matrix.
 funDigitalWrite( PIN_SCL, 1 );
 
 			int32_t eulerAngles[3];
-			const int32_t eulerScale = 200000000/16;// /8 if running at 1.66kHz instead of 208 Hz
+			const int32_t eulerScale = 15500000;// /8 if running at 1.66kHz instead of 208 Hz
 
-			// XXX We actually counterrotate here so the quaternion presents object-to-world space.
-			eulerAngles[0] =  _mulhs( cimu[0]<<16, eulerScale );
-			eulerAngles[1] =  _mulhs( cimu[1]<<16, eulerScale );
-			eulerAngles[2] =  _mulhs( cimu[2]<<16, eulerScale );
-//printf( "%d %d\n", eulerAngles[0], cimu[0] );
-			// Perform calibration here
+			// Step 9: validation.  Make sure your gyroBias = eulerScale * 2^16 * 200,
+			// and in the correct directions and doesn't change as you rotate the system.
+			//cimu[0] += 200; cimu[1] += 200; cimu[2] += 200;
 
-			// Convert euler angles to quaternion.
-			//fixQuatFromEuler( quaternion, eulerAngles );
+			// STEP 1:  Visually inspect the gyro values.
+			// STEP 2:  Integrate the gyro values, verify they are correct.
+
+			// We bring the IMU into our world coordinate frame here. 
+			// YOU MAY NEED TO add negatives to specific terms here.
+			eulerAngles[0] = -_mulhs( cimu[0]<<16, eulerScale ) + gyroBias[0];
+			eulerAngles[1] =  _mulhs( cimu[1]<<16, eulerScale ) + gyroBias[1];
+			eulerAngles[2] = -_mulhs( cimu[2]<<16, eulerScale ) + gyroBias[2];
+
 			int32_t thisQ[4];
-#if 0
-			QuatFromEuler_Fix24( thisQ, eulerAngles );
-			QuatApplyQuat_Fix24( currentQuat, currentQuat, thisQ );
-			QuatNormalize_Fix24( currentQuat, currentQuat );
-#endif
+
+			// STEP 3:  Integrate gyro values into a quaternion.
+			// This step is validated by working with just one axis at a time
+			// then apply a coordinate frame to ld->fqQuat and validate that it is
+			// correct.
 
 			QuatFromEuler_Fix30( thisQ, eulerAngles );
-//printf( "%d %d %d -> %d %d %d %d\n", eulerAngles[0], eulerAngles[1], eulerAngles[2], thisQ[0], thisQ[1], thisQ[2], thisQ[3] );
-
 			QuatApplyQuat_Fix30( currentQuat, currentQuat, thisQ );
-		//	QuatNormalize_Fix30( currentQuat, currentQuat );
+			QuatNormalize_Fix30( currentQuat, currentQuat );
 
-//printf( "%d %d %d %d -> %d %d %d %d\n", thisQ[0], thisQ[1], thisQ[2], thisQ[3], currentQuat[0], currentQuat[1], currentQuat[2], currentQuat[3] );
 			objectToWorldQuat[0] = currentQuat[0]/64;
 			objectToWorldQuat[1] =-currentQuat[1]/64;
 			objectToWorldQuat[2] =-currentQuat[2]/64;
@@ -619,12 +281,120 @@ funDigitalWrite( PIN_SCL, 0 );
 				debugGyroAccum[0] += eulerAngles[0];
 				debugGyroAccum[1] += eulerAngles[1];
 				debugGyroAccum[2] += eulerAngles[2];
-				printf( "%d %d %d\n", (int) debugGyroAccum[0], (int)debugGyroAccum[1], (int)debugGyroAccum[2] );
+				//printf( "%d %d %d\n", (int) debugGyroAccum[0], (int)debugGyroAccum[1], (int)debugGyroAccum[2] );
 			}
+
+			// STEP 4: Validate yor values by doing 4 90 degree turns
+			//  across multiple axes.
+			// i.e. rotate controller down, clockwise from top, up, counter-clockwise.
+			// while investigating quaternion.  It should return to identity.
 		}
 		else if( cimutag == 2 )
 		{
-			// Accel
+
+funDigitalWrite( PIN_SCL, 1 );
+			static int32_t correctiveLast[3];
+
+			static int accelnum = 0;
+
+			int32_t accel_up_Fix24[3];
+			const int32_t accelScale = 1<<27;
+			// Get into correct coordinate frame (you may have to mess with these)
+			// I.e. making some negative.
+			accel_up_Fix24[0] = -_mulhs( cimu[0]<<16, accelScale );
+			accel_up_Fix24[1] =  _mulhs( cimu[1]<<16, accelScale );
+			accel_up_Fix24[2] = -_mulhs( cimu[2]<<16, accelScale );
+
+			int32_t maga24 = mul2x24(accel_up_Fix24[0],accel_up_Fix24[0]) +
+				mul2x24(accel_up_Fix24[1],accel_up_Fix24[1]) +
+				mul2x24(accel_up_Fix24[2],accel_up_Fix24[2]);
+			int32_t maga24recip = rsqrtx24_good( maga24 );
+
+			int32_t accel_up_Fix29Norm[3];
+			accel_up_Fix29Norm[0] = (accel_up_Fix24[0] * (int64_t)maga24recip)>>19;
+			accel_up_Fix29Norm[1] = (accel_up_Fix24[1] * (int64_t)maga24recip)>>19;
+			accel_up_Fix29Norm[2] = (accel_up_Fix24[2] * (int64_t)maga24recip)>>19;
+			int32_t newscale = mul2x24(accel_up_Fix29Norm[0],accel_up_Fix29Norm[0]) +
+				mul2x24(accel_up_Fix29Norm[1],accel_up_Fix29Norm[1]) +
+				mul2x24(accel_up_Fix29Norm[2],accel_up_Fix29Norm[2]);
+
+			// Get an initial guess
+			if( accelnum++ == 0 )
+			{
+				int32_t ideal_up[3] = {0, 1<<29, 0};
+
+				CreateQuatFromTwoVectorRotation_Fix30OutFix29In(currentQuat, ideal_up, accel_up_Fix29Norm);
+			}
+			else
+			{
+				// STEP 5: Determine our "error" based on accelerometer.
+				// NOTE: This step could be done on the inner loop if you want, and done over
+				// every accelerometer cycle, or it can be done on the outside, every few cycles.
+				// all that realy matters is that it is done periodically.
+
+				// STEP 6: Examine vectors.  Generally speaking, we want an "up" vector, not a gravity vector.
+				// this is "up" in the controller's point of view.
+				int32_t cquat_x24[4] = {
+					currentQuat[0] >> 6, 
+					currentQuat[1] >> 6, 
+					currentQuat[2] >> 6, 
+					currentQuat[3] >> 6 };
+
+				// Step 6A: Next, compute what we think "up" should be from our point of view.  We will use +Y Up.
+				int32_t what_we_think_is_up[3] = {0, 1<<29, 0};
+				RotateVectorByInverseOfQuaternion_Fix24(what_we_think_is_up, cquat_x24, what_we_think_is_up);
+
+				// Step 6B: Next, we determine how far off we are.  This will tell us our error.
+				int32_t corrective_quaternion[4];
+
+				// TRICKY: The ouput of this is actually the axis of rotation, which is ironically
+				// in vector-form the same as a quaternion.  So we can write directly into the quat.
+				CrossProduct_Fix30OutFix29In(corrective_quaternion + 1, accel_up_Fix29Norm, what_we_think_is_up);
+
+//				printf( "x %d %d %d // %d %d %d  / %d %d %d\n",
+//					corrective_quaternion[1], corrective_quaternion[2], corrective_quaternion[3], 
+//					accel_up_Fix29Norm[0], accel_up_Fix29Norm[1], accel_up_Fix29Norm[2],
+//					what_we_think_is_up[0], what_we_think_is_up[1], what_we_think_is_up[2] );
+
+				// Now, we apply this in step 7.
+
+				// First, we can compute what the drift values of our axes are, to anti-drift them.
+				// If you do only this, you will always end up in an unstable oscillation.
+				memcpy(correctiveLast, corrective_quaternion + 1, 12);
+
+				int32_t gyroBiasTug = 1<<6;
+				int32_t correctiveForceTug = 1<<22;
+
+				// XXX TODO: We need to multiply by amount the accelerometer gives us assurance.
+				gyroBias[0] += _mulhs( fixedsqrt_x30(corrective_quaternion[1]), gyroBiasTug );
+				gyroBias[1] += _mulhs( fixedsqrt_x30(corrective_quaternion[2]), gyroBiasTug );
+				gyroBias[2] += _mulhs( fixedsqrt_x30(corrective_quaternion[3]), gyroBiasTug );
+
+//printf( "%d %d %d\n", gyroBias[0], gyroBias[1], gyroBias[2] );
+//printf( "%d %d\n",corrective_quaternion[1], fixedsqrt_x30(corrective_quaternion[1]));
+//				float corrective_force = 0.0005f;
+
+				// Second, we can apply a very small corrective tug.  This helps prevent oscillation
+				// about the correct answer.  This acts sort of like a P term to a PID loop.
+				// This is actually the **primary**, or fastest responding thing.
+				corrective_quaternion[1] = _mulhs( corrective_quaternion[1], correctiveForceTug );
+				corrective_quaternion[2] = _mulhs( corrective_quaternion[2], correctiveForceTug );
+				corrective_quaternion[3] = _mulhs( corrective_quaternion[3], correctiveForceTug );
+
+				// x^2+y^2+z^2+q^2 -> ALGEBRA! -> sqrt( 1-x^2-y^2-z^2 ) = w
+				corrective_quaternion[0] = fixedsqrt_x30((1<<30) - mul2x30(corrective_quaternion[1], corrective_quaternion[1] )
+													 - mul2x30( corrective_quaternion[2], corrective_quaternion[2] )
+													 - mul2x30( corrective_quaternion[3], corrective_quaternion[3] ) );
+
+				QuatApplyQuat_Fix30( currentQuat, currentQuat, corrective_quaternion );
+			}
+
+			// Validate:
+			//   Among other tests:
+			//   Apply a strong bias to the IMU falsely, then make sure in all orientations the gyroBias term doesn't spin around.
+
+funDigitalWrite( PIN_SCL, 0 );
+
 		}
 		else if( cimutag == 3 )
 		{
@@ -745,13 +515,13 @@ void cordic(int theta, int *s, int *c, int n)
   n = (n>CORDIC_NTAB) ? CORDIC_NTAB : n;
   for (k=0; k<n; ++k)
   {
-    d = z>>31;
-    //get sign. for other architectures, you might want to use the more portable version
-    //d = z>=0 ? 0 : -1;
-    tx = x - (((y>>k) ^ d) - d);
-    ty = y + (((x>>k) ^ d) - d);
-    tz = z - ((cordic_ctab[k] ^ d) - d);
-    x = tx; y = ty; z = tz;
+	d = z>>31;
+	//get sign. for other architectures, you might want to use the more portable version
+	//d = z>=0 ? 0 : -1;
+	tx = x - (((y>>k) ^ d) - d);
+	ty = y + (((x>>k) ^ d) - d);
+	tz = z - ((cordic_ctab[k] ^ d) - d);
+	x = tx; y = ty; z = tz;
   }  
  *c = x; *s = y;
 }
