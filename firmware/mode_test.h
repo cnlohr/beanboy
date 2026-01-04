@@ -1,7 +1,6 @@
 //
-// TODO:
-// Add drag to pull logo front.
-// Use lowpass on accel for bouncy.
+// TODO:  FIX self-fronting code.  It only works at 90 degree angle.
+// TODO: Use lowpass on accel for bouncy.  Unrotate accelerometer so rotations don't rek us.
 // Fix IMU for other usage.
 //
 
@@ -63,7 +62,7 @@ void CoreLoop()
 	int32_t objectQuatx24[4] = { 1<<24, 0, 0, 0 };
 
 	int32_t loccenter[3] = { 0 };
-	int32_t loccenter_filt[3] = { 0 };
+//	int32_t loccenter_filt[3] = { 0 };
 
 	int skip = 0;	
 	uint32_t nextdeadline = SysTick->CNT;
@@ -144,7 +143,7 @@ void CoreLoop()
 				{
 					int32_t relz = -dispPixel[2];
 
-					int zspeed = 30000000/((relz>>10));
+					int zspeed = 60000000/((relz>>10)+100);
 
 					if( zspeed < 3000 ) zspeed = 3000;
 					if( zspeed > 65534 ) zspeed = 65534;
@@ -195,21 +194,21 @@ void CoreLoop()
 				// Bunny is rotated in bunny-local coordinates, where
 				// X, Y and Z are all rotated in 3D space, so z = -1..1
 
-				dispPixel[0] -= loccenter_filt[0];
-				dispPixel[1] -= loccenter_filt[1];
-				dispPixel[2] -= loccenter_filt[2];
+			//	dispPixel[0] -= loccenter_filt[0];
+			//	dispPixel[1] -= loccenter_filt[1];
+			//	dispPixel[2] -= loccenter_filt[2];
 
 				//int32_t wxpos = _mulhs( dispPixel[0]/((dispPixel[2]+2000000)), 20000 );
 				//int32_t wypos = _mulhs( dispPixel[1]/((dispPixel[2]+2000000)), 20000 );
-				int32_t wxpos = dispPixel[0]/((dispPixel[2]+44000000)>>8);
-				int32_t wypos = dispPixel[1]/((dispPixel[2]+44000000)>>8);
+				int32_t wxpos = dispPixel[0]/((dispPixel[2]+54000000)>>8);
+				int32_t wypos = dispPixel[1]/((dispPixel[2]+54000000)>>8);
 
 				// convert from RHS (World) to NDC
 				x_coord =  wxpos + 64;
 				y_coord = -wypos + 64;
 
 				// MAke sparkley effect.
-				if( (SysTick->CNT & 0x3f) < 3 ) skip = 6;
+				if( (SysTick->CNT & 0x3f) < 3 ) skip = (SysTick->CNT & 0xf) ;
 			}
 
 			while( R16_SPI0_TOTAL_CNT );
@@ -221,52 +220,36 @@ void CoreLoop()
 
 	base_loop_logic:
 	{
-		//if( ( SysTick->CNT & 0xf ) == 7) Delay_Us(1000);
+		// This can take a while, it's all fine.   This happens when we have free time.
 
-		int32_t unrotated[3] = { 1<<24, 0, 0 };
+		//////////////////////////////////////////////////////////////////////////
+		// Push the square wave towards the user.
+
+
+		int32_t unrotated[3] = { 0, 0, 1<<24 };
 		int32_t rotated[3];
 		int32_t rotatedFinal[3];
 		RotateVectorByQuaternion_Fix24_rough( rotated, objectQuatx24, unrotated );
 		RotateVectorByQuaternion_Fix24_rough( rotated, viewQuatx24,   rotated );
 
-		// Ideal rotation = rotated[z] = -2^16.
-		// nudge objectQuat left and right based on the value of [y] being > or < 0.
+		// Ideal rotation = rotated[x] = -2^16.
+		// nudge objectQuat left and right based on the value of [z] being > or < 0.
 
 		// Cross between ideal and what we have.
 		int32_t dragcenter[4] = { 0, 0, 0, 0 };
 
 		//CrossProduct_Fix24( dragcenter + 1, ideal, rotated );
 		// Because we are only rotating around Y all we need is the Y component of the corrective amount.
-		dragcenter[2] = rotated[1];;
+		dragcenter[2] = rotated[2];
 
 		// Don't yank.
-		dragcenter[2] >>= 10;
+		dragcenter[2] >>= 8;
 
 		// Because we only have one term, normalizing is ez.
 		dragcenter[0] = rsqrtx24_rough((1<<24) - mul2x30(dragcenter[2], dragcenter[2] ));
 
 		QuatApplyQuat_Fix24( objectQuatx24, objectQuatx24, dragcenter );
 		QuatNormalize_Fix24( objectQuatx24, objectQuatx24 );
-
-
-
-//		int32_t dragcenter[4];
-//		CreateQuatFromTwoVectorRotation_Fix30OutFix29In(dragcenter, ideal, rotated);
-
-//		dragcenter[0]>>=6;
-//		dragcenter[1]>>=6;
-//		dragcenter[2]>>=6;
-//		dragcenter[3]>>=6;
-
-//		QuatApplyQuat_Fix24( objectQuat, objectQuat, dragcenter );
-//		printf( "%d %d %d %d\n", dragcenter[0], dragcenter[1], dragcenter[2], dragcenter[3] );
-
-//		printf( "%d %d %d\n", rotated[0], rotated[1], rotated[2] );
-//		QuatApplyQuat_Fix30( currentQuat, currentQuat, thisQ );
-//		QuatNormalize_Fix30( currentQuat, currentQuat );
-//		QuatNormalize_Fix30(objectQuat, objectQuat);
-
-
 
 		nextjump = &&lsm6_getcimu;
 		goto cont;
@@ -537,11 +520,34 @@ void CoreLoop()
 		goto cont;
 
 	game_logic_after_accel:
+	{
+
+		// CAREFUL: Perform rotations to acceleration reverse in object space.
+		int32_t rotatedAccel[3] = { };
+		//RotateVectorByQuaternion_Fix24_rough( rotatedAccel, viewQuatx24,   accel_up_Fix24 );
+		int32_t invq[4] = { viewQuatx24[0],-viewQuatx24[1],-viewQuatx24[2],-viewQuatx24[3] };
+		RotateVectorByQuaternion_Fix24_rough( rotatedAccel, invq,   accel_up_Fix24 );
+
+		static int32_t averageAccel[3];
+		const int32_t accelGamma = 500000;
+		averageAccel[0] =  mul2x24( averageAccel[0], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[0], accelGamma );
+		averageAccel[1] =  mul2x24( averageAccel[1], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[1], accelGamma );
+		averageAccel[2] =  mul2x24( averageAccel[2], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[2], accelGamma );
+//printf( "%d %d %d\n", rotatedAccel[0], rotatedAccel[1], rotatedAccel[2] );
+
+		int32_t diffAccel[3] = {
+			rotatedAccel[0] - averageAccel[0],
+			rotatedAccel[1] - averageAccel[1],
+			rotatedAccel[2] - averageAccel[2] };
+
+		// Put it back into world space.
+		RotateVectorByQuaternion_Fix24_rough( diffAccel, viewQuatx24,   diffAccel );
+
 
 		// Gravity
-		dongleVelocity[0] += _mulhs(accel_up_Fix24[0], -100000 );
-		dongleVelocity[1] += _mulhs(accel_up_Fix24[1], -100000 );
-		dongleVelocity[2] += _mulhs(accel_up_Fix24[2], -100000 );
+		dongleVelocity[0] += _mulhs(diffAccel[0], -1500000 );
+		dongleVelocity[1] += _mulhs(diffAccel[1], -1500000 );
+		dongleVelocity[2] += _mulhs(diffAccel[2], -1500000 );
 
 		// Drag
 		dongleVelocity[0] -= _mulhs(dongleVelocity[0], 12000000 );
@@ -567,11 +573,11 @@ void CoreLoop()
 
 		int32_t dist = fixedsqrt_x30( _mulhs( tcenter[0], tcenter[0] ) +
 			_mulhs( tcenter[1], tcenter[1] ) + _mulhs( tcenter[2], tcenter[2] )  );
-		dist-= 1000000;
 
+		dist-= 5000000;
 		if( dist > 0 )
 		{
-			dist>>=8;
+			dist>>=4;
 			int32_t resistance[3] = {
 				_mulhs( tcenter[0], -dist ),
 				_mulhs( tcenter[1], -dist ),
@@ -584,10 +590,10 @@ void CoreLoop()
 
 		//RotateVectorByQuaternion_Fix24_rough( loccenter, viewQuat, worldTranslate );
 
-		const int32_t loccenter_epsilon = 100000;
-		loccenter_filt[0] = mul2x24( loccenter_filt[0], (1<<24)-loccenter_epsilon ) + mul2x24(  worldTranslate[0], loccenter_epsilon );
-		loccenter_filt[1] = mul2x24( loccenter_filt[1], (1<<24)-loccenter_epsilon ) + mul2x24(  worldTranslate[1], loccenter_epsilon );
-		loccenter_filt[2] = mul2x24( loccenter_filt[2], (1<<24)-loccenter_epsilon ) + mul2x24(  worldTranslate	[2], loccenter_epsilon );
+//		const int32_t loccenter_gamma = 100000;
+//		loccenter_filt[0] = mul2x24( loccenter_filt[0], (1<<24)-loccenter_gamma ) + mul2x24(  worldTranslate[0], loccenter_gamma );
+//		loccenter_filt[1] = mul2x24( loccenter_filt[1], (1<<24)-loccenter_gamma ) + mul2x24(  worldTranslate[1], loccenter_gamma );
+//		loccenter_filt[2] = mul2x24( loccenter_filt[2], (1<<24)-loccenter_gamma ) + mul2x24(  worldTranslate	[2], loccenter_gamma );
 
 
 		// Drag object to kinda look at the user.
@@ -598,7 +604,7 @@ void CoreLoop()
 
 		nextjump = &&lsm6_getcimu;
 		goto cont;
-	
+	}	
 
 }
 
