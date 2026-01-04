@@ -525,33 +525,22 @@ resample:
 			const int gyroBiasForce = 1<<9;
 
 			int32_t confidences[3] = {
-				(gyroBiasForce>>3) - dotm_mulhs3( (const int32_t[3]){ gyroBiasForce, 0, 0 }, what_we_think_is_up ),
-				(gyroBiasForce>>3) - dotm_mulhs3( (const int32_t[3]){ 0, gyroBiasForce, 0 }, what_we_think_is_up ),
-				(gyroBiasForce>>3) - dotm_mulhs3( (const int32_t[3]){ 0, 0, gyroBiasForce }, what_we_think_is_up ) };
+				(gyroBiasForce>>3) - ABS( dotm_mulhs3( (const int32_t[3]){ gyroBiasForce, 0, 0 }, what_we_think_is_up ) ),
+				(gyroBiasForce>>3) - ABS( dotm_mulhs3( (const int32_t[3]){ 0, gyroBiasForce, 0 }, what_we_think_is_up ) ),
+				(gyroBiasForce>>3) - ABS( dotm_mulhs3( (const int32_t[3]){ 0, 0, gyroBiasForce }, what_we_think_is_up ) ) };
 
-			if( confidences[0] < 0 ) confidences[0] = -confidences[0];
-			if( confidences[1] < 0 ) confidences[1] = -confidences[1];
-			if( confidences[2] < 0 ) confidences[2] = -confidences[2];
-
-			// XXX TODO: We need to multiply by amount the accelerometer gives us assurance.
 			int32_t gbadg[3] = {
 				_mulhs( fixedsqrt_x30(corrective_quaternion[1]), confidences[0] ),
 				_mulhs( fixedsqrt_x30(corrective_quaternion[2]), confidences[1] ),
 				_mulhs( fixedsqrt_x30(corrective_quaternion[3]), confidences[2] ) };
 
-			// Tricky if you take a negative number and >> it, then it will be sticky at -1.
-			// Surely there's a more elegant way of doing this!
-			const int histeresis = 2;
-			if( gbadg[0] < 0 ) { if( gbadg[0] < -histeresis ) gbadg[0] += histeresis; else gbadg[0] = 0; }
-			else { if( gbadg[0] > histeresis ) gbadg[0]-= histeresis;  else gbadg[0] = 0; }
-			if( gbadg[1] < 0 ) { if( gbadg[1] < -histeresis ) gbadg[1] += histeresis; else gbadg[1] = 0; }
-			else { if( gbadg[1] > histeresis ) gbadg[1]-= histeresis;  else gbadg[1] = 0; }
-			if( gbadg[2] < 0 ) { if( gbadg[2] < -histeresis ) gbadg[2] += histeresis; else gbadg[2] = 0; } 
-			else { if( gbadg[2] > histeresis ) gbadg[2]-= histeresis;  else gbadg[2] = 0; }
+			// Tricky: when updating the gyro bias, if you take a negative number and >> it, then it will be sticky at -1.
+			// You're dealing with very small numbers.  When integrating many times they add up.  This nerfs that.
+			const int hysteresis = 2;
 
-			gyroBias[0] += gbadg[0];
-			gyroBias[1] += gbadg[1];
-			gyroBias[2] += gbadg[2];
+			gyroBias[0] += ApplyHysteresis( gbadg[0], hysteresis );
+			gyroBias[1] += ApplyHysteresis( gbadg[1], hysteresis );
+			gyroBias[2] += ApplyHysteresis( gbadg[2], hysteresis );
 
 			//printf( "%d %d %d\n",confidences[0], _mulhs( fixedsqrt_x30(corrective_quaternion[2]), confidences[1] ), confidences[2] );
 

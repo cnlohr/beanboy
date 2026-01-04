@@ -26,7 +26,7 @@ typedef struct ModeTest_t
 
 ModeTest * testMode;
 
-int SlowGameCheck()
+void SlowGameCheck()
 {
 	static int fastgamestate = 0;
 
@@ -56,7 +56,7 @@ int SlowGameCheck()
 		lastfifo = 0;
 		EventRelease();
 	}
-	else if ( (fastgamestate & 0xf) == 4 )
+	else if ( (fastgamestate & 0xf) == 0xf )
 	{
 		int tbtn = testMode->tbtn;
 		int lastp = testMode->tppressures[tbtn];
@@ -93,7 +93,6 @@ int SlowGameCheck()
 		}
 	}
 	fastgamestate = ( fastgamestate + 1 ) & 0x3f;
-	return 0;
 }
 
 void CoreLoop() __HIGH_CODE;
@@ -101,7 +100,7 @@ void CoreLoop() __HIGH_CODE;
 
 void CoreLoop()
 {
-	uint32_t tmpr_for_imu;
+	uint32_t tmp;
 	uint32_t pixelNumber = 0;
 	int x_coord;
 	int y_coord;
@@ -127,10 +126,10 @@ void CoreLoop()
 	int32_t corrective_quaternion[4]; // Internal, for gravity updates.
 	int32_t what_we_think_is_up[3];
 	int32_t gyroBias[3] = { 0, 0, 0 };
+	int32_t accelUpdateConfidences[3] = { 0, 0, 0 };
+	int32_t gyroBiasUpdateAmount[3] = { 0, 0, 0 };
 	int gyronum = 0;
 	int accelnum = 0;
-
-
 
 	int32_t viewQuatx24[4] = { 1<<24, 0, 0, 0 };
 	int32_t objectQuatx24[4] = { 1<<24, 0, 0, 0 };
@@ -286,7 +285,7 @@ void CoreLoop()
 			//	dispPixel[2] -= loccenter_filt[2];
 
 				// Animate going to main menu
-				dispPixel[2] += testMode->timeMenuDown * 6000000;
+				dispPixel[2] += MAX( testMode->timeMenuDown - 20, 0 ) * 6000000;
 
 				//int32_t wxpos = _mulhs( dispPixel[0]/((dispPixel[2]+2000000)), 20000 );
 				//int32_t wypos = _mulhs( dispPixel[1]/((dispPixel[2]+2000000)), 20000 );
@@ -306,6 +305,10 @@ void CoreLoop()
 			funDigitalWrite( SSD1306_CS_PIN, FUN_HIGH );
 		}
 		pixelNumber++;
+		if( !nextjump )
+		{
+			nextjump = cimudat ? &&base_loop_logic : &&lsm6_getcimu;
+		}
 		goto *nextjump;
 
 	base_loop_logic:
@@ -315,10 +318,10 @@ void CoreLoop()
 
 		//////////////////////////////////////////////////////////////////////////
 		// Push the square wave towards the user.
+		funDigitalWrite( PIN_SCL, 1 );
 
 		if( (int32_t)(SysTick->CNT - logicTickNext) > 0 )
 		{
-
 			logicTickNext += 400000;
 
 			int32_t unrotated[3] = { 0, 0, 1<<24 };
@@ -348,10 +351,9 @@ void CoreLoop()
 		}
 		else
 		{
-			funDigitalWrite( PIN_SCL, 1 );
-			if( SlowGameCheck() ) return;
-			funDigitalWrite( PIN_SCL, 0 );
+			SlowGameCheck();
 		}
+		funDigitalWrite( PIN_SCL, 0 );
 		nextjump = &&lsm6_getcimu;
 		goto cont;
 	}
@@ -376,6 +378,11 @@ void CoreLoop()
 			nextjump = &&lsm6_pull0;
 			goto cont;
 		}
+
+		// There's nothing pending, we can do anything we want here that takes a while.
+		//printf( "%d %d %d\n", accelUpdateConfidences[0], accelUpdateConfidences[1], accelUpdateConfidences[2] );
+		//printf( "%d %d %d\n", what_we_think_is_up[0], what_we_think_is_up[1], what_we_think_is_up[2] );
+
 		nextjump = &&base_loop_logic;
 		goto cont;
 
@@ -402,17 +409,18 @@ void CoreLoop()
 		SendByteNoAck( (LSM6DS3_ADDRESS<<1)|1 );
 		cimutag = GetByte( 0 ); // FIFO Tag
 	//	GetByte( 0 )<<8; // Ignore FIFO status 4
-		tmpr_for_imu = GetByte( 0 );
+		tmp = GetByte( 0 );
 		nextjump = &&lsm6_pull1;
 		goto cont;
 
 	lsm6_pull1:
-		cimu[0] = tmpr_for_imu | GetByte( 0 ) << 8;
-		tmpr_for_imu = GetByte( 0 );
-		cimu[1] = tmpr_for_imu | GetByte( 0 ) << 8;
-		tmpr_for_imu = GetByte( 0 );
-		cimu[2] = tmpr_for_imu | GetByte( 1 ) << 8;
+		cimu[0] = tmp | GetByte( 0 ) << 8;
+		tmp = GetByte( 0 );
+		cimu[1] = tmp | GetByte( 0 ) << 8;
+		tmp = GetByte( 0 );
+		cimu[2] = tmp | GetByte( 1 ) << 8;
 		SendStop();
+		cimudat--;
 		nextjump = &&lsm6_pull2;
 		goto cont;
 
@@ -480,7 +488,7 @@ void CoreLoop()
 		{
 			if(testMode->modePause)
 			{		
-				nextjump = &&lsm6_getcimu;
+				nextjump = 0;
 				goto cont;
 			}
 			funDigitalWrite( PIN_SCL, 1 );
@@ -531,11 +539,31 @@ void CoreLoop()
 				// Step 6A: Next, compute what we think "up" should be from our point of view.  We will use +Y Up.
 				RotateVectorByInverseOfQuaternion_Fix24(what_we_think_is_up, cquat_x24, (const int32_t[3]){0, -1<<29, 0});
 
+				funDigitalWrite( PIN_SCL, 1 );
 				// Step 6C: Next, we determine how far off we are.  This will tell us our error.
 
 				// TRICKY: The ouput of this is actually the axis of rotation, which is ironically
 				// in vector-form the same as a quaternion.  So we can write directly into the quat.
 				CrossProduct_Fix30OutFix29In(corrective_quaternion + 1, what_we_think_is_up, accel_up_Fix29Norm);
+		
+				const int gyroBiasForce = 1<<9;
+				accelUpdateConfidences[0] = (gyroBiasForce>>3) - ABS( dotm_mulhs3( (const int32_t[3]){ gyroBiasForce, 0, 0 }, what_we_think_is_up ) );
+				accelUpdateConfidences[1] = (gyroBiasForce>>3) - ABS( dotm_mulhs3( (const int32_t[3]){ 0, gyroBiasForce, 0 }, what_we_think_is_up ) );
+				accelUpdateConfidences[2] = (gyroBiasForce>>3) - ABS( dotm_mulhs3( (const int32_t[3]){ 0, 0, gyroBiasForce }, what_we_think_is_up ) );
+
+				// Now, we apply this in step 7.
+
+				// First, we can compute what the drift values of our axes are, to anti-drift them.
+				// If you do only this, you will always end up in an unstable oscillation.
+				//
+				//  We
+
+				gyroBiasUpdateAmount[0] = _mulhs( fixedsqrt_x30(corrective_quaternion[1]), accelUpdateConfidences[0] );
+
+				funDigitalWrite( PIN_SCL, 0 );
+
+
+				// [[[CONTINUED BELOW]]]
 
 				nextjump = &&continue_accelerometer_logic;
 				goto cont;
@@ -549,57 +577,34 @@ void CoreLoop()
 		{
 			//printf( "Confusing tag: %d\n", (int)cimutag );
 		}
-		nextjump = &&lsm6_getcimu;
+		nextjump = 0;
 		goto cont;
 
 
 
 
 	continue_accelerometer_logic:
-
 		funDigitalWrite( PIN_SCL, 1 );
 
-		// Now, we apply this in step 7.
+		// Continued from lsm6_pull2, tag 2.
 
-		// First, we can compute what the drift values of our axes are, to anti-drift them.
-		// If you do only this, you will always end up in an unstable oscillation.
-		//memcpy(correctiveLast, corrective_quaternion + 1, 12);
+		gyroBiasUpdateAmount[1] = _mulhs( fixedsqrt_x30(corrective_quaternion[2]), accelUpdateConfidences[1] );
+		gyroBiasUpdateAmount[2] = _mulhs( fixedsqrt_x30(corrective_quaternion[3]), accelUpdateConfidences[2] );
 
 		//int32_t gyroBiasTug = 1<<8;
 		int32_t correctiveForceTug = 1<<21;
-		
-		const int gyroBiasForce = 1<<9;
 
-		int32_t confidences[3] = {
-			(gyroBiasForce>>3) - dotm_mulhs3( (const int32_t[3]){ gyroBiasForce, 0, 0 }, what_we_think_is_up ),
-			(gyroBiasForce>>3) - dotm_mulhs3( (const int32_t[3]){ 0, gyroBiasForce, 0 }, what_we_think_is_up ),
-			(gyroBiasForce>>3) - dotm_mulhs3( (const int32_t[3]){ 0, 0, gyroBiasForce }, what_we_think_is_up ) };
+		// Tricky: when updating the gyro bias, if you take a negative number and >> it, then it will be sticky at -1.
+		// You're dealing with very small numbers.  When integrating many times they add up.  This nerfs that.
+		const int gyroBiasUpdateHysteresis = 2;
 
-		if( confidences[0] < 0 ) confidences[0] = -confidences[0];
-		if( confidences[1] < 0 ) confidences[1] = -confidences[1];
-		if( confidences[2] < 0 ) confidences[2] = -confidences[2];
-
-		// XXX TODO: We need to multiply by amount the accelerometer gives us assurance.
-		int32_t gbadg[3] = {
-			_mulhs( fixedsqrt_x30(corrective_quaternion[1]), confidences[0] ),
-			_mulhs( fixedsqrt_x30(corrective_quaternion[2]), confidences[1] ),
-			_mulhs( fixedsqrt_x30(corrective_quaternion[3]), confidences[2] ) };
-
-		// Tricky if you take a negative number and >> it, then it will be sticky at -1.
-		// Surely there's a more elegant way of doing this!
-		const int histeresis = 2;
-		if( gbadg[0] < 0 ) { if( gbadg[0] < -histeresis ) gbadg[0] += histeresis; else gbadg[0] = 0; }
-		else { if( gbadg[0] > histeresis ) gbadg[0]-= histeresis;  else gbadg[0] = 0; }
-		if( gbadg[1] < 0 ) { if( gbadg[1] < -histeresis ) gbadg[1] += histeresis; else gbadg[1] = 0; }
-		else { if( gbadg[1] > histeresis ) gbadg[1]-= histeresis;  else gbadg[1] = 0; }
-		if( gbadg[2] < 0 ) { if( gbadg[2] < -histeresis ) gbadg[2] += histeresis; else gbadg[2] = 0; } 
-		else { if( gbadg[2] > histeresis ) gbadg[2]-= histeresis;  else gbadg[2] = 0; }
-
-		gyroBias[0] += gbadg[0];
-		gyroBias[1] += gbadg[1];
-		gyroBias[2] += gbadg[2];
+		gyroBias[0] += ApplyHysteresis( gyroBiasUpdateAmount[0], gyroBiasUpdateHysteresis );
+		gyroBias[1] += ApplyHysteresis( gyroBiasUpdateAmount[1], gyroBiasUpdateHysteresis );
+		gyroBias[2] += ApplyHysteresis( gyroBiasUpdateAmount[2], gyroBiasUpdateHysteresis );
 
 		//printf( "%d %d %d\n",confidences[0], _mulhs( fixedsqrt_x30(corrective_quaternion[2]), confidences[1] ), confidences[2] );
+
+		funDigitalWrite( PIN_SCL, 0 );	
 
 		// Second, we can apply a very small corrective tug.  This helps prevent oscillation
 		// about the correct answer.  This acts sort of like a P term to a PID loop.
@@ -616,7 +621,6 @@ void CoreLoop()
 
 
 		QuatApplyQuat_Fix30( currentQuat, currentQuat, corrective_quaternion );
-		funDigitalWrite( PIN_SCL, 0 );	
 
 		// Validate:
 		//   Among other tests:
@@ -701,7 +705,7 @@ void CoreLoop()
 		funDigitalWrite( PIN_SCL, 0 );
 
 
-		nextjump = &&lsm6_getcimu;
+		nextjump = 0;
 		goto cont;
 
 	// Extra states look like this:

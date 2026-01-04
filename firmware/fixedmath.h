@@ -3,6 +3,29 @@
 
 #include <stdint.h>
 
+#define MAX( x, y ) (( (x) < (y) )? (y) : (x) )
+#define ABS( x ) (( (x) < (0) ) ? (-(x)) : (x) )
+
+int32_t ApplyHysteresis( int32_t v, int32_t hysteresis ) __HIGH_CODE;
+int32_t ApplyHysteresis( int32_t v, int32_t hysteresis )
+{
+	if( v < 0 )
+	{
+		if( v < -hysteresis )
+			v += hysteresis;
+		else
+			v = 0;
+	}
+	else
+	{
+		if( v > hysteresis )
+			v-= hysteresis; 
+		else
+			v = 0;
+	}
+
+	return v;
+}
 
 //https://www.coranac.com/2009/07/sines/
 // Based on isin_S4, but fiddled to get the right range.
@@ -165,7 +188,7 @@ int32_t fixedsqrt_x30( int32_t i )
 	for( l = 0; l < 24; l++ )
 	{
 		int32_t comp = _mulhs( x, x );
-		if( comp == ir4 ) break;
+		//if( comp == ir4 ) break;
 		if( comp < ir4 )
 			x += adj;
 		else
