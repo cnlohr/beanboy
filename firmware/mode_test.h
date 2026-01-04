@@ -57,6 +57,9 @@ void CoreLoop()
 
 	// IMU (updates)
 	int32_t currentQuat[4] = { 1<<30, 0, 0, 0 };
+	int32_t corrective_quaternion[4]; // Internal, for gravity updates.
+	int32_t what_we_think_is_up[3];
+
 
 	int32_t viewQuatx24[4] = { 1<<24, 0, 0, 0 };
 	int32_t objectQuatx24[4] = { 1<<24, 0, 0, 0 };
@@ -409,6 +412,27 @@ void CoreLoop()
 			}
 			else
 			{
+				// STEP 6: Determine our "error" based on accelerometer.
+				// NOTE: This step could be done on the inner loop if you want, and done over
+				// every accelerometer cycle, or it can be done on the outside, every few cycles.
+				// all that realy matters is that it is done periodically.
+
+				// STEP 6A: Examine vectors.  Generally speaking, we want an "up" vector, not a gravity vector.
+				// this is "up" in the controller's point of view.
+				int32_t cquat_x24[4] = {
+					currentQuat[0] >> 6, 
+					currentQuat[1] >> 6, 
+					currentQuat[2] >> 6, 
+					currentQuat[3] >> 6 };
+
+				// Step 6A: Next, compute what we think "up" should be from our point of view.  We will use +Y Up.
+				RotateVectorByInverseOfQuaternion_Fix24(what_we_think_is_up, cquat_x24, (const int32_t[3]){0, -1<<29, 0});
+
+				// Step 6C: Next, we determine how far off we are.  This will tell us our error.
+
+				// TRICKY: The ouput of this is actually the axis of rotation, which is ironically
+				// in vector-form the same as a quaternion.  So we can write directly into the quat.
+				CrossProduct_Fix30OutFix29In(corrective_quaternion + 1, what_we_think_is_up, accel_up_Fix29Norm);
 
 				nextjump = &&continue_accelerometer_logic;
 				goto cont;
@@ -429,30 +453,8 @@ void CoreLoop()
 
 
 	continue_accelerometer_logic:
-		// STEP 5: Determine our "error" based on accelerometer.
-		// NOTE: This step could be done on the inner loop if you want, and done over
-		// every accelerometer cycle, or it can be done on the outside, every few cycles.
-		// all that realy matters is that it is done periodically.
 
 		funDigitalWrite( PIN_SCL, 1 );
-		// STEP 6: Examine vectors.  Generally speaking, we want an "up" vector, not a gravity vector.
-		// this is "up" in the controller's point of view.
-		int32_t cquat_x24[4] = {
-			currentQuat[0] >> 6, 
-			currentQuat[1] >> 6, 
-			currentQuat[2] >> 6, 
-			currentQuat[3] >> 6 };
-
-		// Step 6A: Next, compute what we think "up" should be from our point of view.  We will use +Y Up.
-		int32_t what_we_think_is_up[3] = {0, -1<<29, 0};
-		RotateVectorByInverseOfQuaternion_Fix24(what_we_think_is_up, cquat_x24, what_we_think_is_up);
-
-		// Step 6B: Next, we determine how far off we are.  This will tell us our error.
-		int32_t corrective_quaternion[4];
-
-		// TRICKY: The ouput of this is actually the axis of rotation, which is ironically
-		// in vector-form the same as a quaternion.  So we can write directly into the quat.
-		CrossProduct_Fix30OutFix29In(corrective_quaternion + 1, what_we_think_is_up, accel_up_Fix29Norm);
 
 		// Now, we apply this in step 7.
 
@@ -510,17 +512,18 @@ void CoreLoop()
 		QuatApplyQuat_Fix30( currentQuat, currentQuat, corrective_quaternion );
 		funDigitalWrite( PIN_SCL, 0 );	
 
-
-		// TODO: Need to stop windup around 
-
 		// Validate:
 		//   Among other tests:
 		//   Apply a strong bias to the IMU falsely, then make sure in all orientations the gyroBias term doesn't spin around.
-		nextjump = &&game_logic_after_accel;
-		goto cont;
 
-	game_logic_after_accel:
-	{
+
+		// We're actually done with IMU work.
+
+
+
+		// But we still have time, so let's handle letting our object bounce around.
+
+		funDigitalWrite( PIN_SCL, 1 );
 
 		// CAREFUL: Perform rotations to acceleration reverse in object space.
 		int32_t rotatedAccel[3] = { };
@@ -588,23 +591,19 @@ void CoreLoop()
 			dongleVelocity[2] += resistance[2]>>4;
 		}
 
-		//RotateVectorByQuaternion_Fix24_rough( loccenter, viewQuat, worldTranslate );
+		funDigitalWrite( PIN_SCL, 0 );
 
-//		const int32_t loccenter_gamma = 100000;
-//		loccenter_filt[0] = mul2x24( loccenter_filt[0], (1<<24)-loccenter_gamma ) + mul2x24(  worldTranslate[0], loccenter_gamma );
-//		loccenter_filt[1] = mul2x24( loccenter_filt[1], (1<<24)-loccenter_gamma ) + mul2x24(  worldTranslate[1], loccenter_gamma );
-//		loccenter_filt[2] = mul2x24( loccenter_filt[2], (1<<24)-loccenter_gamma ) + mul2x24(  worldTranslate	[2], loccenter_gamma );
-
-
-		// Drag object to kinda look at the user.
-
-		//QuatApplyQuat_Fix30( currentQuat, currentQuat, corrective_quaternion );
-
-		//int32_t objectQuat[4] = { 1<<30, 0, 0, 0 };
 
 		nextjump = &&lsm6_getcimu;
 		goto cont;
-	}	
+
+	// Extra states look like this:
+//	game_logic_after_accel:
+//	{
+//
+//		nextjump = &&lsm6_getcimu;
+//		goto cont;
+//	}	
 
 }
 
@@ -629,13 +628,13 @@ void EnterTestMode( ModeTest * m )
 	SendStart();
 	SendByteNoAck( LSM6DS3_ADDRESS<<1 );
 	SendByteNoAck( 0x11 );
-	SendByteNoAck( 0x9d ); // 1.66kHz = 8d (does not work at all at 6.66, and works worse at 3.33 = 9d)
+	SendByteNoAck( 0x9d ); // 3.33kHz gyro updates
 	SendStop();
 
 	SendStart();
 	SendByteNoAck( LSM6DS3_ADDRESS<<1 );
 	SendByteNoAck( 0x10 );
-	SendByteNoAck( 0x7a ); // 208*4 +/- 8g
+	SendByteNoAck( 0x7a ); // 833Hz Accel updates
 	SendStop();
 
 
