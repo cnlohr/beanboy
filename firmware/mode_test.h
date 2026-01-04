@@ -74,7 +74,7 @@ int SlowGameCheck()
 			{
 				if( testMode->timeMenuDown++ > 80 )
 				{
-					asm volatile( ".option push\n.option norelax\njr x0\n.option pop" );
+					Reboot();
 				}
 			}
 		}

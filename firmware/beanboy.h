@@ -1,14 +1,22 @@
 #ifndef _BEANBOY_H
 #define _BEANBOY_H
 
+// Forward declaration to push code into __HIGH_CODE which is really fast.
 void ssd1306_drawPixel(uint32_t x, uint32_t y, int color) __HIGH_CODE;
 
 
 #include "fixedmath.h"
 
-//#define 	NRODATA   __attribute__((section(".text")))
-//#define 	ST(str)   ({ static const NRODATA char c[] = (str); &c[0]; })
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// misc functions.
 
+static inline void Reboot() __attribute__((noreturn));
+static inline void Reboot()
+{
+	asm volatile( ".option push\n.option norelax\njr x0\n.option pop" );
+	__builtin_unreachable();
+}
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
