@@ -21,6 +21,7 @@ typedef struct ModeTest_t
 	int timeMenuDown;
 	int model;
 	int animationType;
+	int modePause;
 } ModeTest;
 
 ModeTest * testMode;
@@ -72,6 +73,7 @@ int SlowGameCheck()
 			}
 			else
 			{
+				if( !wasdown ) { testMode->modePause = !testMode->modePause; }
 				if( testMode->timeMenuDown++ > 80 )
 				{
 					Reboot();
@@ -98,7 +100,7 @@ void CoreLoop() __HIGH_CODE;
 
 void CoreLoop()
 {
-	uint32_t tmp;
+	uint32_t tmpr_for_imu;
 	uint32_t pixelNumber = 0;
 	int x_coord;
 	int y_coord;
@@ -394,16 +396,16 @@ void CoreLoop()
 		SendByteNoAck( (LSM6DS3_ADDRESS<<1)|1 );
 		cimutag = GetByte( 0 ); // FIFO Tag
 	//	GetByte( 0 )<<8; // Ignore FIFO status 4
+		tmpr_for_imu = GetByte( 0 );
 		nextjump = &&lsm6_pull1;
 		goto cont;
 
 	lsm6_pull1:
-		tmp = GetByte( 0 );
-		cimu[0] = tmp | GetByte( 0 ) << 8;
-		tmp = GetByte( 0 );
-		cimu[1] = tmp | GetByte( 0 ) << 8;
-		tmp = GetByte( 0 );
-		cimu[2] = tmp | GetByte( 1 ) << 8;
+		cimu[0] = tmpr_for_imu | GetByte( 0 ) << 8;
+		tmpr_for_imu = GetByte( 0 );
+		cimu[1] = tmpr_for_imu | GetByte( 0 ) << 8;
+		tmpr_for_imu = GetByte( 0 );
+		cimu[2] = tmpr_for_imu | GetByte( 1 ) << 8;
 		SendStop();
 		nextjump = &&lsm6_pull2;
 		goto cont;
@@ -444,10 +446,13 @@ void CoreLoop()
 			QuatApplyQuat_Fix30( currentQuat, currentQuat, thisQ );
 			QuatNormalize_Fix30( currentQuat, currentQuat );
 
-			viewQuatx24[0] = currentQuat[0]>>6;
-			viewQuatx24[1] =-currentQuat[1]>>6;
-			viewQuatx24[2] =-currentQuat[2]>>6;
-			viewQuatx24[3] =-currentQuat[3]>>6;
+			if( !testMode->modePause )
+			{
+				viewQuatx24[0] = currentQuat[0]>>6;
+				viewQuatx24[1] =-currentQuat[1]>>6;
+				viewQuatx24[2] =-currentQuat[2]>>6;
+				viewQuatx24[3] =-currentQuat[3]>>6;
+			}
 
 			funDigitalWrite( PIN_SCL, 0 );
 #if 0
@@ -467,6 +472,11 @@ void CoreLoop()
 		}
 		else if( cimutag == 2 )
 		{
+			if(testMode->modePause)
+			{		
+				nextjump = &&lsm6_getcimu;
+				goto cont;
+			}
 			funDigitalWrite( PIN_SCL, 1 );
 
 			const int32_t accelScale = 1<<27;
