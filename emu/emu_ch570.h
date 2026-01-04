@@ -569,7 +569,7 @@ void CheckSock()
 
 	// Optionally.
 	#ifndef WIN32
-		setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, (const char*)&opt , sizeof(opt));
+		setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt , sizeof(opt));
 	#endif
 
 	struct sockaddr_in serveraddr = { 0 };

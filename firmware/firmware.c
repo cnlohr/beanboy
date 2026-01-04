@@ -28,9 +28,11 @@ void * game;
 #include "lib_rand.h"
 #include "mode_test.h"
 #include "mode_example.h"
+#include "mode_puffer.h"
+#include "mode_shutbox.h"
 
 // Include name of mode here.
-const char * gameModes[] = { "Menu", "Example", "Test" };
+const char * gameModes[] = { "Menu", "Example", "Test", "Puffer", "ShutBox" };
 
 #include "mode_menu.h"
 
@@ -41,6 +43,8 @@ union
 	ModeMenu menu;
 	ModeExample example;
 	ModeTest test;
+	ModePuffer puffer;
+	ModeShut shut;
 } gameUnion;
 
 // Add it to this list.
@@ -57,6 +61,12 @@ void SelectMode( int modeNumber )
 			break;
 		case 2:
 			EnterTestMode( &gameUnion.test );
+			break;
+		case 3:
+			EnterPufferMode( &gameUnion.puffer);
+			break;
+		case 4:
+			EnterShutMode( &gameUnion.shut);
 			break;
 	}
 }
@@ -104,6 +114,7 @@ int main()
 
 		unsigned now = SysTick->CNT;
 		unsigned deltaUS = (now - lastStart)/48; // Wacky math to make sure we don't lose microseconds.
+		//printf("%d,%d,%d\n",now,lastStart,deltaUS);
 		if( gameUnion.template.Update )
 		{
 			gameUnion.template.Update( &gameUnion, deltaUS, pressures, clickedMask, lastClickedMask );
