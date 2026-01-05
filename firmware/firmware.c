@@ -95,7 +95,7 @@ int main()
 
 	game = &gameUnion.template;
 
-	SelectMode( 2 );
+	SelectMode( 0 );
 
 	uint32_t lastClickedMask = 0;
 	while(1)
