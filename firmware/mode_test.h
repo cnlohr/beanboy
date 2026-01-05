@@ -764,17 +764,22 @@ void EnterTestMode( ModeTest * m )
 	SendByteNoAck( 0x8a ); // 833Hz Accel updates
 	SendStop();
 
-
 	funDigitalWrite( SSD1306_CS_PIN, FUN_HIGH );
+
+
+	ssd1306_rst();
+
+	ssd1306_spi_init();
+	ssd1306_init();
 
 	//sh1107_setup_for_scope();
 	ssd1306_setbuf(0x00); // Clear screen
 	int i;
 
 	// Line 0 is clear.
-	for( i = 1; i < 128; i++ )
+	for( i = 0; i < 128; i++ )
 	{
-		ssd1306_drawPixel(i, i, 1);
+		ssd1306_drawPixel(i, i, (i!=0));
 	}
 	ssd1306_refresh();
 
