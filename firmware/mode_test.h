@@ -766,11 +766,12 @@ void EnterTestMode( ModeTest * m )
 
 	funDigitalWrite( SSD1306_CS_PIN, FUN_HIGH );
 
-
+#if 0
+	// TODO: add these back in but figure out why it borks the imu
 	ssd1306_rst();
-
 	ssd1306_spi_init();
 	ssd1306_init();
+#endif
 
 	//sh1107_setup_for_scope();
 	ssd1306_setbuf(0x00); // Clear screen
