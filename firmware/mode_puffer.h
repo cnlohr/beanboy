@@ -12,19 +12,23 @@ typedef struct ModePuffer_t
     int16_t popNum;
     int16_t curPoke;
 	int16_t displayAdd;
+	int animTime;
 } ModePuffer;
 
 static const uint32_t TimePerTick = 85000; 
 static const uint32_t TicksPerLoop = 21;
 static const int16_t SinStepsPerFrame = 5; //This number should be coprime with ticksperloop if it's not itself prime
-static const int16_t imageOffset = 12; //Fish Images are 90 pixels square, so the coordinate we want it drawn on is 45 pixels right and down from where we actually need to draw it
-static const char* NewGameText1 = "-Press R to";
-static const char* NewGameText2 = " play again!";
+static const int16_t imageOffset = 24; //
+static const int deathAnimationTime = 2000000;
+static const char* NewGameText1 = "R to Play";
+static const char* NewGameText1_1 = "R to Play Again";
+static const char* NewGameText2 = "L to Leave";
+static const char* DeathText = "You lose :(";
 static const char* GameOverText = "Game Over!";
-static const char* TitleText = "Pass the Puffer!";
-static const char* Instructions1 = "-Press C to Poke";
-static const char* Instructions2 = "-Get rid of him";
-static const char* Instructions3 = " before he pops!";
+static const char* TitleText = "Pass the Puffer";
+static const char* Instructions1 = "Press C to Poke";
+static const char* Instructions2 = "then pass to the";
+static const char* Instructions3 = "next player";
 
 
 void ModePufferWirelessRX( uint8_t * txmac, uint8_t * message, int messageLength, int rssi )
@@ -35,22 +39,22 @@ void ModePufferWirelessRX( uint8_t * txmac, uint8_t * message, int messageLength
 }
 
 int getNewPufferPokes(){
-	return ((rand() % 35) + 20);
+	return ((rand() % 2) + 20);
 }
 int getRandExtraPokes(){
 	return (rand() % 5) + 10;
 }
 
-int badSin(int degrees){
+int badSin(int degrees, int radius){
 	//0 returns 1
 	//90 returns 0
 	//180 returns -1
 	//270 returns 0
 	//We interpolate these values linearly because who has time for real lookup tables
 	if(degrees >= 180){
-		return -1 + ((degrees-180)/90);
+		return -radius + ((degrees-180)*radius/90);
 	}else{
-		return -1 + ((180-degrees)/90);
+		return -radius + ((180-degrees)*radius/90);
 	}
 }
 
@@ -79,27 +83,37 @@ void ModePufferLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint
 	if(newClickedMask & 2){
 		//Pressed the button
 		m->curPoke++;
+		ssd1306_drawRect(1,1,126,126,1);
 	}
 	if(newClickedMask & 4 && m->curPoke >= m->popNum){
 		//Reset the game
 		m->curPoke = 0;
 		m->frameNum = 0;
 		m->spriteTime = 0;
+		m->animTime = 0;
 		m->popNum = getNewPufferPokes();
 		m->displayAdd = getRandExtraPokes();
 	}
 	
     if(m->popNum == 0){
-		ssd1306_drawstr_sz(5,0,TitleText,1,1);
-		ssd1306_drawstr_sz(0,20,Instructions1,1,1);
+		ssd1306_drawstr_sz(5,2,TitleText,1,1);
+		ssd1306_drawstr_sz(4,20,Instructions1,1,1);
 		ssd1306_drawstr_sz(0,32,Instructions2,1,1);
-		ssd1306_drawstr_sz(0,44,Instructions3,1,1);
-		ssd1306_drawstr_sz(0,73,NewGameText1,1,1);
-		ssd1306_drawstr_sz(0,85,NewGameText2,1,1);
+		ssd1306_drawstr_sz(20,44,Instructions3,1,1);
+		ssd1306_drawstr_sz(30,73,NewGameText1,1,1);
+		ssd1306_drawstr_sz(26,85,NewGameText2,1,1);
 	}else if(m->curPoke >= m->popNum){
-		ssd1306_drawstr_sz(25,40,GameOverText,1,1);
-		ssd1306_drawstr_sz(0,60,NewGameText1,1,1);
-		ssd1306_drawstr_sz(0,72,NewGameText2,1,1);
+		if(m->animTime < deathAnimationTime){
+			m->animTime += deltaTime;
+			ssd1306_drawstr_sz(25,40,DeathText,1,1);
+			RenderBSprite(&fishDead, 32,60);
+		}else{
+			ssd1306_drawstr_sz(25,40,GameOverText,1,1);
+			ssd1306_drawstr_sz(6,60,NewGameText1_1,1,1);
+			ssd1306_drawstr_sz(26,72,NewGameText2,1,1);
+			RenderBSprite(&fishDead,32,90);
+		}
+		
 	}else{
 		int radialSteps = (m->frameNum * SinStepsPerFrame) % TicksPerLoop;
 		int sinDegrees = radialSteps * 360  / TicksPerLoop;
@@ -108,11 +122,11 @@ void ModePufferLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint
 		//printf("%d\n",displayedPokes);
 		//render the fish during the game
 		if(  displayedPokes  >  90  ){
-			RenderBSprite(&fish2, 64+24*badSin(sinDegrees)-imageOffset,64+28*badSin(cosDegrees)-imageOffset);
+			RenderBSprite(&fish2, 64-imageOffset+badSin(sinDegrees,24),64-imageOffset+badSin(cosDegrees,24));
 		}else if(  displayedPokes  >  65  ){
-			RenderBSprite(&fish1, 64+17*badSin(sinDegrees)-imageOffset,64+17*badSin(cosDegrees)-imageOffset);
+			RenderBSprite(&fish1, 64-imageOffset+badSin(sinDegrees,17),64-imageOffset+badSin(cosDegrees,17));
 		}else if(  displayedPokes  >  30  ){
-			RenderBSprite(&fish0, 64+5*badSin(sinDegrees)-imageOffset,64+5*badSin(cosDegrees)-imageOffset);
+			RenderBSprite(&fish0, 64-imageOffset+badSin(sinDegrees,5),64-imageOffset+badSin(cosDegrees,5));
 		}else{
 			RenderBSprite(&fish0, 64-imageOffset,64-imageOffset);
 		}
@@ -135,6 +149,7 @@ void EnterPufferMode( ModePuffer * m )
 	m->spriteTime = 0;
 	m->frameNum = 0;
 	m->displayAdd = 0;
+	m->animTime = 0;
 
 	seed(frameentropy);
 }
