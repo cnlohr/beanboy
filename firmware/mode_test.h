@@ -648,9 +648,10 @@ void CoreLoop()
 
 		static int32_t averageAccel[3];
 		const int32_t accelGamma = 100000;
-		averageAccel[0] =  mul2x24( averageAccel[0], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[0], accelGamma );
-		averageAccel[1] =  mul2x24( averageAccel[1], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[1], accelGamma );
-		averageAccel[2] =  mul2x24( averageAccel[2], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[2], accelGamma );
+		const int32_t accelGammaShrink = 100000; // Make this smaller to have a little gravity.
+		averageAccel[0] =  mul2x24( averageAccel[0], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[0], accelGammaShrink );
+		averageAccel[1] =  mul2x24( averageAccel[1], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[1], accelGammaShrink );
+		averageAccel[2] =  mul2x24( averageAccel[2], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[2], accelGammaShrink );
 //printf( "%d %d %d\n", rotatedAccel[0], rotatedAccel[1], rotatedAccel[2] );
 
 		int32_t diffAccel[3] = {
