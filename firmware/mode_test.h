@@ -9,6 +9,7 @@
 
 #include "test/bunny.h"
 #include "test/bean.h"
+#include "test/donut.h"
 
 typedef struct ModeTest_t
 {
@@ -84,7 +85,7 @@ void SlowGameCheck()
 		if( tbtn == 2 && !wasdown && nowdown )
 		{
 			testMode->model = (testMode->model+1);
-			if( testMode->model == 2 ) testMode->model = 0;
+			if( testMode->model == 3 ) testMode->model = 0;
 		}
 
 		if( tbtn == 0 && !wasdown && nowdown )
@@ -192,6 +193,10 @@ void CoreLoop()
 					totalLines = (sizeof(bean_lines)/sizeof(bean_lines[0])/2);
 					indices3d = bean_lines;
 					vertices3d = bean_verts;
+				} else if( testMode->model == 2 ) {
+					totalLines = (sizeof(donut_lines)/sizeof(donut_lines[0])/2);
+					indices3d = donut_lines;
+					vertices3d = donut_verts;
 				}
 				/*} else {
 					totalLines = (sizeof(kd_lines)/sizeof(kd_lines[0])/2);
