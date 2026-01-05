@@ -43,7 +43,7 @@ void ModeMenuLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 		segm++;
 	}
 
-	ssd1306_drawRect( 0+m->zeroEntryLaunch>>2, centerline_minus_half-2, m->animWidth>>3, 18, 1 );
+	ssd1306_drawRect( 0+(m->zeroEntryLaunch>>2), centerline_minus_half-2, m->animWidth>>3, 18, 1 );
 
 	m->currentRelative -= m->currentRelative>>3;
 
