@@ -28,6 +28,14 @@ int main( int argc, char ** argv )
 	snprintf( outname, sizeof(outname)-1, "%s.h", argv[1] );
 
 	FILE * bh = fopen( outname, "w" );
+
+	int minx = INT_MAX;
+	int miny = INT_MAX;
+	int minz = INT_MAX;
+	int maxx = INT_MIN;
+	int maxy = INT_MIN;
+	int maxz = INT_MIN;
+
 	fprintf( bh, "#include <stdint.h>\nconst int16_t %s_verts[]  __attribute__((section(\".rodata\"))) = {\n", argv[1] );
 	while( line = fgets( buffer, sizeof(buffer)-1, f ) )
 	{
@@ -35,7 +43,14 @@ int main( int argc, char ** argv )
 		{
 			float x, y, z;
 			sscanf( line + 2, "%f %f %f", &x, &y, &z );
-			fprintf( bh, "\t%d, %d, %d,\n", (int)(x*scale), (int)(y*scale), (int)(z*scale) );
+			int ox = (int)(x*scale), oy = (int)(y*scale), oz = (int)(z*scale);
+			fprintf( bh, "\t%d, %d, %d,\n", ox, oy, oz );
+			if( ox < minx ) minx = ox;
+			if( oy < miny ) miny = oy;
+			if( oz < minz ) minz = oz;
+			if( ox > maxx ) maxx = ox;
+			if( oy > maxy ) maxy = oy;
+			if( oz > maxz ) maxz = oz;
 		}
 		if( line[0] == 'l' )
 		{
@@ -51,6 +66,7 @@ int main( int argc, char ** argv )
 		}
 	}
 	fprintf( bh, "};\n" );
+	printf( "Extents: %d %d %d - %d %d %d\n", minx, miny, minz, maxx, maxy, maxz );
 
 }
 
