@@ -88,7 +88,6 @@ void ModeShutLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 					m->shutters[m->selected] = 1;
 					m->score += m->selected + 1;
 					m->remainingRoll -= m->selected + 1;
-					m->shutters[m->selected] = 1;
 				}
 
 				//Check if that won the game
