@@ -25,6 +25,8 @@ static inline void Reboot()
 //
 // BLE-like interface.
 
+#if 0
+
 #define ISLER_CALLBACK ISLER_BEANBOY_INTERNAL_CALLBACK
 static void ISLER_BEANBOY_INTERNAL_CALLBACK();
 #include "iSLER.h"
@@ -67,6 +69,11 @@ static void ISLERSend( const void * message, int messageLength )
 	Frame_TX(ACCESS_ADDRESS, pkt_tx, messageLength+10, iSLERChannel, PHY_MODE);
 	Frame_RX(ACCESS_ADDRESS, iSLERChannel, PHY_MODE);
 }
+
+
+#endif
+
+
 
 const uint8_t * GetSelfMAC() { return (const uint8_t*)ROM_CFG_MAC_ADDR; }
 
@@ -116,9 +123,6 @@ static void RenderBSprite( const bsprite * spr, int outx, int outy )
 		}
 	}
 }
-
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // FakeDC

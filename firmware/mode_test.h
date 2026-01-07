@@ -130,6 +130,9 @@ void CoreLoop()
 	int32_t gyroBias[3] = { 0, 0, 0 };
 	int32_t accelUpdateConfidences[3] = { 0, 0, 0 };
 	int32_t gyroBiasUpdateAmount[3] = { 0, 0, 0 };
+	// CAREFUL: Perform rotations to acceleration reverse in object space.
+	int32_t rotatedAccel[3] = { 0 };
+
 	int gyronum = 0;
 	int accelnum = 0;
 
@@ -324,10 +327,9 @@ void CoreLoop()
 	{
 		// This can take a while, it's all fine.   This happens when we have free time.
 		// TODO: Make this only happen every so often.
-
 		//////////////////////////////////////////////////////////////////////////
 		// Push the square wave towards the user.
-		funDigitalWrite( PIN_SCL, 1 );
+	//	funDigitalWrite( PIN_SCL, 1 );
 
 		if( (int32_t)(SysTick->CNT - logicTickNext) > 0 )
 		{
@@ -362,7 +364,7 @@ void CoreLoop()
 		{
 			SlowGameCheck();
 		}
-		funDigitalWrite( PIN_SCL, 0 );
+	//	funDigitalWrite( PIN_SCL, 0 );
 		nextjump = &&lsm6_getcimu;
 		goto cont;
 	}
@@ -440,7 +442,7 @@ void CoreLoop()
 			gyronum++;	
 			// Based on the euler angles, apply a change to the rotation matrix.
 
-			funDigitalWrite( PIN_SCL, 1 );
+		//	funDigitalWrite( PIN_SCL, 1 );
 
 			int32_t eulerAngles[3];
 			const int32_t eulerScale = 15500000*2;// XXX Change me when you change IMU update rate.
@@ -477,7 +479,7 @@ void CoreLoop()
 				viewQuatx24[3] =-currentQuat[3]>>6;
 			}
 
-			funDigitalWrite( PIN_SCL, 0 );
+	//		funDigitalWrite( PIN_SCL, 0 );
 #if 0
 			if( 0 )
 			{
@@ -500,7 +502,7 @@ void CoreLoop()
 				nextjump = 0;
 				goto cont;
 			}
-			funDigitalWrite( PIN_SCL, 1 );
+		//	funDigitalWrite( PIN_SCL, 1 );
 
 			const int32_t accelScale = 1<<27;
 			// Get into correct coordinate frame (you may have to mess with these)
@@ -521,7 +523,7 @@ void CoreLoop()
 				mul2x24(accel_up_Fix29Norm[1],accel_up_Fix29Norm[1]) +
 				mul2x24(accel_up_Fix29Norm[2],accel_up_Fix29Norm[2]);
 
-			funDigitalWrite( PIN_SCL, 0 );
+		//	funDigitalWrite( PIN_SCL, 0 );
 
 			// Get an initial guess
 			if( accelnum++ == 0 )
@@ -548,7 +550,7 @@ void CoreLoop()
 				// Step 6A: Next, compute what we think "up" should be from our point of view.  We will use +Y Up.
 				RotateVectorByInverseOfQuaternion_Fix24(what_we_think_is_up, cquat_x24, (const int32_t[3]){0, -1<<29, 0});
 
-				funDigitalWrite( PIN_SCL, 1 );
+			//	funDigitalWrite( PIN_SCL, 1 );
 				// Step 6C: Next, we determine how far off we are.  This will tell us our error.
 
 				// TRICKY: The ouput of this is actually the axis of rotation, which is ironically
@@ -569,7 +571,7 @@ void CoreLoop()
 
 				gyroBiasUpdateAmount[0] = _mulhs( fixedsqrt_x30(corrective_quaternion[1]), accelUpdateConfidences[0] );
 
-				funDigitalWrite( PIN_SCL, 0 );
+			//	funDigitalWrite( PIN_SCL, 0 );
 
 
 				// [[[CONTINUED BELOW]]]
@@ -593,7 +595,7 @@ void CoreLoop()
 
 
 	continue_accelerometer_logic:
-		funDigitalWrite( PIN_SCL, 1 );
+	//	funDigitalWrite( PIN_SCL, 1 );
 
 		// Continued from lsm6_pull2, tag 2.
 
@@ -613,7 +615,7 @@ void CoreLoop()
 
 		//printf( "%d %d %d\n",confidences[0], _mulhs( fixedsqrt_x30(corrective_quaternion[2]), confidences[1] ), confidences[2] );
 
-		funDigitalWrite( PIN_SCL, 0 );	
+	//	funDigitalWrite( PIN_SCL, 0 );	
 
 		// Second, we can apply a very small corrective tug.  This helps prevent oscillation
 		// about the correct answer.  This acts sort of like a P term to a PID loop.
@@ -643,10 +645,10 @@ void CoreLoop()
 
 		// But we still have time, so let's handle letting our object bounce around.
 
-		funDigitalWrite( PIN_SCL, 1 );
+	//	funDigitalWrite( PIN_SCL, 1 );
 
 		// CAREFUL: Perform rotations to acceleration reverse in object space.
-		int32_t rotatedAccel[3] = { };
+
 		//RotateVectorByQuaternion_Fix24_rough( rotatedAccel, viewQuatx24,   accel_up_Fix24 );
 		int32_t invq[4] = { viewQuatx24[0],-viewQuatx24[1],-viewQuatx24[2],-viewQuatx24[3] };
 		RotateVectorByQuaternion_Fix24_rough( rotatedAccel, invq,   accel_up_Fix24 );
@@ -712,7 +714,7 @@ void CoreLoop()
 			dongleVelocity[2] += resistance[2]>>4;
 		}
 
-		funDigitalWrite( PIN_SCL, 0 );
+	//	funDigitalWrite( PIN_SCL, 0 );
 
 
 		nextjump = 0;
@@ -782,6 +784,7 @@ void EnterTestMode( ModeTest * m )
 	{
 		ssd1306_drawPixel(i, i, (i!=0));
 	}
+	ssd1306_refresh();
 	ssd1306_refresh();
 
 	// Set mux ratio.

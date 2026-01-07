@@ -25,7 +25,7 @@ void ModeMenuLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 	const int nrgameModesM1 = sizeof(gameModes)/sizeof(gameModes[0])-1;
 
 	int ent = m->selectedEntry;
-
+//printf( "ENT: %d\n", ent );
 	int segm = ent-1;
 	int i;
 	for( i = -nrgameModesM1; i <= nrgameModesM1; i++ )
@@ -74,7 +74,7 @@ void ModeMenuLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 		{
 			ent--;
 			m->currentRelative-=16*(1<<20);
-			if( ent < 1 ) ent = nrgameModesM1+1;
+			if( ent < 1 ) ent = nrgameModesM1-1;
 		}
 		if( newClickedMask & 4 )
 		{

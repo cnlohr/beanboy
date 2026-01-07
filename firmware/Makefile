@@ -4,7 +4,7 @@ TARGET:=firmware
 TARGET_MCU:=CH572
 TARGET_MCU_PACKAGE:=CH572Q
 LINKER_SCRIPT:=linkerfile.ld
-EXTRA_CFLAGS:=-Wno-unused-variable -Wno-unused-but-set-variable
+EXTRA_CFLAGS:=-Wno-unused-variable -Wno-unused-but-set-variable -pedantic -Wall
 EXTRA_ELF_DEPENDENCIES=assets.h
 
 include ../ch32fun/ch32fun/ch32fun.mk
