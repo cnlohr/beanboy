@@ -8,3 +8,4 @@ firmware/makeassets.dSYM/Contents/Info.plist
 firmware/makeassets.dSYM/Contents/Resources/DWARF/makeassets
 firmware/makeassets.dSYM/Contents/Resources/Relocations/aarch64/makeassets.yml
 firmware/firmware.bin
+firmware/assets.h

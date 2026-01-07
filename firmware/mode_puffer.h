@@ -81,12 +81,12 @@ void ModePufferLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint
 	}
 	//printf("%d\n",deltaTime);
 	if(newClickedMask & 1 && m->curPoke >= m->popNum){
-		SelectMode(0);
+		Reboot();
 	}
 	if(newClickedMask & 2 && m->curPoke < m->popNum){
 		//Pressed the button
 		m->curPoke++;
-		ssd1306_drawRect(1,1,126,126,1);
+		//ssd1306_drawRect(1,1,126,126,1);
 	}
 	if(newClickedMask & 4 && m->curPoke >= m->popNum){
 		//Reset the game
