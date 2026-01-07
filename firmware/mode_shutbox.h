@@ -73,6 +73,9 @@ void ModeShutLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 	switch (m->gameState)
 	{
 		case 0: //playing the game
+			if(m->score%55==0){
+				//memset(m->shutters, 0, sizeof(int)*10);
+			}
 			if(newClickedMask & 1){//Left
 				do{
 					m->selected = (m->selected + 9) % 10;

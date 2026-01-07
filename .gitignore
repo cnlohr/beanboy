@@ -3,3 +3,7 @@ firmware.lst
 firmware.map
 firmware.hex
 firmware_ext.bin
+firmware/makeassets
+firmware/makeassets.dSYM/Contents/Info.plist
+firmware/makeassets.dSYM/Contents/Resources/DWARF/makeassets
+firmware/makeassets.dSYM/Contents/Resources/Relocations/aarch64/makeassets.yml
