@@ -30,9 +30,10 @@ void * game;
 #include "mode_example.h"
 #include "mode_puffer.h"
 #include "mode_shutbox.h"
+#include "mode_blackjack.h"
 
 // Include name of mode here.
-const char * gameModes[] = { "Menu", "Example", "Idle", "Puffer", "ShutBox" };
+const char * gameModes[] = { "Menu", "Example", "Idle", "Puffer", "ShutBox", "BlackJack" };
 
 #include "mode_menu.h"
 
@@ -45,6 +46,7 @@ union
 	ModeTest test;
 	ModePuffer puffer;
 	ModeShut shut;
+	ModeBlackJack jack;
 } gameUnion;
 
 // Add it to this list.
@@ -67,6 +69,9 @@ void SelectMode( int modeNumber )
 			break;
 		case 4:
 			EnterShutMode( &gameUnion.shut);
+			break;
+		case 5:
+			EnterBlackJackMode( &gameUnion.jack);
 			break;
 	}
 }

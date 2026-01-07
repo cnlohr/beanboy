@@ -9,6 +9,8 @@
 
 #include "test/bunny.h"
 #include "test/bean.h"
+#include "test/donut.h"
+#include "test/teapot.h"
 
 typedef struct ModeTest_t
 {
@@ -84,7 +86,7 @@ void SlowGameCheck()
 		if( tbtn == 2 && !wasdown && nowdown )
 		{
 			testMode->model = (testMode->model+1);
-			if( testMode->model == 2 ) testMode->model = 0;
+			if( testMode->model == 4 ) testMode->model = 0;
 		}
 
 		if( tbtn == 0 && !wasdown && nowdown )
@@ -192,6 +194,14 @@ void CoreLoop()
 					totalLines = (sizeof(bean_lines)/sizeof(bean_lines[0])/2);
 					indices3d = bean_lines;
 					vertices3d = bean_verts;
+				} else if( testMode->model == 2 ) {
+					totalLines = (sizeof(donut_lines)/sizeof(donut_lines[0])/2);
+					indices3d = donut_lines;
+					vertices3d = donut_verts;
+				} else if( testMode->model == 3 ) {
+					totalLines = (sizeof(teapot_lines)/sizeof(teapot_lines[0])/2);
+					indices3d = teapot_lines;
+					vertices3d = teapot_verts;
 				}
 				/*} else {
 					totalLines = (sizeof(kd_lines)/sizeof(kd_lines[0])/2);
@@ -223,7 +233,7 @@ void CoreLoop()
 					}
 					else if( at == 2 )
 					{
-						zspeed = 100;
+						zspeed = 1500;
 					}
 					else if( at == 3 )
 					{
@@ -643,9 +653,10 @@ void CoreLoop()
 
 		static int32_t averageAccel[3];
 		const int32_t accelGamma = 100000;
-		averageAccel[0] =  mul2x24( averageAccel[0], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[0], accelGamma );
-		averageAccel[1] =  mul2x24( averageAccel[1], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[1], accelGamma );
-		averageAccel[2] =  mul2x24( averageAccel[2], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[2], accelGamma );
+		const int32_t accelGammaShrink = 100000; // Make this smaller to have a little gravity.
+		averageAccel[0] =  mul2x24( averageAccel[0], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[0], accelGammaShrink );
+		averageAccel[1] =  mul2x24( averageAccel[1], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[1], accelGammaShrink );
+		averageAccel[2] =  mul2x24( averageAccel[2], (1<<24)-accelGamma ) + mul2x24(  rotatedAccel[2], accelGammaShrink );
 //printf( "%d %d %d\n", rotatedAccel[0], rotatedAccel[1], rotatedAccel[2] );
 
 		int32_t diffAccel[3] = {
@@ -753,17 +764,23 @@ void EnterTestMode( ModeTest * m )
 	SendByteNoAck( 0x8a ); // 833Hz Accel updates
 	SendStop();
 
-
 	funDigitalWrite( SSD1306_CS_PIN, FUN_HIGH );
+
+#if 0
+	// TODO: add these back in but figure out why it borks the imu
+	ssd1306_rst();
+	ssd1306_spi_init();
+	ssd1306_init();
+#endif
 
 	//sh1107_setup_for_scope();
 	ssd1306_setbuf(0x00); // Clear screen
 	int i;
 
 	// Line 0 is clear.
-	for( i = 1; i < 128; i++ )
+	for( i = 0; i < 128; i++ )
 	{
-		ssd1306_drawPixel(i, i, 1);
+		ssd1306_drawPixel(i, i, (i!=0));
 	}
 	ssd1306_refresh();
 
