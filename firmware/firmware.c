@@ -33,7 +33,7 @@ void * game;
 #include "mode_blackjack.h"
 
 // Include name of mode here.
-const char * gameModes[] = { "Menu", "Example", "Idle", "Puffer", "ShutBox", "BlackJack" };
+const char * gameModes[] = { "Menu", "Aquarium", "Idle", "Puffer", "ShutBox", "BlackJack" };
 
 #include "mode_menu.h"
 
