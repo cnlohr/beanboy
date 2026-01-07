@@ -81,13 +81,13 @@ void SelectMode( int modeNumber )
 
 
 
-
+#if 0
 void ISLERCallback( uint8_t * txmac, uint8_t * message, int messageLength, int rssi )
 {
 	if( gameUnion.template.WirelessRX )
 		gameUnion.template.WirelessRX( txmac, message, messageLength, rssi );
 }
-
+#endif
 
 int main()
 {

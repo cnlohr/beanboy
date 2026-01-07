@@ -93,6 +93,7 @@ void ModeMenuLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 	else if( m->zeroEntryLaunch > 512 )
 	{
 		SelectMode( m->selectedEntry );
+		return;
 	}
 
 	// Output screen contents to OLED display.
