@@ -66,7 +66,7 @@ void ModeExampleLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uin
 	if( us < 0 )
 	{
 		m->usTilNextSend = 400000;
-		ISLERSend( "\xaa\xbb\xcc\xdd\xee\xff", 6 );
+		//ISLERSend( "\xaa\xbb\xcc\xdd\xee\xff", 6 );
 	}
 }
 

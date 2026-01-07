@@ -52,6 +52,7 @@ union
 // Add it to this list.
 void SelectMode( int modeNumber )
 {
+	memset( &gameUnion, 0, sizeof(gameUnion) );
 	switch(modeNumber)
 	{
 		case 0:
@@ -96,7 +97,7 @@ int main()
 
 	unsigned lastStart = 0;
 
-	ISLERSetup( 14 );
+//	ISLERSetup( 14 );
 
 	game = &gameUnion.template;
 
@@ -128,11 +129,14 @@ int main()
 		frameno++;
 
 		// EMULATOR ONLY! BB19 contains a pointer to an incoming packet.
+#if 0
 		while( BB->BB19 )
 		{
 			ISLER_BEANBOY_INTERNAL_CALLBACK();
 			BB->BB19 = 0;
 		}
+#endif
+
 /*
 
 static void ISLER_BEANBOY_INTERNAL_CALLBACK()
