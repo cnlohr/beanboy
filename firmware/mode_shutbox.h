@@ -163,8 +163,8 @@ void ModeShutLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint32
 				m->remainingRoll = rollDice();
 				m->selected = 0;
 				m->score=0;
-			}if(newClickedMask & 1){
-				SelectMode(0);
+			}if(newClickedMask & 1){//Left
+				Reboot();
 			}
 			break;
 		case 2:
