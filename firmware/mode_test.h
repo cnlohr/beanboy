@@ -75,7 +75,13 @@ void SlowGameCheck()
 			}
 			else
 			{
-				if( !wasdown ) { testMode->modePause = !testMode->modePause; }
+				if( !wasdown )
+				{
+					int wp = testMode->modePause;
+					wp++;
+					if( wp == 3 ) wp = 0;
+					testMode->modePause = wp;
+				}
 				if( testMode->timeMenuDown++ > 80 )
 				{
 					Reboot();
@@ -471,7 +477,7 @@ void CoreLoop()
 			QuatApplyQuat_Fix30( currentQuat, currentQuat, thisQ );
 			QuatNormalize_Fix30( currentQuat, currentQuat );
 
-			if( !testMode->modePause )
+			if( testMode->modePause < 2 )
 			{
 				viewQuatx24[0] = currentQuat[0]>>6;
 				viewQuatx24[1] =-currentQuat[1]>>6;
