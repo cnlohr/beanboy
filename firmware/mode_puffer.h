@@ -20,6 +20,7 @@ static const uint32_t TicksPerLoop = 21;
 static const int16_t SinStepsPerFrame = 5; //This number should be coprime with ticksperloop if it's not itself prime
 static const int16_t imageOffset = 24; //
 static const int deathAnimationTime = 2000000;
+static const int deathExplosionLoopTime = 250000;
 static const char* NewGameText1 = "R to Play";
 static const char* NewGameText1_1 = "R to Play Again";
 static const char* NewGameText2 = "L to Leave";
@@ -105,8 +106,15 @@ void ModePufferLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint
 	}else if(m->curPoke >= m->popNum){
 		if(m->animTime < deathAnimationTime){
 			m->animTime += deltaTime;
-			ssd1306_drawstr_sz(25,40,DeathText,1,1);
-			RenderBSprite(&fishDead, 32,60);
+			if(  m->animTime%deathExplosionLoopTime  > 2 * deathExplosionLoopTime / 3){
+				RenderBSprite(&fishex3, 32,32);
+			}else if (m->animTime%deathExplosionLoopTime  > deathExplosionLoopTime / 3){
+				RenderBSprite(&fishex2, 32,32);
+			}else{
+				RenderBSprite(&fishex1, 32,32);
+			}
+			ssd1306_drawstr_sz(25,10,DeathText,1,1);
+			
 		}else{
 			ssd1306_drawstr_sz(25,40,GameOverText,1,1);
 			ssd1306_drawstr_sz(6,60,NewGameText1_1,1,1);
