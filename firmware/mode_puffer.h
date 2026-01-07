@@ -17,14 +17,14 @@ typedef struct ModePuffer_t
 
 static const uint32_t TimePerTick = 85000; 
 static const uint32_t TicksPerLoop = 21;
-static const int16_t SinStepsPerFrame = 5; //This number should be coprime with ticksperloop if it's not itself prime
+static const int16_t SinStepsPerFrame = 8; //This number should be coprime with ticksperloop if it's not itself prime
 static const int16_t imageOffset = 24; //
 static const int deathAnimationTime = 2000000;
 static const int deathExplosionLoopTime = 250000;
 static const char* NewGameText1 = "R to Play";
 static const char* NewGameText1_1 = "R to Play Again";
 static const char* NewGameText2 = "L to Leave";
-static const char* DeathText = "You lose :(";
+static const char* DeathText = "You lose!";
 static const char* GameOverText = "Game Over!";
 static const char* TitleText = "Pass the Puffer";
 static const char* Instructions1 = "Press C to Poke";
@@ -40,10 +40,10 @@ void ModePufferWirelessRX( uint8_t * txmac, uint8_t * message, int messageLength
 }
 
 int getNewPufferPokes(){
-	return ((rand() % 2) + 20);
+	return ((rand() % 50) + 30);
 }
 int getRandExtraPokes(){
-	return (rand() % 5) + 10;
+	return (rand() % 15) + 8;
 }
 
 int badSin(int degrees, int radius){
@@ -80,8 +80,10 @@ void ModePufferLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint
 		//printf("%d,%d\n",m->spriteTime,deltaTime);
 	}
 	//printf("%d\n",deltaTime);
-	
-	if(newClickedMask & 2){
+	if(newClickedMask & 1 && m->curPoke >= m->popNum){
+		SelectMode(0);
+	}
+	if(newClickedMask & 2 && m->curPoke < m->popNum){
 		//Pressed the button
 		m->curPoke++;
 		ssd1306_drawRect(1,1,126,126,1);
@@ -107,11 +109,11 @@ void ModePufferLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint
 		if(m->animTime < deathAnimationTime){
 			m->animTime += deltaTime;
 			if(  m->animTime%deathExplosionLoopTime  > 2 * deathExplosionLoopTime / 3){
-				RenderBSprite(&fishex3, 32,32);
+				RenderBSprite(&fishex3, 25,32);
 			}else if (m->animTime%deathExplosionLoopTime  > deathExplosionLoopTime / 3){
-				RenderBSprite(&fishex2, 32,32);
+				RenderBSprite(&fishex2, 25,32);
 			}else{
-				RenderBSprite(&fishex1, 32,32);
+				RenderBSprite(&fishex1, 25,32);
 			}
 			ssd1306_drawstr_sz(25,10,DeathText,1,1);
 			
@@ -134,9 +136,9 @@ void ModePufferLoop( void * mode, uint32_t deltaTime, uint32_t * pressures, uint
 		}else if(  displayedPokes  >  65  ){
 			RenderBSprite(&fish1, 64-imageOffset+badSin(sinDegrees,17),64-imageOffset+badSin(cosDegrees,17));
 		}else if(  displayedPokes  >  30  ){
-			RenderBSprite(&fish0, 64-imageOffset+badSin(sinDegrees,5),64-imageOffset+badSin(cosDegrees,5));
+			RenderBSprite(&fish0, 64-imageOffset+badSin(sinDegrees,5),67-imageOffset+badSin(cosDegrees,5));
 		}else{
-			RenderBSprite(&fish0, 64-imageOffset,64-imageOffset);
+			RenderBSprite(&fish0, 64-imageOffset,67-imageOffset);
 		}
 
 	}
