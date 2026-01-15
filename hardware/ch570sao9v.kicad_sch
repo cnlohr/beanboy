@@ -3994,9 +3994,9 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "REV A UNTESTED\nTODO: Antenna tuning test.\nBring OLED pads down about 0.2mm, same size..\nFix labeling on back"
+	(text "REV A TESTED OK\nTODO: Antenna tuning test.\nREV B Untested"
 		(exclude_from_sim no)
-		(at 157.226 28.448 0)
+		(at 157.226 23.368 0)
 		(effects
 			(font
 				(size 3.81 3.81)
